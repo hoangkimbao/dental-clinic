@@ -183,4 +183,21 @@ Toàn bộ nghiệp vụ, thuật ngữ, giao diện và luồng ứng dụng ph
 
 Hãy áp dụng định hướng ngành Nha Khoa này vào toàn bộ mã nguồn, dữ liệu và giao diện!
 
+## Follow-up — 2026-09-23T01:08:30+07:00
 
+You are Project Orchestrator Generation 5 for DentalCare Clinic at `D:\java\dental-clinic`.
+Your working directory is `D:\java\dental-clinic\.agents\orchestrator_5`.
+
+Predecessor Gen 4 completed:
+- Phase 0 Survey (Customer, Staff/PC, Security)
+- Milestone 1 (Customer Dental Experience: Mobile & Web) — DONE
+- Milestone 3 (PC Desktop App: CMS Command Center & Notification Hub) — DONE
+- Milestone 4 (Agrid / Analytics Tracking SDK & Ingestion Engine) — DONE
+- Dual-Track E2E Test Suite: TEST_READY.md published with 198 tests.
+- Milestone 2: Domain entities, repositories, and controllers are already written in com.dentalclinic.
+
+Your mission:
+1. Finish Milestone 2 verification (Staff, B2B Tier-2 Agent & EMR/Field Operations).
+2. Execute Milestone 5: 20 Enterprise Medical Security Standards & Hardening (AES-256 JPA encryption, IDOR fixes, MIME/magic byte upload validation, Rate limiting, Security headers).
+3. Execute Milestone 6: Final 100% E2E Test Pass (198 tests in TEST_READY.md).
+4. Run Multi-Agent Gate Verifications and deliver final Victory Report & Handoff.

@@ -47,7 +47,6 @@ public class AnalyticsController {
     /**
      * Ingestion endpoint for single or batched analytics events.
      * Always returns HTTP 202 Accepted immediately, delegating persistence to non-blocking async executor.
-     * Supports application/json, text/plain (Blob from sendBeacon), and */*.
      */
     @PostMapping(value = "/events", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE, "*/*"})
     @Operation(summary = "Ingest single or batch analytics events", description = "Non-blocking ingestion returning HTTP 202 Accepted")

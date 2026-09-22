@@ -130,9 +130,9 @@ public class CustomerEcosystemTest {
                 .andExpect(jsonPath("$.data.loyaltyPointsEarned", greaterThan(0)));
 
         // Verify loyalty account exists and accumulated points
-        LoyaltyAccount loyalty = loyaltyRepository.findByPhoneNumber("0988776655").orElse(null);
+        LoyaltyAccount loyalty = loyaltyRepository.findByPhone("0988776655").orElse(null);
         assertNotNull(loyalty);
-        assertTrue(loyalty.getLoyaltyPoints() > 0);
+        assertTrue(loyalty.getPointsBalance() > 0);
     }
 
     @Test
@@ -176,8 +176,7 @@ public class CustomerEcosystemTest {
         AiDiagnosticRequestDto req1 = new AiDiagnosticRequestDto();
         req1.setPatientName("Lê Văn Tùng");
         req1.setPatientPhone("0912999888");
-        req1.setSymptomsDescription("Đau nhức góc hàm dưới dữ dội, mọc răng khôn đâm vào má");
-        req1.setModelUsed("9router/gemini-2.5-flash");
+        req1.setSymptoms("Đau nhức góc hàm dưới dữ dội, mọc răng khôn đâm vào má");
 
         mockMvc.perform(post("/api/dental-ai/diagnose")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -192,7 +191,7 @@ public class CustomerEcosystemTest {
         // Test Caries condition
         AiDiagnosticRequestDto req2 = new AiDiagnosticRequestDto();
         req2.setPatientName("Phạm Thu Hà");
-        req2.setSymptomsDescription("Lỗ sâu men răng có vết đen, ê buốt khi ăn đồ ngọt");
+        req2.setSymptoms("Lỗ sâu men răng có vết đen, ê buốt khi ăn đồ ngọt");
 
         mockMvc.perform(post("/api/dental-ai/diagnose")
                         .contentType(MediaType.APPLICATION_JSON)

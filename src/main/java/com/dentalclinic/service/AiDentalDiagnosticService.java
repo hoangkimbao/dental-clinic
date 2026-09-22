@@ -40,7 +40,7 @@ public class AiDentalDiagnosticService {
         // Try 9Router Gateway
         boolean callSuccess = false;
         try {
-            String 9RouterUrl = "http://localhost:20128/v1/chat/completions";
+            String nineRouterUrl = "http://localhost:20128/v1/chat/completions";
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -60,7 +60,7 @@ public class AiDentalDiagnosticService {
             body.put("messages", messages);
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
-            ResponseEntity<Map> response = restTemplate.exchange(9RouterUrl, HttpMethod.POST, entity, Map.class);
+            ResponseEntity<Map> response = restTemplate.exchange(nineRouterUrl, HttpMethod.POST, entity, Map.class);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 // Parse response if available
                 callSuccess = true;

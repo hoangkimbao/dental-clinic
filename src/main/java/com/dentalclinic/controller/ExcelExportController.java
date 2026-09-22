@@ -131,7 +131,7 @@ public class ExcelExportController {
         StringBuilder csv = new StringBuilder();
         csv.append('\uFEFF');
 
-        csv.append("Mã Sản Phẩm / Vật Tư,Tên Mặt Hàng,Thương Hiệu,Danh Mục,Quy Cách Đóng Gói,Số Lượng Tồn,Đơn Giá Cơ Bản (VNĐ),Tổng Giá Trị Tồn Kho (VNĐ),Ngưỡng An Toàn,Trạng Thái Tồn Kho\n");
+        csv.append("Mã Sản Phẩm / Vật Tư,Tên Mặt Hàng,Thương Hiệu,Danh Mục,Quy Cách Đóng Gói,Số Lượng Tồn,Đơn Giá Cơ Bản (VNĐ),Định Giá Tồn Kho (VNĐ),Ngưỡng An Toàn,Trạng Thái Tồn Kho\n");
 
         List<DentalProduct> products = dentalProductRepository.findAll();
 
