@@ -1,5 +1,10 @@
 server:
   port: 8080
+  error:
+    include-stacktrace: never
+    include-message: never
+    include-binding-errors: never
+    include-exception: false
   compression:
     enabled: true
     mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json,application/xml
@@ -27,8 +32,8 @@ spring:
       path: /h2-console
   servlet:
     multipart:
-      max-file-size: 50MB
-      max-request-size: 50MB
+      max-file-size: 5MB
+      max-request-size: 5MB
   mail:
     host: smtp.gmail.com
     port: 587
@@ -45,6 +50,9 @@ spring:
 app:
   upload:
     dir: ./uploads/dental-images/
+  security:
+    crypto:
+      aes-key: DentalCare2026LuxuryClinicSecureKeyForMedicalEMRAES256GCM
   jwt:
     secret: dentalcareluxurysecuresecretkey2026superstrongforproductiontokengeneration32bytes
     expiration-ms: 86400000 # 24 hours

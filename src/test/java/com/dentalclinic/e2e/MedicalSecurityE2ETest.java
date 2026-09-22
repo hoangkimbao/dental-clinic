@@ -69,8 +69,14 @@ public class MedicalSecurityE2ETest {
         return root.path("data").path("token").asText();
     }
 
+    @Autowired
+    private com.dentalclinic.security.LoginAttemptService loginAttemptService;
+
     @BeforeEach
     void setUpAuthTokens() throws Exception {
+        if (loginAttemptService != null) {
+            loginAttemptService.resetAll();
+        }
         if (ownerToken == null) {
             ownerToken = obtainToken("owner", "123");
         }

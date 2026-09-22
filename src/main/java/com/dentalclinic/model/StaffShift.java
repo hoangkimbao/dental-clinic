@@ -1,11 +1,13 @@
 package com.dentalclinic.model;
 
 import com.dentalclinic.common.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "staff_shifts")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class StaffShift extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,6 +17,9 @@ public class StaffShift extends BaseEntity {
     @JoinColumn(name = "staff_id", nullable = false)
     private User staff;
 
+    @Transient
+    private Long staffId;
+
     private LocalDate shiftDate;
 
     @Enumerated(EnumType.STRING)
@@ -22,6 +27,12 @@ public class StaffShift extends BaseEntity {
     private ShiftType shiftType = ShiftType.CA_SANG_8H_12H;
 
     private String roleTitle;
+
+    @Transient
+    private String dutyDescription;
+
+    @Transient
+    private String roomOrChair;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -46,14 +57,26 @@ public class StaffShift extends BaseEntity {
     public void setId(Long id) { this.id = id; }
     public User getStaff() { return staff; }
     public void setStaff(User staff) { this.staff = staff; }
+    public Long getStaffId() { return staff != null ? staff.getId() : staffId; }
+    public void setStaffId(Long staffId) { this.staffId = staffId; }
     public LocalDate getShiftDate() { return shiftDate; }
     public void setShiftDate(LocalDate shiftDate) { this.shiftDate = shiftDate; }
     public ShiftType getShiftType() { return shiftType; }
     public void setShiftType(ShiftType shiftType) { this.shiftType = shiftType; }
-    public String getRoleTitle() { return roleTitle; }
+    public String getRoleTitle() { return roleTitle != null ? roleTitle : dutyDescription; }
     public void setRoleTitle(String roleTitle) { this.roleTitle = roleTitle; }
+    public String getDutyDescription() { return dutyDescription != null ? dutyDescription : roleTitle; }
+    public void setDutyDescription(String dutyDescription) {
+        this.dutyDescription = dutyDescription;
+        if (this.roleTitle == null) {
+            this.roleTitle = dutyDescription;
+        }
+    }
+    public String getRoomOrChair() { return roomOrChair; }
+    public void setRoomOrChair(String roomOrChair) { this.roomOrChair = roomOrChair; }
     public ShiftStatus getStatus() { return status; }
     public void setStatus(ShiftStatus status) { this.status = status; }
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
 }
+

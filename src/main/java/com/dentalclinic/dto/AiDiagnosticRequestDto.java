@@ -5,6 +5,7 @@ public class AiDiagnosticRequestDto {
     private String patientPhone;
     private String imageUrl;
     private String symptoms;
+    private Boolean forceFallback;
 
     public AiDiagnosticRequestDto() {}
 
@@ -26,4 +27,7 @@ public class AiDiagnosticRequestDto {
 
     public String getSymptoms() { return symptoms; }
     public void setSymptoms(String symptoms) { this.symptoms = symptoms; }
+
+    public Boolean getForceFallback() { return forceFallback; }
+    public void setForceFallback(Boolean forceFallback) { this.forceFallback = forceFallback; }
 }

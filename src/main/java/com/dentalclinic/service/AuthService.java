@@ -26,40 +26,56 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
     private final NotificationService notificationService;
+    private final com.dentalclinic.security.LoginAttemptService loginAttemptService;
 
     // 100% Constructor Injection
     public AuthService(AuthenticationManager authenticationManager,
                        UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        JwtTokenProvider tokenProvider,
-                       NotificationService notificationService) {
+                       NotificationService notificationService,
+                       com.dentalclinic.security.LoginAttemptService loginAttemptService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
         this.notificationService = notificationService;
+        this.loginAttemptService = loginAttemptService;
     }
 
     public AuthResponse login(LoginRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername().trim(), request.getPassword().trim())
-        );
+        String username = request.getUsername().trim();
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        User user = userDetails.getUser();
+        if (loginAttemptService.isBlocked(username)) {
+            throw new BadRequestException("Tài khoản tạm thời bị khóa do đăng nhập sai quá 5 lần. Vui lòng thử lại sau 15 phút!");
+        }
 
-        String jwt = tokenProvider.generateToken(authentication, user.getId(), user.getFullName());
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, request.getPassword().trim())
+            );
 
-        return new AuthResponse(
-                jwt,
-                user.getId(),
-                user.getUsername(),
-                user.getFullName(),
-                user.getRole().name(),
-                user.getPhone(),
-                user.getEmail()
-        );
+            loginAttemptService.loginSucceeded(username);
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            User user = userDetails.getUser();
+
+            String jwt = tokenProvider.generateToken(authentication, user.getId(), user.getFullName());
+
+            return new AuthResponse(
+                    jwt,
+                    user.getId(),
+                    user.getUsername(),
+                    user.getFullName(),
+                    user.getRole().name(),
+                    user.getPhone(),
+                    user.getEmail()
+            );
+        } catch (org.springframework.security.authentication.BadCredentialsException ex) {
+            loginAttemptService.loginFailed(username);
+            throw ex;
+        }
     }
 
     @Transactional

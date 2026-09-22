@@ -7,6 +7,10 @@ import com.dentalclinic.model.Appointment;
 import com.dentalclinic.model.AppointmentStatus;
 import com.dentalclinic.model.Payment;
 import com.dentalclinic.model.PaymentMethod;
+import com.dentalclinic.model.Role;
+import com.dentalclinic.model.User;
+import com.dentalclinic.repository.UserRepository;
+import com.dentalclinic.security.CustomUserDetails;
 import com.dentalclinic.service.AppointmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,7 +18,11 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -27,9 +35,25 @@ import java.util.List;
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
+    private final UserRepository userRepository;
 
-    public AppointmentController(AppointmentService appointmentService) {
+    public AppointmentController(AppointmentService appointmentService, UserRepository userRepository) {
         this.appointmentService = appointmentService;
+        this.userRepository = userRepository;
+    }
+
+    private User resolveCurrentUser(CustomUserDetails userDetails) {
+        if (userDetails != null && userDetails.getUser() != null) {
+            return userDetails.getUser();
+        }
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+            if (auth.getPrincipal() instanceof CustomUserDetails cud) {
+                return cud.getUser();
+            }
+            return userRepository.findByUsername(auth.getName()).orElse(null);
+        }
+        return null;
     }
 
     @PostMapping("/book")
@@ -70,14 +94,33 @@ public class AppointmentController {
 
     @GetMapping("/patient/{patientId}")
     @PreAuthorize("hasAnyRole('OWNER', 'RECEPTIONIST', 'PATIENT', 'ADMIN')")
-    public ResponseEntity<ApiResponse<List<Appointment>>> getForPatient(@PathVariable Long patientId) {
+    public ResponseEntity<ApiResponse<List<Appointment>>> getForPatient(
+            @PathVariable Long patientId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        User currentUser = resolveCurrentUser(userDetails);
+        if (currentUser != null && currentUser.getRole() == Role.ROLE_PATIENT) {
+            if (!currentUser.getId().equals(patientId)) {
+                throw new AccessDeniedException("Không có quyền xem lịch hẹn của bệnh nhân khác!");
+            }
+        }
         return ResponseEntity.ok(ApiResponse.success(appointmentService.getAppointmentsForPatient(patientId)));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('OWNER', 'RECEPTIONIST', 'DENTIST', 'PATIENT', 'ADMIN')")
-    public ResponseEntity<ApiResponse<Appointment>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.success(appointmentService.getAppointmentById(id)));
+    public ResponseEntity<ApiResponse<Appointment>> getById(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Appointment appointment = appointmentService.getAppointmentById(id);
+        User currentUser = resolveCurrentUser(userDetails);
+        if (currentUser != null && currentUser.getRole() == Role.ROLE_PATIENT) {
+            boolean isOwner = (appointment.getPatient() != null && appointment.getPatient().getId().equals(currentUser.getId()))
+                    || (appointment.getPatientPhone() != null && appointment.getPatientPhone().equals(currentUser.getPhone()));
+            if (!isOwner) {
+                throw new AccessDeniedException("Không có quyền xem chi tiết lịch hẹn này!");
+            }
+        }
+        return ResponseEntity.ok(ApiResponse.success(appointment));
     }
 
     @RequestMapping(value = "/{id}/status", method = {RequestMethod.PATCH, RequestMethod.POST})

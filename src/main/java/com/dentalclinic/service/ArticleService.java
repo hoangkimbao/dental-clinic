@@ -32,6 +32,19 @@ public class ArticleService {
     }
 
     public Article createArticle(Article article) {
+        if (article.getSlug() == null || article.getSlug().trim().isEmpty()) {
+            String baseSlug = (article.getTitle() != null && !article.getTitle().isBlank())
+                    ? article.getTitle().toLowerCase().replaceAll("[^a-z0-9]+", "-").replaceAll("^-|-$", "")
+                    : "bai-viet";
+            if (baseSlug.isBlank()) baseSlug = "bai-viet";
+            article.setSlug(baseSlug + "-" + System.currentTimeMillis());
+        }
+        if (article.getCreatedAt() == null) {
+            article.setCreatedAt(java.time.LocalDateTime.now());
+        }
+        if (article.getUpdatedAt() == null) {
+            article.setUpdatedAt(java.time.LocalDateTime.now());
+        }
         return articleRepository.save(article);
     }
 

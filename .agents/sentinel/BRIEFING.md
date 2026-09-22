@@ -26,13 +26,13 @@ Coordinate, monitor, and verify the construction of the cross-platform multi-app
 - **Cron 2 (Liveness Check)**: Active (task-36, */10 * * * *)
 - **Delivered Milestones**:
   - `M1`: Customer Dental Experience (Mobile & Web) — 10 JPA entities, 8 controllers, e-commerce, QR warranty, AI diagnostic, forum, GPS branches, mobile app views (DONE & HANDED OFF)
+  - `M2`: Staff, B2B Tier-2 Agent & EMR/Field Intake — Tier2Agent, DentalMaterial, MaterialOrder, StaffAttendance, DoctorKpi, FieldPatientIntake; 100% pass on 39 StaffAndOperationsE2ETests (DONE & HANDED OFF)
   - `M3`: PC Desktop App (CMS Command Center & Notification Hub) — Electron standalone client in `desktop-app/`, WebSocket STOMP real-time sync, 5 CMS modules, UTF-8 BOM CSV/Excel export, DesktopCmsExportTest (DONE & HANDED OFF)
   - `M4`: Agrid / Analytics Tracking SDK & Ingestion Engine (DONE & VERIFIED)
   - `E2E Testing Track`: TEST_INFRA.md v2.0.0 & TEST_READY.md published (198 automated tests across Tiers 1-4)
-- **In-Progress Work**:
-  - `M2`: Staff, B2B Tier-2 Agent & EMR/Field Intake (`worker_m2_staff` - backend controllers & tests built)
-- **Queued Work**:
-  - `M5`: 20 Enterprise Medical Security Standards & Hardening
+  - `M5`: 20 Enterprise Medical Security Standards & Hardening — AES-256 GCM JPA AttributeConverter, IDOR & RBAC hardening, FileUploadValidator (5MB, magic bytes), LoginAttemptService account lockout, CSP/HSTS/SAMEORIGIN headers, MedicalSecurityE2ETest (DONE & HANDED OFF)
+- **In-Progress Work (Gen 5)**:
+  - Milestone 6: Final 100% E2E Test Pass (198 tests across Tiers 1-4) & Multi-Agent Gate Verifications (Reviewers, Challengers, Forensic Auditor)
 
 ## Victory Audit Status
 - **Triggered**: no

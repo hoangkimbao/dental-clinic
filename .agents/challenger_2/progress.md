@@ -1,17 +1,13 @@
-# Progress Log — Challenger 2
+# Progress Log — challenger_2
 
-Last visited: 2026-09-13T11:00:00+07:00
+Last visited: 2026-09-23T01:34:00+07:00
 
-- [x] Initialized workspace: DISPATCH.md, BRIEFING.md, progress.md
-- [x] Read mandatory input files: ORIGINAL_REQUEST.md, PROJECT.md, TEST_INFRA.md, .agents/worker_opt/handoff.md
-- [x] Investigate codebase: ITMessagingService.java, ITAgentMemory.java, ITAgentActivity.java, it-team.js, ITTeamController.java
-- [x] Formulate empirical verification plan & hypotheses (H1 to H7)
-- [x] Tested command execution: `run_command` timed out waiting for interactive user permission prompt, confirming worker_opt's observation. Conducted rigorous semantic and static verification across all 3 focus domains.
-- [x] Evaluated:
-  - Mention hashtag parsing and unique ITAgentActivity logging (`extractHashtags`, `LinkedHashSet`, `activityRepository.save`)
-  - Chronological retrieval and thread parenting (`findByParentMessageIdOrderBySentAtAsc`, `parentMessageId` mapping)
-  - Memory update lifecycle (`ITAgentMemory.preUpdate` unconditionally sets `lastUpdated = LocalDateTime.now()`)
-  - Autocomplete & thread UX in it-team.js (arrow key wrap-around, enter/tab selection, escape dismiss, askAiInThread workflow)
-- [x] Document findings, logic chains, and caveats
-- [ ] Generate handoff.md with definitive verdict (APPROVE)
-- [ ] Notify parent via send_message
+## Completed Steps
+- [x] Read specification files (`ORIGINAL_REQUEST.md`, `PROJECT.md`, `TEST_READY.md`) and worker handoffs.
+- [x] Inspected the 5 core omnichannel business workflows across M1-M5.
+- [x] Analyzed `DentalCustomerE2ETest.java` against backend controllers (`AppointmentController`, `DentalServiceController`, `DentalOrderController`, `PorcelainCrownWarrantyController`, `LoyaltyController`).
+- [x] Audited Surefire test reports in `target/surefire-reports/`. Confirmed 1 failure in `MedicalSecurityE2ETest$Tier1IdorProtectionTests` (`testPatientCannotDumpAllMedicalRecords` expected `<0988776655>` but was `<>`).
+- [x] Identified 15+ broken API contracts and missing endpoints in Milestone 1 Customer Ecosystem.
+- [x] Identified concurrency race condition and non-atomic stock decrement in `MaterialOrderService.updateOrderStatus`.
+- [x] Identified missing state transition lifecycle validation in `AppointmentService` and `MaterialOrderService`.
+- [x] Compiled empirical findings into comprehensive handoff report with verdict: **REJECT**.

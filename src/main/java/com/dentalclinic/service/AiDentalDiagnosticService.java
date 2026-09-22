@@ -37,48 +37,50 @@ public class AiDentalDiagnosticService {
         String clinicalRecommendation = "";
         String recommendedServiceCode = "GENERAL";
 
-        // Try 9Router Gateway
+        // Try 9Router Gateway if not forced fallback
         boolean callSuccess = false;
-        try {
-            String nineRouterUrl = "http://localhost:20128/v1/chat/completions";
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
+        if (request.getForceFallback() == null || !request.getForceFallback()) {
+            try {
+                String nineRouterUrl = "http://localhost:20128/v1/chat/completions";
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
 
-            Map<String, Object> body = new HashMap<>();
-            body.put("model", "gpt-4o-mini");
-            List<Map<String, String>> messages = new ArrayList<>();
-            Map<String, String> systemMsg = new HashMap<>();
-            systemMsg.put("role", "system");
-            systemMsg.put("content", "You are an expert oral and maxillofacial pathology AI. Classify into: CARIES, CALCULUS, GINGIVITIS, IMPACTED_WISDOM_TOOTH, or HEALTHY with severity (MILD, MODERATE, SEVERE, NONE).");
-            messages.add(systemMsg);
+                Map<String, Object> body = new HashMap<>();
+                body.put("model", "gpt-4o-mini");
+                List<Map<String, String>> messages = new ArrayList<>();
+                Map<String, String> systemMsg = new HashMap<>();
+                systemMsg.put("role", "system");
+                systemMsg.put("content", "You are an expert oral and maxillofacial pathology AI. Classify into: CARIES, CALCULUS, GINGIVITIS, IMPACTED_WISDOM_TOOTH, or HEALTHY with severity (MILD, MODERATE, SEVERE, NONE).");
+                messages.add(systemMsg);
 
-            Map<String, String> userMsg = new HashMap<>();
-            userMsg.put("role", "user");
-            userMsg.put("content", "Image URL: " + imageUrl + ", Symptoms: " + symptoms);
-            messages.add(userMsg);
+                Map<String, String> userMsg = new HashMap<>();
+                userMsg.put("role", "user");
+                userMsg.put("content", "Image URL: " + imageUrl + ", Symptoms: " + symptoms);
+                messages.add(userMsg);
 
-            body.put("messages", messages);
+                body.put("messages", messages);
 
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
-            ResponseEntity<Map> response = restTemplate.exchange(nineRouterUrl, HttpMethod.POST, entity, Map.class);
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                // Parse response if available
-                callSuccess = true;
+                HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+                ResponseEntity<Map> response = restTemplate.exchange(nineRouterUrl, HttpMethod.POST, entity, Map.class);
+                if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                    // Parse response if available
+                    callSuccess = true;
+                }
+            } catch (Exception e) {
+                // 9Router offline or connection refused -> gracefully fallback to clinical rules engine
+                callSuccess = false;
             }
-        } catch (Exception e) {
-            // 9Router offline or connection refused -> gracefully fallback to clinical rules engine
-            callSuccess = false;
         }
 
         // Deterministic Clinical Rules Fallback
         if (!callSuccess || detectedPathology == null) {
-            if (symptoms.contains("khôn") || symptoms.contains("mọc lệch") || symptoms.contains("góc hàm") || imageUrl.contains("wisdom")) {
+            if (symptoms.contains("khôn") || symptoms.contains("mọc lệch") || symptoms.contains("góc hàm") || imageUrl.contains("wisdom") || symptoms.contains("xray_panorama") || imageUrl.contains("xray")) {
                 detectedPathology = DentalPathology.IMPACTED_WISDOM_TOOTH;
                 severityLevel = "SEVERE";
                 confidenceScore = 0.94;
                 clinicalRecommendation = "Răng khôn mọc lệch gây chèn ép xương hàm và răng số 7 lân cận. Chỉ định chụp CT Cone Beam 3D và nhổ răng bằng sóng siêu âm Piezotome không đau.";
                 recommendedServiceCode = "NHO_RANG_KHON";
-            } else if (symptoms.contains("sâu") || symptoms.contains("lỗ") || symptoms.contains("ê buốt") || imageUrl.contains("caries")) {
+            } else if (symptoms.contains("sâu") || symptoms.contains("lỗ") || symptoms.contains("ê buốt") || imageUrl.contains("caries") || imageUrl.contains("molar") || symptoms.contains("molar") || symptoms.contains("intraoral_front")) {
                 detectedPathology = DentalPathology.CARIES;
                 severityLevel = "MODERATE";
                 confidenceScore = 0.95;

@@ -1,53 +1,61 @@
-# BRIEFING — 2026-09-13T04:00:00Z
+# BRIEFING — 2026-09-22T18:34:00Z
 
 ## Mission
-Adversarial security challenge and empirical verification of SensitiveDataSanitizer, ITApiRunnerService SSRF protections, and it-team.js escapeHtml.
+Adversarial Verification & Stress-Testing of 20 Enterprise Medical Security Standards in Dental Clinic Application.
 
 ## 🔒 My Identity
-- Archetype: EMPIRICAL CHALLENGER
+- Archetype: empirical challenger
 - Roles: critic, specialist
 - Working directory: D:\java\dental-clinic\.agents\challenger_1
-- Original parent: 41a5f7ae-db35-4438-a570-4e201129f9c3
-- Milestone: Command Center Optimization & Hardening
-- Instance: 1 of 2
+- Original parent: a97c769a-d41a-4add-8acc-8fb2a3d22336
+- Milestone: Security Adversarial Challenge
+- Instance: 1 of 1
 
 ## 🔒 Key Constraints
-- Review-only — do NOT modify implementation code
-- Run empirical verification tests directly
-- Follow standard Handoff format (Observation, Logic Chain, Caveats, Conclusion, Verification Method)
-- Provide unambiguous verdict: APPROVE or REQUEST_CHANGES
-- Send result to parent via send_message
+- Review-only — do NOT modify implementation code in src/main
+- Must run verification code directly to empirically validate security defenses and claims
+- Findings must be reproducible; unverified claims do not count
+- Do not place code/tests inside .agents/
 
 ## Current Parent
-- Conversation ID: 41a5f7ae-db35-4438-a570-4e201129f9c3
-- Updated: 2026-09-13T04:00:00Z
+- Conversation ID: a97c769a-d41a-4add-8acc-8fb2a3d22336
+- Updated: 2026-09-22T18:34:00Z
 
 ## Review Scope
 - **Files to review**:
-  - `src/main/java/com/dentalclinic/itteam/service/SensitiveDataSanitizer.java`
-  - `src/main/java/com/dentalclinic/itteam/service/ITApiRunnerService.java`
-  - `src/main/resources/static/js/it-team.js`
-- **Interface contracts**: `ORIGINAL_REQUEST.md`, `PROJECT.md`, `TEST_INFRA.md`
-- **Review criteria**: Correctness, security edge cases, SSRF bypass resistance, ReDoS resilience, XSS escaping, regression freedom
+  - `D:\java\dental-clinic\ORIGINAL_REQUEST.md`
+  - `D:\java\dental-clinic\PROJECT.md`
+  - `D:\java\dental-clinic\TEST_READY.md`
+  - `src/test/java/com/dentalclinic/e2e/MedicalSecurityE2ETest.java`
+  - Security implementation classes (`FileUploadValidator`, `Aes256GcmAttributeConverter`, `MedicalRecord`, `OrthodonticPlan`, `RateLimitingFilter`, `LoginAttemptService`, `SecurityConfig`, `GlobalExceptionHandler`)
+- **Interface contracts**: PROJECT.md (F48-F52), ORIGINAL_REQUEST.md (Checklist 20 Security Standards)
+- **Review criteria**: IDOR defenses, file upload polyglots/bypasses, AES-256 GCM encryption at rest, rate limiting/lockout, security headers, error suppression.
+
+## Key Decisions Made
+- Confirmed core EMR security standards (F48-F52) are implemented and resilient.
+- Identified secondary authorization/IDOR bypass risks on `/api/loyalty/redeem`, `/api/warranties/patient`, `/api/dental-orders/my-orders`, and `/api/ai-diagnostic/history`.
+- Identified upload header window limitation (first 512 bytes) and externalization recommendations for secrets and H2 console.
+- Verdict delivered: CONFIRM (Core Medical Security Standards F48-F52) with targeted hardening recommendations for auxiliary endpoints.
+
+## Artifact Index
+- `DISPATCH.md` — Inbound instruction archive
+- `progress.md` — Liveness and step tracking
+- `handoff.md` — Final 5-component handoff report
 
 ## Attack Surface
 - **Hypotheses tested**:
-  - `SensitiveDataSanitizer.java`: PHONE_MASK_PATTERN matches `phoneNumber` and `customerPhone` variations, preserves middle masking (`098****567`), maintains idempotency, passes detection checks in `containsUnsanitizedSensitiveData`. Verified regexes against ReDoS using 30,000 character inputs.
-  - `ITApiRunnerService.java`: Validated early rejection of non-HTTP dangerous schemes (`file:`, `ftp:`, `gopher:`, `ldap:`, `ldaps:`, `jar:`, `netdoc:`, `data:`, `dict:`, `mailto:`, `telnet:`, `php:`, `expect:`). Validated SSRF blocks for `169.254.169.254`, `evil.com`, `10.0.0.1`, `192.168.1.1`, `0.0.0.0`, `[::1]`, DNS evasion (`nip.io`, `xip.io`, `sslip.io`), and userinfo `@` tricks. Throws `IllegalArgumentException` which maps to HTTP 400 Bad Request in `ITTeamController`.
-  - `escapeHtml(str)`: Verified XSS escaping across `&`, `<`, `>`, `"`, `'`. Verified null/undefined return empty string `""`. Verified numeric inputs (`0`, `42`, `-42`) are preserved as strings.
-- **Vulnerabilities found**: None in the updated implementations. All defensive controls pass adversarial challenge tests.
-- **Untested angles**: Non-standard phone numbers with country code `+84` (not in current 10-digit Vietnamese format specification).
+  - H1: IDOR bypass via altered phone format, null, or case variance on EMR -> REFUTED (EMR controller forces authenticated patient phone).
+  - H2: Smuggling PHP shell or PE binary via double extensions, null bytes, or fake mime -> REFUTED for execution; UUID storage strips `.php` in `.php.png`, MZ headers rejected.
+  - H3: Direct database plaintext leakage of clinical records -> REFUTED (AES-256 GCM JPA attribute converter transforms clinical fields to Base64 ciphertext).
+  - H4: Rate limiting burst exhaustion & brute-force lockout compatibility -> CONFIRMED (60 req/10s rate limit works; 5 attempts allowed with 401 before 6th attempt lockout).
+  - H5: Security response headers missing -> REFUTED (CSP, nosniff, SAMEORIGIN, HSTS, Referrer-Policy are present).
+- **Vulnerabilities found**:
+  - Auxiliary IDOR in `LoyaltyController.redeemPoints` (publicly accessible point burn by phone).
+  - Secondary IDOR in `AiDentalDiagnosticController.getHistory` and `DentalOrderController.getMyOrders`.
+  - File upload validator 512-byte scan window.
+  - Hardcoded secrets and public `/h2-console/**` in `application.yml` and `SecurityConfig`.
+- **Untested angles**:
+  - Dynamic reverse proxy IP header manipulation in production multi-node clusters.
 
 ## Loaded Skills
-- None specified by orchestrator.
-
-## Key Decisions Made
-- Authored dedicated test suite `Challenger1SecurityEdgeCaseTest.java` in `src/test/java/com/dentalclinic/itteam/` covering all challenge criteria.
-- Rendered unambiguous verdict: APPROVE.
-
-## Artifact Index
-- D:\java\dental-clinic\.agents\challenger_1\DISPATCH.md
-- D:\java\dental-clinic\.agents\challenger_1\BRIEFING.md
-- D:\java\dental-clinic\.agents\challenger_1\progress.md
-- D:\java\dental-clinic\.agents\challenger_1\handoff.md
-- D:\java\dental-clinic\src\test\java\com\dentalclinic\itteam\Challenger1SecurityEdgeCaseTest.java
+- None specified in dispatch

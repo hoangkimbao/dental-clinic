@@ -1,7 +1,7 @@
-# BRIEFING — 2026-09-13T11:00:00+07:00
+# BRIEFING — 2026-09-23T01:34:00+07:00
 
 ## Mission
-Adversarially challenge and empirically verify the Multi-Agent Workflow & Concurrency implementation for DentalCare IT Team Command Center.
+Adversarial Verification & End-to-End Workflow Testing across the DentalCare Ecosystem (Milestones M1, M2, M3, M4, M5).
 
 ## 🔒 My Identity
 - Archetype: challenger
@@ -18,51 +18,53 @@ Adversarially challenge and empirically verify the Multi-Agent Workflow & Concur
 - No code/tests in .agents/
 
 ## Current Parent
-- Conversation ID: 41a5f7ae-db35-4438-a570-4e201129f9c3
-- Updated: 2026-09-13T10:55:05+07:00
+- Conversation ID: a97c769a-d41a-4add-8acc-8fb2a3d22336 (Parent Orchestrator Gen 5)
+- Updated: 2026-09-23T01:27:15+07:00
 
 ## Review Scope
-- **Files to review**:
-  - `src/main/java/com/dentalclinic/itteam/service/ITMessagingService.java`
-  - `src/main/resources/static/js/it-team.js`
-  - `src/main/java/com/dentalclinic/itteam/model/ITAgentActivity.java`
-  - `src/main/java/com/dentalclinic/itteam/model/ITAgentMemory.java`
-  - `src/main/java/com/dentalclinic/itteam/model/ITAgentMessage.java`
-  - `src/main/java/com/dentalclinic/itteam/controller/ITTeamController.java`
-  - `src/test/java/com/dentalclinic/e2e/ITTeamE2ETestSuite.java`
-  - `src/test/java/com/dentalclinic/itteam/ITTeamM1PersistenceTest.java`
-  - `src/test/java/com/dentalclinic/itteam/model/EntityPrePersistenceSanitizationTest.java`
-- **Interface contracts**: ORIGINAL_REQUEST.md, PROJECT.md, TEST_INFRA.md, .agents/worker_opt/handoff.md
+- **Files reviewed**:
+  - `DentalCustomerE2ETest.java` (55 tests)
+  - `StaffAndOperationsE2ETest.java` (39 tests)
+  - `MedicalSecurityE2ETest.java` (31 tests)
+  - `DesktopCmsExportTest.java` (7 tests)
+  - `AppointmentController.java` & `AppointmentService.java`
+  - `DentalServiceController.java` & `DentalServiceCatalogService.java`
+  - `DentalProductController.java` & `DentalOrderController.java` & `DentalOrderService.java`
+  - `PorcelainCrownWarrantyController.java` & `PorcelainCrownWarrantyService.java`
+  - `LoyaltyController.java` & `LoyaltyService.java`
+  - `DentalMaterialController.java` & `MaterialOrderController.java` & `MaterialOrderService.java`
+  - `FieldPatientIntakeController.java` & `DoctorKpiController.java`
+  - `CmsConfigController.java` & `CmsConfigService.java`
+  - `AnalyticsController.java` & `AnalyticsService.java` & `AnalyticsDataSanitizer.java`
+  - `SecurityConfig.java` & `RateLimitingFilter.java` & `Aes256GcmAttributeConverter.java`
 - **Review criteria**:
-  1. Multi-agent coordination & activity logging (#agent mentions, ITAgentActivity MENTIONED, thread parenting)
-  2. Memory update lifecycle (@PreUpdate lastUpdated)
-  3. Autocomplete & Thread UX in it-team.js (keyboard nav, askAiInThread)
+  - Patient Onboarding & Booking workflow
+  - Porcelain Crown & Warranty workflow
+  - B2B & Operations workflow
+  - Field Intake Conversion workflow
+  - PC Desktop App & Agrid SDK workflow
+  - Concurrency, race conditions, state transitions, API contract fidelity
 
 ## Key Decisions Made
-- Direct shell execution via `run_command` timed out waiting for interactive user permission prompt in autonomous mode (consistent with worker_opt's caveat). Verification executed via comprehensive static code analysis, abstract syntax and regex evaluation, and tracing against the existing 73 E2E and persistence test specifications.
-- Verified hashtag parsing regex `(?i)#it-(backend|frontend|qa|devops|security)\\b` and LinkedHashSet deduplication.
-- Verified that for every unique hashtag mentioned, an `ITAgentActivity` record of type `MENTIONED` is created and saved.
-- Verified thread parenting (`parentMessageId`) and chronological ordering (`sentAt ASC`).
-- Verified `ITAgentMemory` `@PreUpdate` callback unconditionally updates `lastUpdated = LocalDateTime.now()`.
-- Verified `it-team.js` autocomplete keyboard navigation (ArrowDown, ArrowUp, Enter, Tab, Escape) and candidate selection.
-- Verified `askAiInThread(parentId)` workflow, persona detection, threaded replies, and error handling.
+- Discovered 15+ broken API contracts and missing endpoints between `DentalCustomerE2ETest.java` and backend controllers (e.g. `/api/appointments/available-slots`, `/api/cart/**`, `/api/orders/**`, `/api/warranty/**` plural vs singular, missing `/api/loyalty/**` sub-routes).
+- Discovered failure in `TEST-com.dentalclinic.e2e.MedicalSecurityE2ETest$Tier1IdorProtectionTests.xml` for `testPatientCannotDumpAllMedicalRecords` (`T1-IDOR-01` expected `0988776655` but was empty string `""`).
+- Discovered race condition and lack of locking in `MaterialOrderService.updateOrderStatus` leading to lost updates and silent negative stock clamping.
+- Discovered absence of state machine validation in `AppointmentService` and `MaterialOrderService` (orders can be re-approved without compensation, appointments can jump between cancelled and completed).
+- Delivered Empirical Correctness Verdict: **REJECT**.
 
 ## Artifact Index
-- D:\java\dental-clinic\.agents\challenger_2\DISPATCH.md — Incoming instruction log
-- D:\java\dental-clinic\.agents\challenger_2\progress.md — Progress log
-- D:\java\dental-clinic\.agents\challenger_2\handoff.md — Final handoff report
+- `D:\java\dental-clinic\.agents\challenger_2\DISPATCH.md` — Incoming instruction log
+- `D:\java\dental-clinic\.agents\challenger_2\progress.md` — Progress log
+- `D:\java\dental-clinic\.agents\challenger_2\handoff.md` — Final handoff report
 
 ## Attack Surface
 - **Hypotheses tested**:
-  - H1: Duplicate hashtags in a single message create duplicate MENTIONED activities. (Refuted: `extractHashtags` uses `LinkedHashSet<String>`, ensuring exactly one activity record per unique mentioned agent).
-  - H2: Unknown or malformed hashtags crash the message parser. (Refuted: `HASHTAG_PATTERN` restricts matching strictly to the 5 valid agents; non-matching tags are safely ignored).
-  - H3: Thread reply retrieval is out-of-order. (Refuted: `findByParentMessageIdOrderBySentAtAsc` strictly guarantees chronological order).
-  - H4: Updating memory fails to update `lastUpdated`. (Refuted: `preUpdate()` unconditionally executes `this.lastUpdated = LocalDateTime.now()`).
-  - H5: Autocomplete trigger fires inside email addresses or words (e.g. `foo@bar#tag`). (Refuted: trigger regex `/(?:^|\s)(#[\w-]*)$/` requires start of line or preceding whitespace).
-  - H6: Autocomplete keyboard navigation overflows or fails to wrap. (Refuted: ArrowDown uses modulo `% length`, ArrowUp checks `<= 0` and wraps to `length - 1`).
-  - H7: `askAiInThread` sends AI replies to root feed instead of parent thread. (Refuted: `parentMessageId: parentId` is explicitly passed in both the user question and AI reply payloads).
-- **Vulnerabilities found**: None. Implementation matches all specifications and contracts.
-- **Untested angles**: Hardware-level network disconnection during 9Router streaming (handled gracefully by try/catch with toast notification).
+  - H1: Cross-module M1-M5 contracts in `TEST_READY.md` (198 tests) execute cleanly. (Refuted: 1 test failure in MedicalSecurityE2ETest, 15+ broken contracts in DentalCustomerE2ETest).
+  - H2: Slot availability is exposed publicly as specified. (Refuted: `/api/appointments/available-slots` does not exist in backend and is not whitelisted in SecurityConfig).
+  - H3: Cart endpoints exist for e-commerce checkout. (Refuted: `/api/cart/**` is completely missing from backend controllers).
+  - H4: Inventory approval is thread-safe and enforces stock consistency. (Refuted: Non-atomic decrement without locking, silent overdraw clamping via `Math.max(0, currentStock - reqQty)`).
+- **Vulnerabilities found**: Broken API contracts, IDOR test assertion failure, concurrency race condition in warehouse decrement, missing state transition guards.
+- **Untested angles**: Full multi-user load testing under 100 concurrent threads.
 
 ## Loaded Skills
 - None

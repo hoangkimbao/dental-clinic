@@ -264,8 +264,27 @@ public class StaffAndOperationsE2ETest {
         @Test
         @DisplayName("T1-ATN-02: Staff performs morning shift check-in with GPS and IP verification")
         void testStaffMorningCheckIn() throws Exception {
+            // Create a fresh shift for test to avoid collision
+            Map<String, Object> shiftReq = new HashMap<>();
+            shiftReq.put("staffId", 3); // letan
+            shiftReq.put("shiftDate", "2026-11-20");
+            shiftReq.put("shiftType", "CA_SANG_8H_12H");
+            shiftReq.put("dutyDescription", "Lễ tân tiếp đón bệnh nhân");
+            shiftReq.put("roomOrChair", "Quầy lễ tân trung tâm");
+
+            MvcResult sRes = mockMvc.perform(post("/api/shifts")
+                    .header("Authorization", "Bearer " + ownerToken)
+                    .header("X-Forwarded-For", getUniqueIp())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(shiftReq)))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            JsonNode sNode = objectMapper.readTree(sRes.getResponse().getContentAsString());
+            long newShiftId = sNode.path("data").path("id").asLong();
+
             Map<String, Object> checkInReq = new HashMap<>();
-            checkInReq.put("shiftId", 1);
+            checkInReq.put("shiftId", newShiftId);
             checkInReq.put("latitude", 10.760624);
             checkInReq.put("longitude", 106.587106);
             checkInReq.put("networkIp", "192.168.1.50");
@@ -668,7 +687,7 @@ public class StaffAndOperationsE2ETest {
             // 2. Parent uses voucher to book consultation
             Map<String, Object> bookReq = new HashMap<>();
             bookReq.put("patientName", "Đinh Ngọc Ánh");
-            bookReq.put("phone", "0944556677");
+            bookReq.put("patientPhone", "0944556677");
             bookReq.put("serviceName", "Niềng Răng Mắc Cài");
             bookReq.put("appointmentTime", "2026-10-25T15:00:00");
             bookReq.put("dentistId", 4);
@@ -861,7 +880,7 @@ public class StaffAndOperationsE2ETest {
             // 3. Booking is created from converted lead
             Map<String, Object> bookReq = new HashMap<>();
             bookReq.put("patientName", "Nguyễn Gia Hân");
-            bookReq.put("phone", "0938112233");
+            bookReq.put("patientPhone", "0938112233");
             bookReq.put("serviceName", "Cạo Vôi Răng & Đánh Bóng");
             bookReq.put("appointmentTime", "2026-10-28T16:00:00");
             bookReq.put("dentistId", 4);

@@ -2,9 +2,10 @@ package com.dentalclinic.controller;
 
 import com.dentalclinic.model.DentalImageAttachment;
 import com.dentalclinic.model.DentalImageType;
+import com.dentalclinic.security.upload.FileUploadValidator;
 import com.dentalclinic.service.FileUploadService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,10 +18,16 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class FileUploadController {
 
-    @Autowired
-    private FileUploadService fileUploadService;
+    private final FileUploadService fileUploadService;
+    private final FileUploadValidator fileUploadValidator;
+
+    public FileUploadController(FileUploadService fileUploadService, FileUploadValidator fileUploadValidator) {
+        this.fileUploadService = fileUploadService;
+        this.fileUploadValidator = fileUploadValidator;
+    }
 
     @PostMapping("/upload")
+    @PreAuthorize("hasAnyRole('DENTIST', 'ADMIN', 'OWNER')")
     public ResponseEntity<?> uploadImage(
             @RequestParam("file") MultipartFile file,
             @RequestParam(value = "medicalRecordId", required = false) Long medicalRecordId,
@@ -29,9 +36,8 @@ public class FileUploadController {
             @RequestParam(value = "imageType", required = false) String imageType,
             @RequestParam(value = "notes", required = false) String notes) {
 
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Vui lòng chọn file hình ảnh hoặc phim X-Quang."));
-        }
+        // Validate file size, extension, MIME type, magic bytes, and scripts
+        fileUploadValidator.validate(file);
 
         DentalImageType type = DentalImageType.PANORAMA;
         if (imageType != null && !imageType.trim().isEmpty()) {
@@ -51,11 +57,13 @@ public class FileUploadController {
     }
 
     @GetMapping("/record/{recordId}")
+    @PreAuthorize("hasAnyRole('DENTIST', 'ADMIN', 'OWNER', 'PATIENT')")
     public ResponseEntity<List<DentalImageAttachment>> getByMedicalRecord(@PathVariable Long recordId) {
         return ResponseEntity.ok(fileUploadService.getImagesByMedicalRecord(recordId));
     }
 
     @GetMapping("/patient/{patientId}")
+    @PreAuthorize("hasAnyRole('DENTIST', 'ADMIN', 'OWNER', 'PATIENT')")
     public ResponseEntity<List<DentalImageAttachment>> getByPatient(@PathVariable Long patientId) {
         return ResponseEntity.ok(fileUploadService.getImagesByPatient(patientId));
     }

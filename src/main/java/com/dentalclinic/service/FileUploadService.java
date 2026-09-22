@@ -3,12 +3,11 @@ package com.dentalclinic.service;
 import com.dentalclinic.model.DentalImageAttachment;
 import com.dentalclinic.model.DentalImageType;
 import com.dentalclinic.repository.DentalImageRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.dentalclinic.security.upload.FileUploadValidator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,10 +22,17 @@ public class FileUploadService {
     @Value("${app.upload.dir:./uploads/dental-images/}")
     private String uploadDir;
 
-    @Autowired
-    private DentalImageRepository imageRepository;
+    private final DentalImageRepository imageRepository;
+    private final FileUploadValidator fileUploadValidator;
+
+    public FileUploadService(DentalImageRepository imageRepository, FileUploadValidator fileUploadValidator) {
+        this.imageRepository = imageRepository;
+        this.fileUploadValidator = fileUploadValidator;
+    }
 
     public DentalImageAttachment uploadDentalImage(MultipartFile file, Long medicalRecordId, Long patientId, String patientName, DentalImageType type, String notes) throws IOException {
+        fileUploadValidator.validate(file);
+
         Path uploadPath = Paths.get(uploadDir);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);

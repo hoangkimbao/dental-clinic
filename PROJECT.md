@@ -20,21 +20,21 @@ The DentalCare Clinic Ecosystem is an omnichannel enterprise dental platform bui
 | F35 | AI Dental Diagnostic Vision | Pathology detection (caries, tartar, gingivitis, wisdom teeth) with 9Router & deterministic fallback | M1 | ORIGINAL_REQUEST §1 | DONE |
 | F36 | Dental Forum & Clinic Map | Community discussion forum & multi-branch directory with GPS turn-by-turn directions | M1 | ORIGINAL_REQUEST §1 | DONE |
 | F37 | Customer Mobile App Experience | Dual-role Expo app adding patient tabs: Services, Booking, E-Commerce, Warranty, AI Diagnostic | M1 | ORIGINAL_REQUEST §1 | DONE |
-| F38 | B2B Tier-2 Agent & Satellite Clinics | Tier2Agent entity, satellite clinic directory, partner distributor management | M2 | ORIGINAL_REQUEST §2 | PLANNED |
-| F39 | Dental Inventory & Material Orders | DentalMaterial (brackets, implants, consumables), procurement order & approval workflow | M2 | ORIGINAL_REQUEST §2 | PLANNED |
-| F40 | Staff Timekeeping & Shift Check-In | StaffAttendance entity, GPS/IP verified check-in/out, shift matching | M2 | ORIGINAL_REQUEST §2 | PLANNED |
-| F41 | Doctor Consultation & Revenue KPIs | DoctorKpiRecord entity, consultation counts, treatment conversions, revenue attribution | M2 | ORIGINAL_REQUEST §2 | PLANNED |
-| F42 | Field Patient Intake & School Screening | FieldPatientIntake entity, event screening leads, offline sync capability | M2 | ORIGINAL_REQUEST §2 | PLANNED |
+| F38 | B2B Tier-2 Agent & Satellite Clinics | Tier2Agent entity, satellite clinic directory, partner distributor management | M2 | ORIGINAL_REQUEST §2 | DONE |
+| F39 | Dental Inventory & Material Orders | DentalMaterial (brackets, implants, consumables), procurement order & approval workflow | M2 | ORIGINAL_REQUEST §2 | DONE |
+| F40 | Staff Timekeeping & Shift Check-In | StaffAttendance entity, GPS/IP verified check-in/out, shift matching | M2 | ORIGINAL_REQUEST §2 | DONE |
+| F41 | Doctor Consultation & Revenue KPIs | DoctorKpiRecord entity, consultation counts, treatment conversions, revenue attribution | M2 | ORIGINAL_REQUEST §2 | DONE |
+| F42 | Field Patient Intake & School Screening | FieldPatientIntake entity, event screening leads, offline sync capability | M2 | ORIGINAL_REQUEST §2 | DONE |
 | F43 | Standalone PC Desktop App Runner | Electron desktop client in desktop-app/, contextIsolation, system tray, real-time STOMP sync | M3 | ORIGINAL_REQUEST §3 | DONE |
 | F44 | Desktop CMS Command Center | Dynamic CMS for Services, Doctors, Inventory, Branches, Menu & Footer configuration | M3 | ORIGINAL_REQUEST §3 | DONE |
 | F45 | Notification Hub & Excel/CSV Export | Centralized desktop alert panel, sound chimes, UTF-8 BOM Excel/CSV multi-table export | M3 | ORIGINAL_REQUEST §3 | DONE |
 | F46 | Agrid / Analytics Tracking SDK | Cross-platform agrid-sdk.js, non-blocking sendBeacon, micro-batching (5s/10 events), 0ms render latency | M4 | ORIGINAL_REQUEST §4 | DONE |
 | F47 | Analytics Ingestion & Privacy Guard | @Async /api/analytics/events endpoint, AnalyticsEvent entity, medical PII redaction | M4 | ORIGINAL_REQUEST §4 | DONE |
-| F48 | Security: IDOR & RBAC Hardening | Fix MedicalRecordController IDOR, lock down /api/articles/** & /api/emr/images/** | M5 | ORIGINAL_REQUEST §5 | PLANNED |
-| F49 | Security: AES-256 Medical Encryption | JPA AttributeConverter AES-256 GCM for diagnosis, treatment, prescription | M5 | ORIGINAL_REQUEST §5 | PLANNED |
-| F50 | Security: File Upload Validation | Whitelist image MIME types (png, jpg, webp), magic bytes inspection, 5MB limit | M5 | ORIGINAL_REQUEST §5 | PLANNED |
-| F51 | Security: Rate Limiting & Bot Throttling | Brute-force protection, account lockout, honeypot/captcha on public endpoints | M5 | ORIGINAL_REQUEST §5 | PLANNED |
-| F52 | Security: Headers & Secrets Protection | CSP, HSTS, X-Frame-Options, externalized secrets, disable public h2-console | M5 | ORIGINAL_REQUEST §5 | PLANNED |
+| F48 | Security: IDOR & RBAC Hardening | Fix MedicalRecordController IDOR, lock down /api/articles/** & /api/emr/images/** | M5 | ORIGINAL_REQUEST §5 | DONE |
+| F49 | Security: AES-256 Medical Encryption | JPA AttributeConverter AES-256 GCM for diagnosis, treatment, prescription | M5 | ORIGINAL_REQUEST §5 | DONE |
+| F50 | Security: File Upload Validation | Whitelist image MIME types (png, jpg, webp), magic bytes inspection, 5MB limit | M5 | ORIGINAL_REQUEST §5 | DONE |
+| F51 | Security: Rate Limiting & Bot Throttling | Brute-force protection, account lockout, honeypot/captcha on public endpoints | M5 | ORIGINAL_REQUEST §5 | DONE |
+| F52 | Security: Headers & Secrets Protection | CSP, HSTS, X-Frame-Options, externalized secrets, disable public h2-console | M5 | ORIGINAL_REQUEST §5 | DONE |
 | F53 | E2E Automated Test Suite Pass | 100% pass across Tiers 1-4 for Customer, Staff, Desktop, Analytics, and 20 Security Standards | M6 | ORIGINAL_REQUEST §Acceptance | PLANNED |
 | F54 | Adversarial Hardening & Forensic Audit | Tier 5 adversarial tests, binary forensic integrity verification | M6 | ORIGINAL_REQUEST §Acceptance | PLANNED |
 
@@ -42,11 +42,11 @@ The DentalCare Clinic Ecosystem is an omnichannel enterprise dental platform bui
 | # | Name | Scope | Dependencies | Status |
 |---|------|-------|-------------|--------|
 | M1 | Customer Dental Ecosystem (Mobile & Web) | F31, F32, F33, F34, F35, F36, F37 | none | DONE |
-| M2 | Staff, B2B Tier-2 Agent & EMR/Field Ops | F38, F39, F40, F41, F42 | M1 | PLANNED |
+| M2 | Staff, B2B Tier-2 Agent & EMR/Field Ops | F38, F39, F40, F41, F42 | M1 | DONE |
 | M3 | PC Desktop App (CMS & Notification Hub) | F43, F44, F45 | M1, M2 | DONE |
 | M4 | Agrid / Analytics Tracking SDK | F46, F47 | none | DONE |
-| M5 | 20 Enterprise Medical Security Standards | F48, F49, F50, F51, F52 | M1, M2, M3, M4 | PLANNED |
-| M6 | Final E2E Test Suite Pass & Hardening | F53, F54 | M1, M2, M3, M4, M5 | PLANNED |
+| M5 | 20 Enterprise Medical Security Standards | F48, F49, F50, F51, F52 | M1, M2, M3, M4 | DONE |
+| M6 | Final E2E Test Suite Pass & Hardening | F53, F54 | M1, M2, M3, M4, M5 | IN_PROGRESS |
 
 ## Interface Contracts
 ### M1: Customer Dental Experience

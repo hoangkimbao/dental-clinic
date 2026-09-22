@@ -35,6 +35,7 @@ public class Tier2AgentController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'DENTIST', 'RECEPTIONIST')")
     @Operation(summary = "Danh sách đại lý cấp 2 và đối tác phân phối")
     public ResponseEntity<ApiResponse<List<Tier2Agent>>> getAllAgents(
             @RequestParam(required = false) AgentType agentType) {
@@ -42,6 +43,7 @@ public class Tier2AgentController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'DENTIST', 'RECEPTIONIST')")
     @Operation(summary = "Chi tiết đại lý cấp 2 theo ID")
     public ResponseEntity<ApiResponse<Tier2Agent>> getAgentById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success(agentService.getAgentById(id)));

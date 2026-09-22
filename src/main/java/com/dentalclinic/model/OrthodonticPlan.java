@@ -1,6 +1,7 @@
 package com.dentalclinic.model;
 
 import com.dentalclinic.common.BaseEntity;
+import com.dentalclinic.security.crypto.Aes256GcmAttributeConverter;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -36,7 +37,8 @@ public class OrthodonticPlan extends BaseEntity {
     private LocalDate startDate;
     private LocalDate nextAdjustmentDate;
 
-    @Column(length = 2000)
+    @Convert(converter = Aes256GcmAttributeConverter.class)
+    @Column(columnDefinition = "TEXT")
     private String doctorNotes;
 
     public OrthodonticPlan() {

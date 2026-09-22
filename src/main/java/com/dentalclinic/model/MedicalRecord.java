@@ -1,6 +1,7 @@
 package com.dentalclinic.model;
 
 import com.dentalclinic.common.BaseEntity;
+import com.dentalclinic.security.crypto.Aes256GcmAttributeConverter;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -23,13 +24,16 @@ public class MedicalRecord extends BaseEntity {
     @JoinColumn(name = "dentist_id")
     private User dentist;
 
-    @Column(length = 1000)
+    @Convert(converter = Aes256GcmAttributeConverter.class)
+    @Column(columnDefinition = "TEXT")
     private String diagnosis;
 
-    @Column(length = 2000)
+    @Convert(converter = Aes256GcmAttributeConverter.class)
+    @Column(columnDefinition = "TEXT")
     private String treatmentDone;
 
-    @Column(length = 1000)
+    @Convert(converter = Aes256GcmAttributeConverter.class)
+    @Column(columnDefinition = "TEXT")
     private String prescription;
 
     private LocalDate recordDate;
@@ -78,4 +82,10 @@ public class MedicalRecord extends BaseEntity {
 
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
+
+    // Contract compatibility aliases
+    public String getTreatmentPlan() { return getTreatmentDone(); }
+    public void setTreatmentPlan(String treatmentPlan) { setTreatmentDone(treatmentPlan); }
+    public String getPrescriptionNotes() { return getPrescription(); }
+    public void setPrescriptionNotes(String prescriptionNotes) { setPrescription(prescriptionNotes); }
 }

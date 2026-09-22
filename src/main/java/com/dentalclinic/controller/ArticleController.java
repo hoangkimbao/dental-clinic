@@ -30,6 +30,11 @@ public class ArticleController {
         return ResponseEntity.ok(articleService.getAllPublishedArticles());
     }
 
+    @GetMapping("/throw-simulated-error")
+    public ResponseEntity<?> throwSimulatedError() {
+        throw new RuntimeException("Simulated unexpected internal error for security testing");
+    }
+
     @GetMapping("/{slug}")
     public ResponseEntity<Article> getArticleBySlug(@PathVariable String slug) {
         return articleService.getArticleBySlug(slug)
@@ -38,11 +43,13 @@ public class ArticleController {
     }
 
     @PostMapping
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     public ResponseEntity<Article> createArticle(@RequestBody Article article) {
         return ResponseEntity.ok(articleService.createArticle(article));
     }
 
     @PutMapping("/{id}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     public ResponseEntity<Article> updateArticle(@PathVariable Long id, @RequestBody Article article) {
         return articleService.updateArticle(id, article)
                 .map(ResponseEntity::ok)
@@ -50,12 +57,14 @@ public class ArticleController {
     }
 
     @DeleteMapping("/{id}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     public ResponseEntity<Void> deleteArticle(@PathVariable Long id) {
         articleService.deleteArticle(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/ai-generate")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     public ResponseEntity<?> aiGenerate(@RequestBody Map<String, String> payload) {
         String topic = payload.get("topic");
         if (topic == null || topic.trim().isEmpty()) {
@@ -72,6 +81,7 @@ public class ArticleController {
     }
 
     @PostMapping("/ai-generate-and-publish")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     public ResponseEntity<?> aiGenerateAndPublish(@RequestBody Map<String, String> payload) {
         String topic = payload.get("topic");
         if (topic == null || topic.trim().isEmpty()) {
@@ -88,6 +98,7 @@ public class ArticleController {
     }
 
     @PostMapping("/ai-batch-generate")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     public ResponseEntity<?> aiBatchGenerate(@RequestBody Map<String, Object> payload) {
         Object topicsObj = payload.get("topics");
         if (!(topicsObj instanceof List)) {
