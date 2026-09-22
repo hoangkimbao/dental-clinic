@@ -1,0 +1,6 @@
+﻿User-agent: *
+Allow: /
+Disallow: /h2-console
+Disallow: /api/
+
+Sitemap: https://nhakhoadentalcare.id.vn/sitemap.xml

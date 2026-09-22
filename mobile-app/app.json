@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "DentalCare Staff",
+    "slug": "dental-staff-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.dentalcare.staffapp"
+    },
+    "plugins": [
+      "expo-asset",
+      "expo-status-bar"
+    ],
+    "owner": "bao1505"
+  }
+}

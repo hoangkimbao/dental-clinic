@@ -1,0 +1,112 @@
+/* DentalCare UI refresh — visual layer only; application structure and JS hooks stay intact. */
+:root {
+    --clinic-ink: #102f31;
+    --clinic-deep: #0b4241;
+    --clinic-teal: #087a72;
+    --clinic-mint: #dff3ed;
+    --clinic-sand: #f8f5ef;
+    --clinic-line: #dbe8e3;
+    --clinic-coral: #f07c63;
+}
+
+html { scroll-padding-top: 6.25rem; }
+body { background: #fbfdfc !important; color: var(--clinic-ink); }
+body::selection { background: var(--clinic-teal); color: #fff; }
+body::-webkit-scrollbar { width: 10px; }
+body::-webkit-scrollbar-thumb { background: #a9ccc4; border: 3px solid #fbfdfc; border-radius: 999px; }
+
+.font-serif-luxury { font-family: 'Playfair Display', Georgia, serif; }
+.glass-nav {
+    background: rgba(255, 255, 255, .86) !important;
+    border-bottom: 1px solid rgba(219, 232, 227, .9) !important;
+    box-shadow: 0 10px 35px rgba(12, 57, 54, .05);
+}
+.glass-nav > div { height: 5.25rem !important; }
+.glass-nav .bg-gradient-to-tr { background: linear-gradient(135deg, #0a877d, #b5dfd0) !important; box-shadow: 0 8px 18px rgba(8, 122, 114, .22); }
+
+.hero-glow {
+    background:
+        radial-gradient(circle at 79% 22%, rgba(205, 239, 225, .95) 0 8%, transparent 31%),
+        radial-gradient(circle at 8% 82%, rgba(253, 220, 196, .52) 0, transparent 26%),
+        linear-gradient(120deg, #fdfefd 0%, #f1faf6 48%, #effaf8 100%) !important;
+}
+#home { isolation: isolate; position: relative; }
+#home h1 { letter-spacing: -0.02em !important; color: #0f2c2b !important; line-height: 1.18 !important; }
+#home h1 span { 
+    background-image: linear-gradient(120deg, #0d5f58 0%, #0a877d 45%, #059669 100%) !important;
+    font-family: inherit !important;
+    font-style: normal !important;
+}
+#home .inline-flex.bg-brand-50 { background: rgba(255,255,255,.7) !important; border-color: #b7ddd1 !important; color: #087a72 !important; box-shadow: 0 8px 22px rgba(8, 122, 114, .06) !important; }
+#home .bg-white { border-color: var(--clinic-line) !important; box-shadow: 0 12px 24px rgba(12, 57, 54, .045) !important; }
+#home > div > div > div:first-child > div:last-child > a:first-child,
+#home .bg-brand-600 { background: linear-gradient(115deg, #087a72, #0c948a) !important; box-shadow: 0 16px 28px rgba(8, 122, 114, .24) !important; }
+#home .glass-card-luxury { border: 1px solid rgba(255, 255, 255, .9) !important; background: rgba(255, 255, 255, .78) !important; box-shadow: 0 28px 65px rgba(18, 72, 67, .16) !important; }
+#home .glass-card-luxury > .relative { border-radius: 1.25rem !important; }
+
+#public-landing-page section { position: relative; }
+#transformations, #pricing, #faq { background: #fffdfa !important; border-color: var(--clinic-line) !important; }
+#services, #handbook { background: #f4faf7 !important; }
+#promotions { background: linear-gradient(145deg, #fffaf3, #f5fbf8 65%, #fff) !important; }
+#public-landing-page h2 { color: #123536 !important; letter-spacing: -.035em; }
+#public-landing-page h2 + p { max-width: 40rem; margin-left: auto; margin-right: auto; }
+
+/* Patient stories and service cards */
+#transformations .grid > div, #services .grid > div, #handbook .grid > article {
+    border-color: var(--clinic-line) !important;
+    border-radius: 1.5rem !important;
+    box-shadow: 0 10px 24px rgba(18, 72, 67, .045) !important;
+}
+#transformations .grid > div:hover, #services .grid > div:hover, #handbook .grid > article:hover {
+    transform: translateY(-6px); border-color: #8fc9bb !important;
+    box-shadow: 0 22px 42px rgba(18, 72, 67, .11) !important;
+}
+#transformations img { filter: saturate(.84) contrast(1.03); transition: transform .45s ease, filter .45s ease; }
+#transformations .grid > div:hover img { transform: scale(1.06); filter: saturate(1.04); }
+#services .grid > div { background: rgba(255,255,255,.88) !important; }
+#services .grid > div:nth-child(3n+2) .rounded-2xl { background: #356b9d !important; }
+#services .grid > div:nth-child(3n) .rounded-2xl { background: var(--clinic-coral) !important; }
+#services .grid > div .bg-brand-600 { background: var(--clinic-teal) !important; }
+#services a.text-brand-600, #transformations .text-brand-600 { color: var(--clinic-teal) !important; }
+
+/* Doctors — warmer editorial panel instead of a black block */
+#doctors { background: linear-gradient(115deg, #0d3d3c, #0b5550) !important; overflow: hidden; }
+#doctors::before { content: ''; position: absolute; width: 32rem; height: 32rem; border: 1px solid rgba(231, 247, 239, .13); border-radius: 50%; left: -18rem; top: -12rem; }
+#doctors .bg-slate-900 { background: rgba(255,255,255,.07) !important; border-color: rgba(222, 244, 235, .19) !important; backdrop-filter: blur(12px); }
+#doctors .bg-slate-900:hover { background: rgba(255,255,255,.12) !important; transform: translateY(-5px); }
+#doctors img { filter: saturate(.75); }
+
+/* Offers and price cards */
+#promotions .grid > div { border-radius: 1.4rem !important; border-color: rgba(8,122,114,.2) !important; box-shadow: 0 12px 28px rgba(22, 70, 60, .06) !important; }
+#promotions .grid > div:hover { transform: translateY(-5px); box-shadow: 0 24px 45px rgba(22,70,60,.12) !important; }
+#promotions .bg-brand-500 { background: var(--clinic-teal) !important; }
+#pricing .grid > div { border-radius: 1.5rem !important; }
+#pricing .grid > div:not(.bg-slate-900) { border-color: var(--clinic-line) !important; box-shadow: 0 12px 30px rgba(12,57,54,.05); }
+
+/* Booking as the visual focal point near the end of the page */
+#booking-section { background: linear-gradient(120deg, #0b3c3b, #0a625d 58%, #0c8278) !important; }
+#booking-section::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,.13) 1px, transparent 1px); background-size: 22px 22px; opacity: .25; }
+#booking-section > div { position: relative; }
+#booking-section .bg-white { border-radius: 1.6rem !important; box-shadow: 0 28px 60px rgba(0,0,0,.2) !important; }
+#booking-section input:focus, #booking-section select:focus, #booking-section textarea:focus { border-color: #1a9389 !important; box-shadow: 0 0 0 3px rgba(26,147,137,.15) !important; }
+#booking-section button[type=submit] { background: linear-gradient(115deg, #087a72, #0da295) !important; }
+
+/* Panels and controls */
+#management-portal { background: #102f31 !important; }
+#management-portal .bg-slate-800 { border-color: rgba(192, 226, 216, .15) !important; }
+#management-portal .border-brand-400 { border-color: #61d2c1 !important; }
+.fixed.bottom-4.right-4 a { box-shadow: 0 13px 26px rgba(8, 70, 66, .25) !important; }
+.fixed.bottom-4.right-4 a:last-child { background: var(--clinic-teal) !important; }
+#auth-modal > div, #staff-create-modal > div, #coupon-create-modal > div { border-radius: 1.5rem !important; overflow: hidden; }
+footer { background: #0d3534 !important; }
+
+@media (max-width: 1023px) {
+    .glass-nav > div { height: 4.5rem !important; }
+    #home::before { width: 17rem; height: 17rem; right: -9rem; top: 19rem; }
+}
+@media (max-width: 640px) {
+    #home { padding-top: 2.5rem !important; padding-bottom: 4.5rem !important; }
+    #home h1 { font-size: 2.45rem !important; line-height: 1.06 !important; }
+    #public-landing-page section:not(#home) { padding-top: 4.5rem !important; padding-bottom: 4.5rem !important; }
+    #booking-section { padding-top: 4.5rem !important; padding-bottom: 4.5rem !important; }
+}

@@ -1,0 +1,43 @@
+﻿target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradletask/
+
+### VS Code ###
+.vscode/
+
+### Mobile / Node ###
+mobile-app/node_modules/
+mobile-app/.expo/
+mobile-app/dist/
+mobile-app/web-build/
+node_modules/
+
+### OS & Temporary Files ###
+*.log
+*.bak
+cloudflared.exe
+.DS_Store
+Thumbs.db
