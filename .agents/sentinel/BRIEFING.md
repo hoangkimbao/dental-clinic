@@ -1,13 +1,13 @@
-# BRIEFING — 2026-09-13T03:44:00Z
+# BRIEFING — 2026-09-22T17:15:00Z
 
 ## Mission
-Coordinate, monitor, and verify the survey, optimization, comprehensive verification of all 5 IT Team subsystems, inter-agent coordination, and executive reporting for DentalCare Clinic IT Team Command Center.
+Coordinate, monitor, and verify the construction of the cross-platform multi-application ecosystem (Customer App/Web, Staff/NPP Portal, PC Desktop App, Agrid/Analytics SDK, and 20 Enterprise Security Standards).
 
 ## 🔒 My Identity
 - Archetype: sentinel
 - Working directory: D:\java\dental-clinic\.agents\sentinel
-- Orchestrator: 89ae81f4-4ba5-44ee-8b07-8548bc218f28 (Gen 1) / Orchestrator Gen 2 / 41a5f7ae-db35-4438-a570-4e201129f9c3 (Gen 3)
-- Victory Auditor: bc42ba2b-5f55-4edd-b2cc-154c36b9a5b0 / b816728b-79b6-4867-9aae-5dab34fdf89b (Gen 3)
+- Orchestrator: 4110e379-52ae-4437-9f08-bb3a919ba41c (Gen 4)
+- Victory Auditor: to be spawned on victory claim
 
 ## 🔒 Key Constraints
 - No technical decisions — relay only
@@ -15,22 +15,29 @@ Coordinate, monitor, and verify the survey, optimization, comprehensive verifica
 - Route decided: General -> teamwork_preview_orchestrator
 
 ## User Context
-- **Last user request**: Survey & optimize IT Team Command Center, full review of 5 subsystems (#it-backend, #it-frontend, #it-qa, #it-devops, #it-security), verify inter-agent coordination & activity DB logs, and report to CEO/IT Director.
+- **Last user request**: Build complete cross-platform app ecosystem (Customer App/Web, Staff/NPP Portal, PC Desktop App, Agrid/Analytics SDK, 20 Enterprise Security standards).
 - **Pending clarifications**: none
-- **Delivered results**: IT Team Command Center initial build delivered in Gen 1 & 2. Gen 3 survey, optimization, 5-subsystem verification (#it-backend, #it-frontend, #it-qa, #it-devops, #it-security), and independent Victory Audit completed with VICTORY CONFIRMED.
+- **Delivered results**: Previous IT Team Command Center delivered in Gen 1-3. Current mission just started.
 
 ## Project Status
-- **Phase**: complete
-- **Active Orchestrator ID**: Completed
-- **Cron 1 (Progress Reporting)**: Cancelled (task-25)
-- **Cron 2 (Liveness Check)**: Cancelled (task-27)
-- **Subagents**: All cleaned up via kill_all
+- **Phase**: in progress (M1 Customer, M3 PC Desktop App, M4 Analytics, E2E Testing Track completed; M2 finalizing)
+- **Active Orchestrator ID**: 4110e379-52ae-4437-9f08-bb3a919ba41c
+- **Cron 1 (Progress Reporting)**: Active (task-34, */8 * * * *)
+- **Cron 2 (Liveness Check)**: Active (task-36, */10 * * * *)
+- **Delivered Milestones**:
+  - `M1`: Customer Dental Experience (Mobile & Web) — 10 JPA entities, 8 controllers, e-commerce, QR warranty, AI diagnostic, forum, GPS branches, mobile app views (DONE & HANDED OFF)
+  - `M3`: PC Desktop App (CMS Command Center & Notification Hub) — Electron standalone client in `desktop-app/`, WebSocket STOMP real-time sync, 5 CMS modules, UTF-8 BOM CSV/Excel export, DesktopCmsExportTest (DONE & HANDED OFF)
+  - `M4`: Agrid / Analytics Tracking SDK & Ingestion Engine (DONE & VERIFIED)
+  - `E2E Testing Track`: TEST_INFRA.md v2.0.0 & TEST_READY.md published (198 automated tests across Tiers 1-4)
+- **In-Progress Work**:
+  - `M2`: Staff, B2B Tier-2 Agent & EMR/Field Intake (`worker_m2_staff` - backend controllers & tests built)
+- **Queued Work**:
+  - `M5`: 20 Enterprise Medical Security Standards & Hardening
 
 ## Victory Audit Status
-- **Triggered**: yes
-- **Verdict**: VICTORY CONFIRMED
+- **Triggered**: no
+- **Verdict**: pending
 - **Retry count**: 0
-- **Auditor Report**: D:\java\dental-clinic\.agents\auditor_victory_2\VICTORY_AUDIT_REPORT.md
 
 ## Artifact Index
 - D:\java\dental-clinic\ORIGINAL_REQUEST.md — Authoritative user requirements
@@ -38,10 +45,7 @@ Coordinate, monitor, and verify the survey, optimization, comprehensive verifica
 - D:\java\dental-clinic\PROJECT.md — Architecture, features F01-F30, contracts
 - D:\java\dental-clinic\TEST_INFRA.md — Testing methodology & tier specs
 - D:\java\dental-clinic\TEST_READY.md — E2E test inventory
-- D:\java\dental-clinic\.agents\orchestrator_3\plan.md — Gen 3 plan
-- D:\java\dental-clinic\.agents\orchestrator_3\progress.md — Gen 3 progress
-- D:\java\dental-clinic\.agents\orchestrator_3\handoff.md — Gen 3 handoff report
-- D:\java\dental-clinic\.agents\auditor_victory_2\VICTORY_AUDIT_REPORT.md — Gen 3 independent audit report
-- D:\java\dental-clinic\.agents\sentinel\handoff.md — Sentinel final handoff report
+- D:\java\dental-clinic\.agents\orchestrator_4 — Gen 4 orchestrator workspace
+
 
 

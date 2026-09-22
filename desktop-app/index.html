@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DentalCare Luxury Clinic — PC Command Center & Notification Hub</title>
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- 1. Native Desktop Titlebar -->
+    <header class="titlebar">
+        <div class="titlebar-brand">
+            <i class="fa-solid fa-tooth tooth-icon"></i>
+            <span>DENTALCARE LUXURY — C2 COMMAND CENTER</span>
+        </div>
+
+        <div class="titlebar-status">
+            <div id="connectionBadge" class="connection-badge disconnected">
+                <span class="status-dot"></span>
+                <span id="connectionText">STOMP: MẤT KẾT NỐI</span>
+            </div>
+            <div id="liveClock" style="color: #94a3b8; font-family: monospace;">--:--:--</div>
+        </div>
+
+        <div class="window-controls">
+            <button id="btnMinimize" class="window-btn" title="Thu nhỏ"><i class="fa-solid fa-minus"></i></button>
+            <button id="btnMaximize" class="window-btn" title="Phóng to"><i class="fa-regular fa-square"></i></button>
+            <button id="btnClose" class="window-btn close" title="Đóng / Thu về Tray"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+    </header>
+
+    <!-- 2. Main Desktop Layout -->
+    <div class="app-container">
+
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <nav class="sidebar-menu">
+                <div class="menu-category-title">Điều Hành Tổng Quan</div>
+                <div class="nav-item active" data-tab="overview">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Bảng Điều Hành (C2)</span>
+                </div>
+
+                <div class="menu-category-title">CMS Quản Trị Hệ Thống</div>
+                <div class="nav-item" data-tab="services">
+                    <i class="fa-solid fa-tooth"></i>
+                    <span>1. Dịch Vụ Nha Khoa</span>
+                </div>
+                <div class="nav-item" data-tab="doctors">
+                    <i class="fa-solid fa-user-doctor"></i>
+                    <span>2. Danh Bạ Bác Sĩ</span>
+                </div>
+                <div class="nav-item" data-tab="inventory">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                    <span>3. Kho Vật Tư & Thiết Bị</span>
+                    <span id="lowStockBadge" class="nav-badge danger" style="display: none;">0</span>
+                </div>
+                <div class="nav-item" data-tab="branches">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    <span>4. Chi Nhánh & Đại Lý C2</span>
+                </div>
+                <div class="nav-item" data-tab="config">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>5. Cấu Hình Menu / Footer</span>
+                </div>
+
+                <div class="menu-category-title">Luồng Dữ Liệu Thời Gian Thực</div>
+                <div class="nav-item" data-tab="notifications">
+                    <i class="fa-solid fa-bell"></i>
+                    <span>Notification Hub</span>
+                    <span id="unreadNotifBadge" class="nav-badge">0</span>
+                </div>
+                <div class="nav-item" data-tab="export">
+                    <i class="fa-solid fa-file-excel"></i>
+                    <span>Xuất Dữ Liệu Excel / CSV</span>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div>
+                    <i class="fa-solid fa-shield-halved" style="color: #38bdf8;"></i>
+                    <span>Enterprise Secured</span>
+                </div>
+                <div id="appVersion">v1.0.0</div>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content-area">
+
+            <!-- TAB 0: OVERVIEW -->
+            <section id="tab-overview" class="tab-pane active">
+                <div class="page-header">
+                    <div>
+                        <h2 class="page-title"><i class="fa-solid fa-gauge-high text-sky-400"></i> Trung Tâm Điều Hành Phòng Khám (C2 Command Center)</h2>
+                        <p class="page-subtitle">Giám sát toàn diện dịch vụ, nhân sự bác sĩ, kho vật tư, chuỗi chi nhánh và thông báo thời gian thực.</p>
+                    </div>
+                    <div class="action-bar">
+                        <button class="btn btn-outline" onclick="refreshAllData()"><i class="fa-solid fa-rotate"></i> Đồng bộ ngay</button>
+                        <button class="btn btn-primary" onclick="switchTab('notifications')"><i class="fa-solid fa-bell"></i> Xem Thông Báo</button>
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-info">
+                            <h4>Dịch Vụ Nha Khoa</h4>
+                            <div id="statServicesCount" class="metric-val">--</div>
+                        </div>
+                        <div class="metric-icon-wrap metric-blue"><i class="fa-solid fa-tooth"></i></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-info">
+                            <h4>Bác Sĩ Chuyên Khoa</h4>
+                            <div id="statDoctorsCount" class="metric-val">--</div>
+                        </div>
+                        <div class="metric-icon-wrap metric-emerald"><i class="fa-solid fa-user-doctor"></i></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-info">
+                            <h4>Vật Tư / Sản Phẩm</h4>
+                            <div id="statProductsCount" class="metric-val">--</div>
+                        </div>
+                        <div class="metric-icon-wrap metric-amber"><i class="fa-solid fa-boxes-stacked"></i></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-info">
+                            <h4>Chi Nhánh & Đại Lý C2</h4>
+                            <div id="statBranchesCount" class="metric-val">--</div>
+                        </div>
+                        <div class="metric-icon-wrap metric-rose"><i class="fa-solid fa-hospital"></i></div>
+                    </div>
+                </div>
+
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <span class="panel-title"><i class="fa-solid fa-bolt text-amber-400"></i> Luồng Thông Báo & Cảnh Báo Gần Nhất</span>
+                        <button class="btn btn-outline" onclick="switchTab('notifications')" style="padding: 4px 10px; font-size: 11px;">Mở Hub →</button>
+                    </div>
+                    <div id="overviewNotifications" class="notification-feed" style="max-height: 280px;">
+                        <!-- Injected dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 1: SERVICES CMS -->
+            <section id="tab-services" class="tab-pane">
+                <div class="page-header">
+                    <div>
+                        <h2 class="page-title"><i class="fa-solid fa-tooth text-sky-400"></i> Quản Lý Dịch Vụ Nha Khoa (Services CMS)</h2>
+                        <p class="page-subtitle">Quản lý danh mục kỹ thuật số, thời gian thực hiện, bảo hành và đơn giá niêm yết.</p>
+                    </div>
+                    <div class="action-bar">
+                        <button class="btn btn-primary" onclick="openAddServiceModal()"><i class="fa-solid fa-plus"></i> Thêm Dịch Vụ Mới</button>
+                    </div>
+                </div>
+
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <input type="text" id="searchServiceInput" placeholder="Tìm dịch vụ theo tên, mã..." class="form-control" style="width: 280px;" oninput="filterServicesTable()">
+                            <select id="filterServiceCategory" class="form-control" style="width: 200px;" onchange="filterServicesTable()">
+                                <option value="ALL">Tất cả chuyên khoa</option>
+                                <option value="ORTHODONTICS">Niềng Răng Chỉnh Nha</option>
+                                <option value="IMPLANT">Cấy Ghép Implant</option>
+                                <option value="COSMETIC">Thẩm Mỹ Răng Sứ</option>
+                                <option value="GENERAL">Nha Khoa Tổng Quát</option>
+                                <option value="SURGERY">Tiểu Phẫu Nhổ Răng Khôn</option>
+                            </select>
+                        </div>
+                        <span id="servicesCountLabel" style="font-size: 12px; color: #94a3b8;">Đang tải...</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã DV</th>
+                                    <th>Tên Dịch Vụ Nha Khoa</th>
+                                    <th>Chuyên Khoa</th>
+                                    <th>Giá Niêm Yết (VNĐ)</th>
+                                    <th>Thời Gian</th>
+                                    <th>Bảo Hành</th>
+                                    <th>Nổi Bật</th>
+                                    <th>Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="servicesTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: DOCTORS CMS -->
+            <section id="tab-doctors" class="tab-pane">
+                <div class="page-header">
+                    <div>
+                        <h2 class="page-title"><i class="fa-solid fa-user-doctor text-emerald-400"></i> Hồ Sơ Bác Sĩ & Chuyên Gia (Doctor Directory CMS)</h2>
+                        <p class="page-subtitle">Danh bạ đội ngũ bác sĩ Răng Hàm Mặt, chuyên khoa mũi nhọn, lịch trực và thông tin liên hệ.</p>
+                    </div>
+                    <div class="action-bar">
+                        <button class="btn btn-primary" onclick="openAddDoctorModal()"><i class="fa-solid fa-user-plus"></i> Thêm Bác Sĩ Mới</button>
+                    </div>
+                </div>
+
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <input type="text" id="searchDoctorInput" placeholder="Tìm theo tên bác sĩ, số điện thoại..." class="form-control" style="width: 320px;" oninput="filterDoctorsTable()">
+                        <span id="doctorsCountLabel" style="font-size: 12px; color: #94a3b8;">Đang tải...</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Họ Và Tên Bác Sĩ</th>
+                                    <th>Chuyên Môn Mũi Nhọn</th>
+                                    <th>Số Điện Thoại</th>
+                                    <th>Email</th>
+                                    <th>Trạng Thái</th>
+                                    <th>Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="doctorsTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: INVENTORY CMS -->
+            <section id="tab-inventory" class="tab-pane">
+                <div class="page-header">
+                    <div>
+                        <h2 class="page-title"><i class="fa-solid fa-boxes-stacked text-amber-400"></i> Quản Lý Kho Vật Tư Y Tế (Medical Supply Inventory CMS)</h2>
+                        <p class="page-subtitle">Kiểm soát tồn kho vật tư nha khoa (mắc cài, trụ implant, vật tư tiêu hao), định giá và cảnh báo tồn thấp.</p>
+                    </div>
+                    <div class="action-bar">
+                        <button class="btn btn-emerald" onclick="openStockModal()"><i class="fa-solid fa-arrow-up-right-dots"></i> Điều Chỉnh Tồn Kho</button>
+                        <button class="btn btn-outline" onclick="triggerQuickExport('inventory')"><i class="fa-solid fa-file-csv"></i> Xuất Báo Cáo Tồn</button>
+                    </div>
+                </div>
+
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <input type="text" id="searchInventoryInput" placeholder="Tìm vật tư theo mã, tên, thương hiệu..." class="form-control" style="width: 320px;" oninput="filterInventoryTable()">
+                            <select id="filterInventorySafety" class="form-control" style="width: 200px;" onchange="filterInventoryTable()">
+                                <option value="ALL">Tất cả trạng thái</option>
+                                <option value="LOW">Cảnh Báo Tồn Thấp (≤ 10)</option>
+                                <option value="SAFE">Đảm Bảo An Toàn (> 10)</option>
+                            </select>
+                        </div>
+                        <span id="inventoryCountLabel" style="font-size: 12px; color: #94a3b8;">Đang tải...</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã Vật Tư</th>
+                                    <th>Tên Vật Tư / Sản Phẩm</th>
+                                    <th>Thương Hiệu</th>
+                                    <th>Danh Mục</th>
+                                    <th>Tồn Kho</th>
+                                    <th>Đơn Giá (VNĐ)</th>
+                                    <th>Định Giá Tồn (VNĐ)</th>
+                                    <th>Trạng Thái An Toàn</th>
+                                    <th>Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: SATELLITE & BRANCH CMS -->
+            <section id="tab-branches" class="tab-pane">
+                <div class="page-header">
+                    <div>
+                        <h2 class="page-title"><i class="fa-solid fa-map-location-dot text-rose-400"></i> Quản Lý Chi Nhánh & Đại Lý Cấp 2 (Satellite / Branch C2 CMS)</h2>
+                        <p class="page-subtitle">Mạng lưới phòng khám vệ tinh, trung tâm cấy ghép và đối tác phân phối vật tư nha khoa.</p>
+                    </div>
+                    <div class="action-bar">
+                        <button class="btn btn-primary" onclick="openAddBranchModal()"><i class="fa-solid fa-plus"></i> Thêm Chi Nhánh / Đại Lý</button>
+                    </div>
+                </div>
+
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <input type="text" id="searchBranchInput" placeholder="Tìm chi nhánh theo tên, địa chỉ, quận huyện..." class="form-control" style="width: 320px;" oninput="filterBranchesTable()">
+                        <span id="branchesCountLabel" style="font-size: 12px; color: #94a3b8;">Đang tải...</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã CN</th>
+                                    <th>Tên Chi Nhánh / Đại Lý C2</th>
+                                    <th>Địa Chỉ Hoạt Động</th>
+                                    <th>Hotline</th>
+                                    <th>Số Ghế Nha</th>
+                                    <th>Trụ Sở Chính</th>
+                                    <th>Trạng Thái</th>
+                                    <th>Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="branchesTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: MENU & FOOTER CONFIG CMS -->
+            <section id="tab-config" class="tab-pane">
+                <div class="page-header">
+                    <div>
+                        <h2 class="page-title"><i class="fa-solid fa-sliders text-purple-400"></i> Cấu Hình Menu & Chân Trang (Menu / Footer Config CMS)</h2>
+                        <p class="page-subtitle">Đồng bộ động cấu hình website và ứng dụng: hotline cấp cứu 24/7, liên kết điều hướng, giấy phép y tế.</p>
+                    </div>
+                    <div class="action-bar">
+                        <button class="btn btn-outline" onclick="resetCmsConfig()"><i class="fa-solid fa-rotate-left"></i> Khôi Phục Mặc Định</button>
+                        <button class="btn btn-primary" onclick="saveCmsConfig()"><i class="fa-solid fa-floppy-disk"></i> Lưu Thay Đổi</button>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <!-- General Clinic Info -->
+                    <div class="card-panel">
+                        <div class="panel-header">
+                            <span class="panel-title"><i class="fa-solid fa-hospital"></i> Thông Tin Thương Hiệu & Hotline</span>
+                        </div>
+                        <div style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+                            <div class="form-group">
+                                <label>Tên Hệ Thống Phòng Khám</label>
+                                <input type="text" id="cfgClinicName" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Khẩu Hiệu / Tagline</label>
+                                <input type="text" id="cfgTagline" class="form-control">
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div class="form-group">
+                                    <label>Hotline Đặt Lịch</label>
+                                    <input type="text" id="cfgHotline" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Hotline Cấp Cứu Răng Miệng (24/7)</label>
+                                    <input type="text" id="cfgEmergencyHotline" class="form-control">
+                                </div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div class="form-group">
+                                    <label>Email Liên Hệ</label>
+                                    <input type="text" id="cfgEmail" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Thời Gian Làm Việc</label>
+                                    <input type="text" id="cfgWorkingHours" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Địa Chỉ Trụ Sở Chính</label>
+                                <input type="text" id="cfgMainAddress" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer & Legal Info -->
+                    <div class="card-panel">
+                        <div class="panel-header">
+                            <span class="panel-title"><i class="fa-solid fa-scale-balanced"></i> Pháp Lý & Giấy Phép Hoạt Động KCB</span>
+                        </div>
+                        <div style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+                            <div class="form-group">
+                                <label>Số Giấy Phép Hoạt Động (Sở Y Tế)</label>
+                                <input type="text" id="cfgLicenseNumber" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Bản Quyền / Copyright Text</label>
+                                <input type="text" id="cfgCopyright" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Đoạn Giới Thiệu Chân Trang (About Text)</label>
+                                <textarea id="cfgAboutText" class="form-control" rows="4"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Mạng Xã Hội (Facebook, Zalo, YouTube, TikTok)</label>
+                                <input type="text" id="cfgSocialFacebook" placeholder="Facebook URL" class="form-control" style="margin-bottom: 6px;">
+                                <input type="text" id="cfgSocialZalo" placeholder="Zalo URL" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Menu Items Editor -->
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <span class="panel-title"><i class="fa-solid fa-bars"></i> Danh Sách Menu Điều Hướng Website & Mobile App</span>
+                        <button class="btn btn-outline" onclick="addMenuItemRow()" style="padding: 4px 10px; font-size: 11px;"><i class="fa-solid fa-plus"></i> Thêm Mục Menu</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Thứ Tự</th>
+                                    <th>Tiêu Đề Menu</th>
+                                    <th>Đường Dẫn (URL / Anchor)</th>
+                                    <th>Icon FontAwesome</th>
+                                    <th>Badge Phụ</th>
+                                    <th>Hiển Thị</th>
+                                    <th>Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="menuItemsTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: NOTIFICATION HUB -->
+            <section id="tab-notifications" class="tab-pane">
+                <div class="page-header">
+                    <div>
+                        <h2 class="page-title"><i class="fa-solid fa-bell text-sky-400"></i> Centralized Notification Hub (Real-time Alert Stream)</h2>
+                        <p class="page-subtitle">Lắng nghe luồng thông báo STOMP WebSocket từ máy chủ trung tâm (`/topic/notifications`), hỗ trợ chuông báo & Windows Toast.</p>
+                    </div>
+                    <div class="action-bar">
+                        <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #cbd5e1; cursor: pointer;">
+                            <input type="checkbox" id="chkAudioChime" checked>
+                            <i class="fa-solid fa-volume-high"></i> Chuông Báo Âm Thanh
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #cbd5e1; cursor: pointer;">
+                            <input type="checkbox" id="chkNativeNotification" checked>
+                            <i class="fa-brands fa-windows"></i> Desktop Push
+                        </label>
+                        <button class="btn btn-outline" onclick="simulateTestNotification()"><i class="fa-solid fa-paper-plane"></i> Test Chuông</button>
+                        <button class="btn btn-outline" onclick="clearNotificationFeed()"><i class="fa-solid fa-trash-can"></i> Xóa Trắng</button>
+                    </div>
+                </div>
+
+                <div class="card-panel">
+                    <div class="panel-header">
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-outline notif-filter-btn active" data-filter="ALL" onclick="filterNotificationFeed('ALL')">Tất cả</button>
+                            <button class="btn btn-outline notif-filter-btn" data-filter="BOOKING" onclick="filterNotificationFeed('BOOKING')">Lịch Khám</button>
+                            <button class="btn btn-outline notif-filter-btn" data-filter="INVENTORY" onclick="filterNotificationFeed('INVENTORY')">Kho Vật Tư</button>
+                            <button class="btn btn-outline notif-filter-btn" data-filter="EMERGENCY" onclick="filterNotificationFeed('EMERGENCY')">Cấp Cứu</button>
+                            <button class="btn btn-outline notif-filter-btn" data-filter="SYSTEM" onclick="filterNotificationFeed('SYSTEM')">Hệ Thống</button>
+                        </div>
+                        <span id="notifStatusSummary" style="font-size: 12px; color: #94a3b8;">Đang kết nối WebSocket...</span>
+                    </div>
+                    <div id="fullNotificationFeed" class="notification-feed" style="max-height: 520px; padding: 14px;">
+                        <!-- Alerts arrive here in real time -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 7: EXPORT ENGINE -->
+            <section id="tab-export" class="tab-pane">
+                <div class="page-header">
+                    <div>
+                        <h2 class="page-title"><i class="fa-solid fa-file-excel text-emerald-400"></i> Trung Tâm Xuất Báo Cáo Excel / CSV (Export Engine)</h2>
+                        <p class="page-subtitle">Xuất dữ liệu hệ sinh thái chuẩn UTF-8 BOM (`\uFEFF`) tương thích 100% tiếng Việt trên Microsoft Excel và các phần mềm BI.</p>
+                    </div>
+                </div>
+
+                <div class="export-grid">
+                    <!-- Export Card 1: Appointments -->
+                    <div class="export-card">
+                        <div>
+                            <div class="export-title"><i class="fa-solid fa-calendar-check text-sky-400"></i> 1. Danh Sách Lịch Khám & Cọc</div>
+                            <p class="export-desc">Bao gồm mã lịch hẹn, ngày khám, thông tin bệnh nhân, bác sĩ phụ trách, dịch vụ điều trị, trạng thái đặt cọc 100K và ghi chú lâm sàng.</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="exportDataStream('appointments')">
+                            <i class="fa-solid fa-download"></i> Xuất File Appointments CSV
+                        </button>
+                    </div>
+
+                    <!-- Export Card 2: Inventory -->
+                    <div class="export-card">
+                        <div>
+                            <div class="export-title"><i class="fa-solid fa-boxes-packing text-amber-400"></i> 2. Báo Cáo Tồn Kho Vật Tư</div>
+                            <p class="export-desc">Bao gồm mã vật tư, trụ Implant, mắc cài Damon, quy cách đóng gói, số lượng tồn thực tế, đơn giá và cảnh báo tồn kho an toàn.</p>
+                        </div>
+                        <button class="btn btn-emerald" onclick="exportDataStream('inventory')">
+                            <i class="fa-solid fa-download"></i> Xuất File Inventory CSV
+                        </button>
+                    </div>
+
+                    <!-- Export Card 3: Doctor KPIs -->
+                    <div class="export-card">
+                        <div>
+                            <div class="export-title"><i class="fa-solid fa-user-doctor text-purple-400"></i> 3. Hiệu Suất & KPI Bác Sĩ</div>
+                            <p class="export-desc">Thống kê số ca khám hoàn tất, tỷ lệ hoàn thành chỉ tiêu (%), tổng doanh thu cọc giữ chỗ và đánh giá xếp hạng bác sĩ (Platinum, Gold, Standard).</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="exportDataStream('kpi')">
+                            <i class="fa-solid fa-download"></i> Xuất File Doctor KPI CSV
+                        </button>
+                    </div>
+
+                    <!-- Export Card 4: Field Intake Leads -->
+                    <div class="export-card">
+                        <div>
+                            <div class="export-title"><i class="fa-solid fa-users-viewfinder text-rose-400"></i> 4. Khám Tầm Soát Hiện Trường</div>
+                            <p class="export-desc">Dữ liệu bệnh nhân tiếp nhận từ chương trình Nha khoa Học đường, sự kiện hội nghị VIDEC, kết quả sơ bộ và mã voucher ưu đãi tặng kèm.</p>
+                        </div>
+                        <button class="btn btn-emerald" onclick="exportDataStream('intake')">
+                            <i class="fa-solid fa-download"></i> Xuất File Field Intake Leads CSV
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Export Preview Table -->
+                <div class="card-panel" style="margin-top: 24px;">
+                    <div class="panel-header">
+                        <span class="panel-title"><i class="fa-solid fa-table text-sky-400"></i> Bảng Xem Trước Dữ Liệu Chuẩn Bị Xuất</span>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-outline" onclick="previewExportData('appointments')" style="padding: 4px 10px; font-size: 11px;">Xem Lịch Khám</button>
+                            <button class="btn btn-outline" onclick="previewExportData('inventory')" style="padding: 4px 10px; font-size: 11px;">Xem Tồn Kho</button>
+                            <button class="btn btn-outline" onclick="previewExportData('kpi')" style="padding: 4px 10px; font-size: 11px;">Xem KPI</button>
+                            <button class="btn btn-outline" onclick="previewExportData('intake')" style="padding: 4px 10px; font-size: 11px;">Xem Tiếp Nhận</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive" style="max-height: 320px;">
+                        <table class="data-table" id="exportPreviewTable">
+                            <thead id="exportPreviewThead">
+                                <tr><th>Chọn bảng phía trên để xem trước</th></tr>
+                            </thead>
+                            <tbody id="exportPreviewTbody">
+                                <tr><td style="text-align: center; color: #64748b; padding: 24px;">Chưa có dữ liệu xem trước. Bấm vào một nút để tải dữ liệu mẫu.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 3. Modals -->
+
+    <!-- Modal: Add/Edit Service -->
+    <div id="serviceModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="serviceModalTitle" class="panel-title"><i class="fa-solid fa-tooth text-sky-400"></i> Thêm Dịch Vụ Mới</h3>
+                <button class="window-btn" onclick="closeModal('serviceModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="form-group">
+                        <label>Mã Dịch Vụ (Code)</label>
+                        <input type="text" id="mServiceCode" placeholder="DV-NIENG-01" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Chuyên Khoa</label>
+                        <select id="mServiceCategory" class="form-control">
+                            <option value="ORTHODONTICS">Niềng Răng Chỉnh Nha</option>
+                            <option value="IMPLANT">Cấy Ghép Implant</option>
+                            <option value="COSMETIC">Thẩm Mỹ Răng Sứ</option>
+                            <option value="GENERAL">Nha Khoa Tổng Quát</option>
+                            <option value="SURGERY">Tiểu Phẫu Nhổ Răng Khôn</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Tên Dịch Vụ Nha Khoa</label>
+                    <input type="text" id="mServiceName" placeholder="Niềng Răng Mắc Cài Kim Loại Tự Buộc Damon" class="form-control">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="form-group">
+                        <label>Giá Niêm Yết (VNĐ)</label>
+                        <input type="number" id="mServicePrice" placeholder="35000000" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Thời Gian Thực Hiện (Phút)</label>
+                        <input type="number" id="mServiceDuration" placeholder="60" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Chính Sách Bảo Hành</label>
+                    <input type="text" id="mServiceWarranty" placeholder="Bảo hành trọn đời / 10 năm" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Mô Tả Chi Tiết</label>
+                    <textarea id="mServiceDesc" rows="3" placeholder="Mô tả kỹ thuật, chỉ định lâm sàng..." class="form-control"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('serviceModal')">Hủy Bỏ</button>
+                <button class="btn btn-primary" onclick="submitServiceForm()"><i class="fa-solid fa-check"></i> Lưu Dịch Vụ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Stock Adjustment -->
+    <div id="stockModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="panel-title"><i class="fa-solid fa-boxes-stacked text-amber-400"></i> Điều Chỉnh Tồn Kho Vật Tư</h3>
+                <button class="window-btn" onclick="closeModal('stockModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Chọn Mặt Hàng / Vật Tư Nha Khoa</label>
+                    <select id="mStockProductSelect" class="form-control">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Số Lượng Tồn Kho Mới</label>
+                    <input type="number" id="mStockNewQuantity" class="form-control" placeholder="Ví dụ: 50">
+                </div>
+                <div class="form-group">
+                    <label>Lý Do Điều Chỉnh</label>
+                    <input type="text" id="mStockReason" class="form-control" placeholder="Nhập thêm từ kho trung tâm / Xuất chi nhánh vệ tinh">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('stockModal')">Hủy</button>
+                <button class="btn btn-emerald" onclick="submitStockAdjustment()"><i class="fa-solid fa-check"></i> Xác Nhận Cập Nhật</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
+    <!-- External SockJS & StompJS for WebSocket connectivity -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+    <!-- Main Desktop Renderer Script -->
+    <script src="js/desktop-renderer.js"></script>
+</body>
+</html>

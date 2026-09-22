@@ -357,18 +357,25 @@ footer { background: #0d3534 !important; }
             </a>
 
             <!-- Public Nav Links (Desktop) -->
-            <div class="hidden lg:flex items-center space-x-6 text-sm font-bold text-slate-600">
-                <a href="#home" onclick="showLandingPage()" class="hover:text-brand-600 transition flex items-center gap-1.5"><i class="fa-solid fa-house text-slate-400"></i> Trang Chủ</a>
-                <a href="#services" onclick="showLandingPage()" class="hover:text-brand-600 transition">Dịch Vụ</a>
-                <a href="#transformations" onclick="showLandingPage()" class="hover:text-brand-600 transition">Nụ Cười Thực Tế</a>
-                <a href="#doctors" onclick="showLandingPage()" class="hover:text-brand-600 transition">Chuyên Gia</a>
-                <a href="#promotions" onclick="showLandingPage()" class="text-rose-600 hover:text-rose-700 font-extrabold flex items-center gap-1"><i class="fa-solid fa-fire text-rose-500 animate-bounce"></i> Ưu Đãi Hot</a>
-                <a href="#pricing" onclick="showLandingPage()" class="hover:text-brand-600 transition">Bảng Giá &amp; Trả Góp</a>
-                <a href="#booking-section" onclick="showLandingPage()" class="text-brand-600 hover:text-brand-700 font-extrabold flex items-center gap-1.5"><i class="fa-solid fa-calendar-plus"></i> Đặt Lịch</a>
+            <div class="hidden xl:flex items-center space-x-5 text-xs font-bold text-slate-600">
+                <a href="#home" onclick="showLandingPage()" class="hover:text-brand-600 transition flex items-center gap-1"><i class="fa-solid fa-house text-slate-400"></i> Trang Chủ</a>
+                <a href="#dynamic-catalog" onclick="showLandingPage()" class="hover:text-brand-600 transition flex items-center gap-1"><i class="fa-solid fa-tooth text-brand-600"></i> Dịch Vụ</a>
+                <a href="#dental-shop" onclick="showLandingPage()" class="hover:text-brand-600 transition flex items-center gap-1 text-emerald-700 font-extrabold"><i class="fa-solid fa-bag-shopping text-emerald-600"></i> Cửa Hàng</a>
+                <a href="#warranty-section" onclick="showLandingPage()" class="hover:text-brand-600 transition flex items-center gap-1 text-sky-700 font-extrabold"><i class="fa-solid fa-shield-halved text-sky-600"></i> Bảo Hành Răng Sứ</a>
+                <a href="#ai-diagnostic-section" onclick="showLandingPage()" class="hover:text-brand-600 transition flex items-center gap-1 text-purple-700 font-extrabold"><i class="fa-solid fa-wand-magic-sparkles text-purple-600"></i> Bác Sĩ AI</a>
+                <a href="#branches-section" onclick="showLandingPage()" class="hover:text-brand-600 transition flex items-center gap-1 text-teal-700 font-extrabold"><i class="fa-solid fa-location-dot text-rose-500"></i> Chi Nhánh</a>
+                <a href="#community-forum-section" onclick="showLandingPage()" class="hover:text-brand-600 transition flex items-center gap-1 text-amber-700 font-extrabold"><i class="fa-solid fa-comments text-amber-500"></i> Diễn Đàn</a>
+                <a href="#booking-section" onclick="showLandingPage()" class="text-brand-600 hover:text-brand-700 font-extrabold flex items-center gap-1"><i class="fa-solid fa-calendar-plus"></i> Đặt Lịch</a>
             </div>
 
             <!-- Action Buttons & Auth Profile -->
-            <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+                <!-- Shopping Cart Button with Dynamic Badge -->
+                <button type="button" onclick="openCartModal()" class="relative p-2 sm:p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer" title="Xem giỏ hàng nha khoa" aria-label="Giỏ hàng">
+                    <i class="fa-solid fa-cart-shopping text-base sm:text-lg text-emerald-600"></i>
+                    <span id="cart-badge-count" class="absolute -top-1 -right-1 bg-rose-600 text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow">0</span>
+                </button>
+
                 <!-- If Unauthenticated -->
                 <div id="unauth-actions" class="flex items-center gap-1.5 sm:gap-2">
                     <button type="button" onclick="openAuthModal('login')" aria-label="Đăng nhập tài khoản" title="Đăng Nhập" class="py-2 px-3 sm:py-2.5 sm:px-4 rounded-xl text-slate-700 hover:text-brand-600 hover:bg-slate-100 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer">
@@ -404,21 +411,22 @@ footer { background: #0d3534 !important; }
                 </div>
 
                 <!-- Mobile Hamburger Button -->
-                <button onclick="toggleMobileMenu()" class="lg:hidden p-2 sm:p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer" aria-label="Toggle Menu">
+                <button onclick="toggleMobileMenu()" class="xl:hidden p-2 sm:p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer" aria-label="Toggle Menu">
                     <i id="mobile-menu-icon" class="fa-solid fa-bars text-base sm:text-lg"></i>
                 </button>
             </div>
         </div>
 
         <!-- Mobile Menu Dropdown Drawer -->
-        <div id="mobile-menu-drawer" class="hidden lg:hidden bg-white/95 backdrop-blur-xl border-b border-slate-200 px-5 py-4 space-y-3 shadow-2xl animate-fade-in max-h-[80vh] overflow-y-auto">
+        <div id="mobile-menu-drawer" class="hidden xl:hidden bg-white/95 backdrop-blur-xl border-b border-slate-200 px-5 py-4 space-y-3 shadow-2xl animate-fade-in max-h-[80vh] overflow-y-auto">
             <div class="flex flex-col space-y-2 font-bold text-sm text-slate-700">
                 <a href="#home" onclick="closeMobileMenu()" class="py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center gap-2.5"><i class="fa-solid fa-house text-brand-600 w-5"></i> Trang Chủ</a>
-                <a href="#services" onclick="closeMobileMenu()" class="py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center gap-2.5"><i class="fa-solid fa-tooth text-brand-600 w-5"></i> Dịch Vụ Nha Khoa</a>
-                <a href="#transformations" onclick="closeMobileMenu()" class="py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center gap-2.5"><i class="fa-solid fa-wand-magic-sparkles text-amber-500 w-5"></i> Nụ Cười Thực Tế</a>
-                <a href="#doctors" onclick="closeMobileMenu()" class="py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center gap-2.5"><i class="fa-solid fa-user-doctor text-sky-600 w-5"></i> Đội Ngũ Chuyên Gia</a>
-                <a href="#promotions" onclick="closeMobileMenu()" class="py-2.5 px-3 rounded-xl hover:bg-rose-50 text-rose-600 font-extrabold flex items-center gap-2.5"><i class="fa-solid fa-fire text-rose-500 w-5"></i> Ưu Đãi Flash Sale</a>
-                <a href="#pricing" onclick="closeMobileMenu()" class="py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center gap-2.5"><i class="fa-solid fa-tags text-indigo-600 w-5"></i> Bảng Giá &amp; Trả Góp 0%</a>
+                <a href="#dynamic-catalog" onclick="closeMobileMenu()" class="py-2.5 px-3 rounded-xl hover:bg-slate-100 flex items-center gap-2.5"><i class="fa-solid fa-tooth text-brand-600 w-5"></i> Danh Mục Dịch Vụ</a>
+                <a href="#dental-shop" onclick="closeMobileMenu()" class="py-2.5 px-3 rounded-xl hover:bg-emerald-50 text-emerald-700 flex items-center gap-2.5"><i class="fa-solid fa-bag-shopping text-emerald-600 w-5"></i> Cửa Hàng Chăm Sóc Răng</a>
+                <a href="#warranty-section" onclick="closeMobileMenu()" class="py-2.5 px-3 rounded-xl hover:bg-sky-50 text-sky-700 flex items-center gap-2.5"><i class="fa-solid fa-shield-halved text-sky-600 w-5"></i> Tra Cứu Bảo Hành Răng Sứ</a>
+                <a href="#ai-diagnostic-section" onclick="closeMobileMenu()" class="py-2.5 px-3 rounded-xl hover:bg-purple-50 text-purple-700 flex items-center gap-2.5"><i class="fa-solid fa-wand-magic-sparkles text-purple-600 w-5"></i> Bác Sĩ Nha Khoa AI</a>
+                <a href="#branches-section" onclick="closeMobileMenu()" class="py-2.5 px-3 rounded-xl hover:bg-teal-50 text-teal-700 flex items-center gap-2.5"><i class="fa-solid fa-location-dot text-rose-500 w-5"></i> Hệ Thống Chi Nhánh</a>
+                <a href="#community-forum-section" onclick="closeMobileMenu()" class="py-2.5 px-3 rounded-xl hover:bg-amber-50 text-amber-700 flex items-center gap-2.5"><i class="fa-solid fa-comments text-amber-500 w-5"></i> Diễn Đàn Hỏi Đáp</a>
                 <a href="#booking-section" onclick="closeMobileMenu()" class="py-2.5 px-3 rounded-xl bg-brand-50 text-brand-700 font-extrabold flex items-center gap-2.5"><i class="fa-solid fa-calendar-check text-brand-600 w-5"></i> Đặt Lịch Khám Giữ Chỗ</a>
             </div>
             <div class="pt-3 border-t border-slate-100 flex gap-2">
@@ -743,6 +751,38 @@ footer { background: #0d3534 !important; }
                             <a href="#booking-section" class="text-sky-800 font-bold group-hover:translate-x-1 transition-transform flex items-center gap-1">Đặt lịch <i class="fa-solid fa-arrow-right"></i></a>
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DYNAMIC DENTAL SERVICES CATALOG -->
+        <section id="dynamic-catalog" class="py-20 bg-white border-b border-slate-200/80">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto space-y-3 mb-12">
+                    <span class="text-xs font-extrabold uppercase tracking-widest text-brand-700 bg-brand-50 px-3.5 py-1 rounded-full border border-brand-200">
+                        <i class="fa-solid fa-layer-group mr-1"></i> Danh Mục Chuyên Sâu Kỹ Thuật Số
+                    </span>
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tight">
+                        Bảng Tra Cứu Dịch Vụ Nha Khoa Trực Tuyến
+                    </h2>
+                    <p class="text-slate-500 text-xs sm:text-sm">
+                        Tra cứu thời lượng thực hiện, bảng giá niêm yết và kích hoạt đặt lịch ưu tiên cùng bác sĩ chuyên khoa.
+                    </p>
+                    <!-- Category Filters -->
+                    <div class="flex flex-wrap items-center justify-center gap-2 pt-4" id="service-catalog-tabs">
+                        <button type="button" onclick="filterServices('ALL')" class="service-tab-btn active text-xs px-3.5 py-2 rounded-xl font-bold bg-brand-600 text-white shadow-sm transition cursor-pointer">Tất Cả</button>
+                        <button type="button" onclick="filterServices('ORTHODONTICS')" class="service-tab-btn text-xs px-3.5 py-2 rounded-xl font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer">Niềng Răng 3D</button>
+                        <button type="button" onclick="filterServices('IMPLANT')" class="service-tab-btn text-xs px-3.5 py-2 rounded-xl font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer">Cấy Ghép Implant</button>
+                        <button type="button" onclick="filterServices('PORCELAIN_CROWNS')" class="service-tab-btn text-xs px-3.5 py-2 rounded-xl font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer">Răng Sứ Thẩm Mỹ</button>
+                        <button type="button" onclick="filterServices('WHITENING')" class="service-tab-btn text-xs px-3.5 py-2 rounded-xl font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer">Tẩy Trắng Răng</button>
+                        <button type="button" onclick="filterServices('WISDOM_TEETH')" class="service-tab-btn text-xs px-3.5 py-2 rounded-xl font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer">Nhổ Răng Khôn</button>
+                        <button type="button" onclick="filterServices('GENERAL')" class="service-tab-btn text-xs px-3.5 py-2 rounded-xl font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer">Nha Khoa Tổng Quát</button>
+                    </div>
+                </div>
+
+                <!-- Dynamic Service Cards Container -->
+                <div id="dynamic-services-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Injected by JavaScript from /api/dental-services -->
                 </div>
             </div>
         </section>
@@ -1321,6 +1361,155 @@ footer { background: #0d3534 !important; }
             </div>
         </section>
 
+        <!-- DENTAL CARE E-COMMERCE SHOP -->
+        <section id="dental-shop" class="py-20 bg-slate-50 border-b border-slate-200/80">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto space-y-3 mb-12">
+                    <span class="text-xs font-extrabold uppercase tracking-widest text-emerald-800 bg-emerald-100 px-3.5 py-1 rounded-full border border-emerald-200">
+                        <i class="fa-solid fa-store mr-1"></i> Gian Hàng Chính Hãng
+                    </span>
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tight">
+                        Sản Phẩm Chăm Sóc Răng Miệng Chuẩn Nha Khoa
+                    </h2>
+                    <p class="text-slate-500 text-xs sm:text-sm">
+                        Bàn chải điện, máy tăm nước, kem đánh răng chuyên dụng &amp; máng duy trì sau niềng. Đa dạng tùy chọn Hộp Đơn hoặc Combo Tiết Kiệm kèm quà tặng.
+                    </p>
+
+                    <!-- Product Category Filters -->
+                    <div class="flex flex-wrap items-center justify-center gap-2 pt-4" id="product-shop-tabs">
+                        <button type="button" onclick="filterProducts('ALL')" class="prod-tab-btn active text-xs px-3.5 py-2 rounded-xl font-bold bg-emerald-600 text-white shadow-sm transition cursor-pointer">Tất Cả</button>
+                        <button type="button" onclick="filterProducts('BRUSH')" class="prod-tab-btn text-xs px-3.5 py-2 rounded-xl font-bold bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 transition cursor-pointer">Bàn Chải Điện</button>
+                        <button type="button" onclick="filterProducts('FLOSSER')" class="prod-tab-btn text-xs px-3.5 py-2 rounded-xl font-bold bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 transition cursor-pointer">Máy Tăm Nước</button>
+                        <button type="button" onclick="filterProducts('TOOTHPASTE')" class="prod-tab-btn text-xs px-3.5 py-2 rounded-xl font-bold bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 transition cursor-pointer">Kem Đánh Răng</button>
+                        <button type="button" onclick="filterProducts('FLOSS')" class="prod-tab-btn text-xs px-3.5 py-2 rounded-xl font-bold bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 transition cursor-pointer">Chỉ Nha Khoa</button>
+                        <button type="button" onclick="filterProducts('RETAINER')" class="prod-tab-btn text-xs px-3.5 py-2 rounded-xl font-bold bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 transition cursor-pointer">Máng Duy Trì Niềng</button>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div id="dental-products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Injected by JavaScript from /api/dental-products -->
+                </div>
+            </div>
+        </section>
+
+        <!-- PORCELAIN CROWN WARRANTY & QR LOOKUP -->
+        <section id="warranty-section" class="py-20 bg-gradient-to-b from-slate-900 to-slate-950 text-white border-b border-slate-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto space-y-3 mb-12">
+                    <span class="text-xs font-extrabold uppercase tracking-widest text-sky-400 bg-sky-950 px-3.5 py-1 rounded-full border border-sky-800">
+                        <i class="fa-solid fa-shield-halved mr-1"></i> Thẩm Mỹ Chính Hãng
+                    </span>
+                    <h2 class="text-3xl font-black text-white tracking-tight">
+                        Cổng Tra Cứu &amp; Xác Thực Thẻ Bảo Hành Răng Sứ Điện Tử
+                    </h2>
+                    <p class="text-slate-400 text-xs sm:text-sm">
+                        Quét mã QR hoặc nhập số thẻ bảo hành (Lava Plus 3M, Cercon HT, Emax) để kiểm tra nguồn gốc phôi sứ, labo sản xuất và thời hạn bảo hành minh bạch.
+                    </p>
+                </div>
+
+                <!-- Warranty Search Form -->
+                <div class="max-w-2xl mx-auto bg-slate-900/90 p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-2xl space-y-5">
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <div class="relative flex-1">
+                            <i class="fa-solid fa-qrcode absolute left-4 top-3.5 text-sky-400 text-lg"></i>
+                            <input id="warranty-search-input" type="text" placeholder="Nhập mã thẻ bảo hành (VD: DC-WR-2026-88992) hoặc mã QR..." class="w-full pl-11 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-xs sm:text-sm text-white placeholder-slate-500 focus:border-sky-500 outline-none font-semibold">
+                        </div>
+                        <button type="button" onclick="searchWarranty()" class="px-6 py-3 bg-gradient-to-r from-sky-600 to-brand-600 hover:from-sky-700 hover:to-brand-700 text-white rounded-xl text-xs font-black shadow-lg shadow-sky-500/30 transition flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-magnifying-glass"></i> Tra Cứu Ngay
+                        </button>
+                    </div>
+
+                    <!-- Quick Sample Buttons -->
+                    <div class="flex flex-wrap items-center gap-2 pt-1 text-[11px] text-slate-400">
+                        <span>Thử nhanh mã mẫu:</span>
+                        <button type="button" onclick="quickSearchWarranty('DC-WR-2026-88992')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-sky-300 rounded-lg border border-slate-700 font-mono transition cursor-pointer">DC-WR-2026-88992 (Lava Plus)</button>
+                        <button type="button" onclick="quickSearchWarranty('DENTALCARE-CERCON-77123')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded-lg border border-slate-700 font-mono transition cursor-pointer">DENTALCARE-CERCON-77123 (QR)</button>
+                        <button type="button" onclick="quickSearchWarranty('DC-WR-2026-66554')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-emerald-300 rounded-lg border border-slate-700 font-mono transition cursor-pointer">DC-WR-2026-66554 (Emax)</button>
+                    </div>
+
+                    <!-- Warranty Result Display Area -->
+                    <div id="warranty-result-card" class="hidden pt-4">
+                        <!-- Injected by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI DENTAL DIAGNOSTIC VISION -->
+        <section id="ai-diagnostic-section" class="py-20 bg-white border-b border-slate-200/80">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto space-y-3 mb-12">
+                    <span class="text-xs font-extrabold uppercase tracking-widest text-purple-800 bg-purple-100 px-3.5 py-1 rounded-full border border-purple-200">
+                        <i class="fa-solid fa-brain mr-1"></i> Trí Tuệ Nhân Tạo Y Khoa
+                    </span>
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tight">
+                        Bác Sĩ AI Chẩn Đoán Bệnh Lý Răng Miệng Thông Minh
+                    </h2>
+                    <p class="text-slate-500 text-xs sm:text-sm">
+                        Chụp ảnh vùng răng hoặc mô tả triệu chứng, hệ thống AI (kết nối 9Router Gateway &amp; bộ luật lâm sàng chuẩn) sẽ phân tích nguy cơ Sâu răng, Vôi răng, Viêm nướu và Răng khôn mọc lệch chỉ trong 3 giây.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    <!-- Left: Input & Image Upload / Presets -->
+                    <div class="lg:col-span-6 bg-slate-50 p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
+                        <div class="space-y-1">
+                            <label class="block text-xs font-bold text-slate-800">Họ và tên của bạn</label>
+                            <input id="ai-patient-name" type="text" placeholder="Nguyễn Văn A" class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold focus:border-purple-600 outline-none">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-xs font-bold text-slate-800">Số điện thoại liên hệ</label>
+                            <input id="ai-patient-phone" type="tel" placeholder="0988xxxxxx" class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold focus:border-purple-600 outline-none">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-xs font-bold text-slate-800">Mô tả cảm giác / Triệu chứng gặp phải</label>
+                            <textarea id="ai-symptoms-input" rows="3" placeholder="VD: Đau nhức vùng góc hàm dưới khi nhai, nướu hay chảy máu khi đánh răng, răng hàm bị ê buốt khi uống nước lạnh..." class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-medium focus:border-purple-600 outline-none"></textarea>
+                        </div>
+                        
+                        <!-- Sample Symptoms Presets -->
+                        <div class="space-y-1.5 pt-1">
+                            <span class="text-[11px] font-bold text-slate-500">Hoặc chọn nhanh triệu chứng mô phỏng:</span>
+                            <div class="flex flex-wrap gap-1.5">
+                                <button type="button" onclick="selectAiSample('Đau nhức góc hàm dưới, răng khôn mọc lệch đâm vào răng số 7', 'impacted_wisdom')" class="text-[10px] px-2.5 py-1 bg-white hover:bg-purple-50 text-purple-700 border border-purple-200 rounded-lg font-bold transition cursor-pointer">⚡ Răng Khôn Lệch</button>
+                                <button type="button" onclick="selectAiSample('Răng hàm trên có lỗ đen sâu kẽ, ê buốt khi ăn đồ ngọt', 'caries')" class="text-[10px] px-2.5 py-1 bg-white hover:bg-rose-50 text-rose-700 border border-rose-200 rounded-lg font-bold transition cursor-pointer">🦷 Sâu Men Răng</button>
+                                <button type="button" onclick="selectAiSample('Chân răng cửa dưới bám nhiều vôi ố vàng xỉn màu', 'calculus')" class="text-[10px] px-2.5 py-1 bg-white hover:bg-amber-50 text-amber-700 border border-amber-200 rounded-lg font-bold transition cursor-pointer">🪨 Vôi Răng / Cao Răng</button>
+                                <button type="button" onclick="selectAiSample('Lợi bị sưng đỏ, dễ chảy máu khi chải răng nhẹ', 'gingivitis')" class="text-[10px] px-2.5 py-1 bg-white hover:bg-rose-50 text-rose-700 border border-rose-200 rounded-lg font-bold transition cursor-pointer">🩸 Viêm Nướu Lợi</button>
+                                <button type="button" onclick="selectAiSample('Răng sáng bóng không đau, muốn kiểm tra tổng quát', 'healthy')" class="text-[10px] px-2.5 py-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg font-bold transition cursor-pointer">✨ Răng Khỏe Mạnh</button>
+                            </div>
+                        </div>
+
+                        <button type="button" id="btn-run-ai-diagnostic" onclick="runAiDiagnostic()" class="w-full py-3.5 bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-black shadow-lg shadow-purple-500/30 transition flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-microchip"></i> Bác Sĩ AI Tiến Hành Chẩn Đoán
+                        </button>
+                    </div>
+
+                    <!-- Right: Diagnostic Result Screen -->
+                    <div class="lg:col-span-6 bg-slate-50 p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm min-h-[360px] flex flex-col justify-center">
+                        <div id="ai-diag-placeholder" class="text-center py-10 space-y-3">
+                            <div class="w-16 h-16 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-2xl mx-auto shadow-inner">
+                                <i class="fa-solid fa-radar animate-pulse"></i>
+                            </div>
+                            <h4 class="text-sm font-bold text-slate-700">Sẵn Sàng Tiếp Nhận Dữ Liệu</h4>
+                            <p class="text-xs text-slate-400 max-w-sm mx-auto">Vui lòng nhập triệu chứng hoặc chọn nút mẫu bên trái để nhận chẩn đoán bệnh lý chi tiết từ Bác sĩ AI.</p>
+                        </div>
+
+                        <div id="ai-diag-loading" class="hidden text-center py-10 space-y-3">
+                            <div class="w-16 h-16 rounded-full bg-purple-600 text-white flex items-center justify-center text-2xl mx-auto animate-spin">
+                                <i class="fa-solid fa-spinner"></i>
+                            </div>
+                            <h4 class="text-sm font-black text-purple-900">AI Vision Đang Quét Dữ Liệu Nha Khoa...</h4>
+                            <p class="text-xs text-purple-700">Đang đối chiếu triệu chứng với cơ sở dữ liệu bệnh lý...</p>
+                        </div>
+
+                        <div id="ai-diag-result" class="hidden space-y-4">
+                            <!-- Injected by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- 5. BOOKING SECTION -->
         <section id="booking-section" class="py-24 bg-slate-900 text-white relative overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -1525,6 +1714,26 @@ footer { background: #0d3534 !important; }
             <button onclick="switchTab('notifications')" id="tab-notifications" class="tab-btn py-3.5 px-4 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2 relative">
                 <i class="fa-solid fa-bell text-brand-300"></i> Thông Báo
                 <span id="notif-badge" class="bg-rose-500 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full">0</span>
+            </button>
+            <!-- Tab Kho Vật Tư (M2) -->
+            <button onclick="switchTab('inventory')" id="tab-inventory" class="tab-btn py-3.5 px-4 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2">
+                <i class="fa-solid fa-boxes-stacked text-amber-400"></i> <span id="label-tab-inventory">Kho Vật Tư</span>
+            </button>
+            <!-- Tab Đơn B2B (M2) -->
+            <button onclick="switchTab('b2b-orders')" id="tab-b2b-orders" class="tab-btn py-3.5 px-4 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2">
+                <i class="fa-solid fa-truck-ramp-box text-sky-400"></i> <span id="label-tab-b2b-orders">Đơn Hàng B2B</span>
+            </button>
+            <!-- Tab Chấm Công (M2) -->
+            <button onclick="switchTab('attendance')" id="tab-attendance" class="tab-btn py-3.5 px-4 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2">
+                <i class="fa-solid fa-business-time text-emerald-400"></i> <span id="label-tab-attendance">Chấm Công</span>
+            </button>
+            <!-- Tab KPI Bác Sĩ (M2) -->
+            <button onclick="switchTab('doctor-kpi')" id="tab-doctor-kpi" class="tab-btn py-3.5 px-4 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2">
+                <i class="fa-solid fa-award text-yellow-400"></i> <span id="label-tab-doctor-kpi">KPI Bác Sĩ</span>
+            </button>
+            <!-- Tab Field Intake (M2) -->
+            <button onclick="switchTab('field-intake')" id="tab-field-intake" class="tab-btn py-3.5 px-4 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2">
+                <i class="fa-solid fa-clipboard-user text-purple-400"></i> <span id="label-tab-field-intake">Khám Hiện Trường</span>
             </button>
             <!-- Tab IT Team Command Center (Chủ & Admin) -->
             <button onclick="switchTab('itteam')" id="tab-itteam" class="tab-btn py-3.5 px-4 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center gap-2" style="display: none;">
@@ -2078,6 +2287,279 @@ footer { background: #0d3534 !important; }
                 </div>
             </div>
 
+            <!-- SECTION: KHO VẬT TƯ NHA KHOA (M2) -->
+            <div id="section-inventory" class="hidden space-y-6">
+                <div class="bg-slate-800 p-6 rounded-3xl border border-slate-700 space-y-4">
+                    <div class="flex flex-wrap justify-between items-center gap-4">
+                        <div>
+                            <h3 class="text-lg font-black text-white flex items-center gap-2">
+                                <i class="fa-solid fa-boxes-stacked text-amber-400"></i> Quản Lý Tồn Kho Vật Tư &amp; Khí Cụ Nha Khoa
+                            </h3>
+                            <p class="text-xs text-slate-400">Kho trung tâm DentalCare: Trụ Implant, Mắc cài Damon, Thuốc tê, Vật tư tiêu hao</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <select id="filter-inventory-category" onchange="loadInventoryMaterials()" class="bg-slate-900 border border-slate-700 text-xs rounded-xl px-3 py-2 text-white font-bold">
+                                <option value="">Tất Cả Danh Mục</option>
+                                <option value="IMPLANT_POST">Trụ Implant</option>
+                                <option value="BRACKET">Mắc Cài Chỉnh Nha</option>
+                                <option value="CONSUMABLE">Vật Tư Tiêu Hao</option>
+                                <option value="ANESTHETIC">Thuốc Tê</option>
+                                <option value="ORTHO_WIRE">Dây Cung NiTi</option>
+                            </select>
+                            <button onclick="loadInventoryMaterials()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-700 text-amber-400 font-bold rounded-xl text-xs border border-slate-700 transition">
+                                <i class="fa-solid fa-arrows-rotate mr-1"></i> Làm mới
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="bg-slate-900 text-slate-400 uppercase font-bold tracking-wider border-b border-slate-700">
+                                    <th class="py-3 px-4">Mã Vật Tư</th>
+                                    <th class="py-3 px-4">Tên Vật Tư / Khí Cụ</th>
+                                    <th class="py-3 px-4">Danh Mục</th>
+                                    <th class="py-3 px-4">Nhà Sản Xuất</th>
+                                    <th class="py-3 px-4 text-center">ĐVT</th>
+                                    <th class="py-3 px-4 text-right">Tồn Kho</th>
+                                    <th class="py-3 px-4 text-right">Đơn Giá</th>
+                                    <th class="py-3 px-4 text-center">Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-table-body" class="divide-y divide-slate-700 text-slate-200">
+                                <tr><td colspan="8" class="text-center py-6 text-slate-400">Đang tải dữ liệu tồn kho...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: ĐƠN HÀNG VẬT TƯ B2B (M2) -->
+            <div id="section-b2b-orders" class="hidden space-y-6">
+                <div class="bg-slate-800 p-6 rounded-3xl border border-slate-700 space-y-4">
+                    <div class="flex flex-wrap justify-between items-center gap-4">
+                        <div>
+                            <h3 class="text-lg font-black text-white flex items-center gap-2">
+                                <i class="fa-solid fa-truck-ramp-box text-sky-400"></i> Quản Lý Đơn Đặt Vật Tư Đại Lý Cấp 2 &amp; Chi Nhánh Vệ Tinh
+                            </h3>
+                            <p class="text-xs text-slate-400">Quy trình: Đề xuất xuất kho ➔ Ban quản trị duyệt ➔ Tự động trừ kho &amp; hạch toán công nợ</p>
+                        </div>
+                        <button onclick="loadB2BOrders()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-700 text-sky-400 font-bold rounded-xl text-xs border border-slate-700 transition">
+                            <i class="fa-solid fa-arrows-rotate mr-1"></i> Làm mới
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="bg-slate-900 text-slate-400 uppercase font-bold tracking-wider border-b border-slate-700">
+                                    <th class="py-3 px-4">Mã Đơn</th>
+                                    <th class="py-3 px-4">Đại Lý / Phòng Khám Vệ Tinh</th>
+                                    <th class="py-3 px-4">Ngày Đặt</th>
+                                    <th class="py-3 px-4 text-right">Tổng Tiền (VNĐ)</th>
+                                    <th class="py-3 px-4 text-center">Trạng Thái</th>
+                                    <th class="py-3 px-4">Ghi Chú</th>
+                                    <th class="py-3 px-4 text-center">Phê Duyệt</th>
+                                </tr>
+                            </thead>
+                            <tbody id="b2b-orders-table-body" class="divide-y divide-slate-700 text-slate-200">
+                                <tr><td colspan="7" class="text-center py-6 text-slate-400">Đang tải đơn đặt hàng...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: CHẤM CÔNG NHÂN SỰ (M2) -->
+            <div id="section-attendance" class="hidden space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Quick Check-in / Check-out Panel -->
+                    <div class="bg-slate-800 p-6 rounded-3xl border border-slate-700 space-y-4">
+                        <h3 class="text-base font-black text-white flex items-center gap-2">
+                            <i class="fa-solid fa-location-crosshairs text-emerald-400"></i> Chấm Công Đi Làm
+                        </h3>
+                        <p class="text-xs text-slate-400">Xác thực GPS phòng khám (10.760624, 106.587106) và địa chỉ IP mạng nội bộ.</p>
+                        
+                        <div class="p-4 bg-slate-900 rounded-2xl border border-slate-700 space-y-2 text-xs">
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Trạng thái định vị:</span>
+                                <span class="text-emerald-400 font-bold">✓ Tọa độ GPS hợp lệ</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Ca làm việc gán:</span>
+                                <span class="text-white font-bold">Ca Sáng 8h-12h</span>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <button onclick="handleQuickCheckIn(1)" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs shadow-md transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-fingerprint"></i> Check-in Vào
+                            </button>
+                            <button onclick="handleQuickCheckOut(1)" class="flex-1 py-3 bg-rose-600 hover:bg-rose-700 text-white font-black rounded-xl text-xs shadow-md transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-door-open"></i> Check-out Ra
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Attendance Audit Table -->
+                    <div class="lg:col-span-2 bg-slate-800 p-6 rounded-3xl border border-slate-700 space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-base font-black text-white flex items-center gap-2">
+                                <i class="fa-solid fa-business-time text-emerald-400"></i> Nhật Ký Chấm Công Nhân Sự Toàn Phòng
+                            </h3>
+                            <button onclick="loadAttendanceRecords()" class="text-xs font-bold text-emerald-400 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-700">
+                                <i class="fa-solid fa-arrows-rotate mr-1"></i> Làm mới
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead>
+                                    <tr class="bg-slate-900 text-slate-400 uppercase font-bold tracking-wider border-b border-slate-700">
+                                        <th class="py-2.5 px-3">Nhân Viên</th>
+                                        <th class="py-2.5 px-3">Ca Trực</th>
+                                        <th class="py-2.5 px-3">Giờ Vào</th>
+                                        <th class="py-2.5 px-3">Giờ Ra</th>
+                                        <th class="py-2.5 px-3 text-center">GPS</th>
+                                        <th class="py-2.5 px-3 text-center">Trạng Thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attendance-table-body" class="divide-y divide-slate-700 text-slate-200">
+                                    <tr><td colspan="6" class="text-center py-6 text-slate-400">Đang tải nhật ký chấm công...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: KPI & DOANH SỐ BÁC SĨ (M2) -->
+            <div id="section-doctor-kpi" class="hidden space-y-6">
+                <div class="bg-slate-800 p-6 rounded-3xl border border-slate-700 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-lg font-black text-white flex items-center gap-2">
+                                <i class="fa-solid fa-award text-yellow-400"></i> Bảng Đánh Giá Năng Suất &amp; KPI Bác Sĩ Nha Khoa
+                            </h3>
+                            <p class="text-xs text-slate-400">Tổng ca khám, tỷ lệ chuyển đổi cấy Implant &amp; niềng răng, doanh số dịch vụ thực hiện</p>
+                        </div>
+                        <button onclick="loadDoctorKpis()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-700 text-yellow-400 font-bold rounded-xl text-xs border border-slate-700 transition">
+                            <i class="fa-solid fa-arrows-rotate mr-1"></i> Làm mới
+                        </button>
+                    </div>
+
+                    <div id="doctor-kpi-cards" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- KPI cards rendered dynamically -->
+                    </div>
+
+                    <div class="overflow-x-auto mt-4">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="bg-slate-900 text-slate-400 uppercase font-bold tracking-wider border-b border-slate-700">
+                                    <th class="py-3 px-4">Bác Sĩ</th>
+                                    <th class="py-3 px-4 text-center">Ca Khám</th>
+                                    <th class="py-3 px-4 text-center">Niềng Răng</th>
+                                    <th class="py-3 px-4 text-center">Trụ Implant</th>
+                                    <th class="py-3 px-4 text-center">Tổng Quát</th>
+                                    <th class="py-3 px-4 text-right">Doanh Thu Thu Về</th>
+                                    <th class="py-3 px-4 text-center">Tỷ Lệ Chuyển Đổi</th>
+                                    <th class="py-3 px-4 text-center">Điểm KPI</th>
+                                </tr>
+                            </thead>
+                            <tbody id="doctor-kpi-table-body" class="divide-y divide-slate-700 text-slate-200">
+                                <tr><td colspan="8" class="text-center py-6 text-slate-400">Đang tải bảng xếp hạng KPI...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: TIẾP NHẬN BỆNH NHÂN HIỆN TRƯỜNG (M2) -->
+            <div id="section-field-intake" class="hidden space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Form Thu Thập Nhanh Hiện Trường -->
+                    <div class="lg:col-span-4 bg-slate-800 p-6 rounded-3xl border border-slate-700 space-y-4">
+                        <h3 class="text-base font-black text-white flex items-center gap-2">
+                            <i class="fa-solid fa-clipboard-user text-purple-400"></i> Tiếp Nhận Khám Sơ Bộ Tại Sự Kiện
+                        </h3>
+                        <p class="text-xs text-slate-400">Sự kiện nha khoa học đường, khám cộng đồng, hội nghị VIDEC</p>
+
+                        <form id="field-intake-form" onsubmit="handleQuickCreateLead(event)" class="space-y-3 text-xs">
+                            <div>
+                                <label class="block font-bold text-slate-400 mb-1">Tên Sự Kiện / Trường Học</label>
+                                <input type="text" id="intake-event-name" required value="Chương Trình Nụ Cười Học Đường 2026 - THCS Lê Quý Đôn"
+                                       class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-400 mb-1">Họ Tên Học Sinh / Bệnh Nhân *</label>
+                                <input type="text" id="intake-patient-name" required placeholder="VD: Trần Minh Quân"
+                                       class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block font-bold text-slate-400 mb-1">Số Điện Thoại *</label>
+                                    <input type="tel" id="intake-phone" required placeholder="0908112233"
+                                           class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-400 mb-1">Lớp / Đơn Vị</label>
+                                    <input type="text" id="intake-class" placeholder="7A2"
+                                           class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-400 mb-1">Kết Quả Khám Sơ Bộ</label>
+                                <input type="text" id="intake-findings" placeholder="VD: Sâu răng hàm số 46, khớp cắn hở nhẹ"
+                                       class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-400 mb-1">Khuyến Nghị &amp; Voucher</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <input type="text" id="intake-recommendation" placeholder="Hàn răng sâu sớm"
+                                           class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                                    <input type="text" id="intake-voucher" value="HOCDUONG100K"
+                                           class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-black rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-floppy-disk"></i> Lưu Hồ Sơ Tiếp Nhận
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Lead Records List -->
+                    <div class="lg:col-span-8 bg-slate-800 p-6 rounded-3xl border border-slate-700 space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-base font-black text-white flex items-center gap-2">
+                                <i class="fa-solid fa-users-viewfinder text-purple-400"></i> Danh Sách Hồ Sơ Khách Hàng Tiềm Năng Hiện Trường
+                            </h3>
+                            <button onclick="loadFieldIntakeLeads()" class="text-xs font-bold text-purple-400 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-700">
+                                <i class="fa-solid fa-arrows-rotate mr-1"></i> Làm mới
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead>
+                                    <tr class="bg-slate-900 text-slate-400 uppercase font-bold tracking-wider border-b border-slate-700">
+                                        <th class="py-2.5 px-3">Mã Hồ Sơ</th>
+                                        <th class="py-2.5 px-3">Bệnh Nhân</th>
+                                        <th class="py-2.5 px-3">SĐT</th>
+                                        <th class="py-2.5 px-3">Sự Kiện</th>
+                                        <th class="py-2.5 px-3">Kết Quả Sơ Bộ</th>
+                                        <th class="py-2.5 px-3 text-center">Voucher</th>
+                                        <th class="py-2.5 px-3 text-center">Trạng Thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="field-intake-table-body" class="divide-y divide-slate-700 text-slate-200">
+                                    <tr><td colspan="7" class="text-center py-6 text-slate-400">Đang tải hồ sơ hiện trường...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -2605,6 +3087,175 @@ footer { background: #0d3534 !important; }
         </div>
     </div>
 
+    <!-- MODAL CHỌN QUY CÁCH ĐÓNG GÓI SẢN PHẨM (HỘP / COMBO) -->
+    <div id="product-packaging-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-200">
+            <div class="bg-slate-950 text-white p-5 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                    <div>
+                        <span id="pack-modal-brand" class="text-[10px] text-emerald-400 font-extrabold uppercase">Thương Hiệu</span>
+                        <h3 id="pack-modal-title" class="text-sm font-black line-clamp-1">Tên Sản Phẩm</h3>
+                    </div>
+                </div>
+                <button type="button" onclick="closeProductPackagingModal()" class="text-slate-400 hover:text-white text-lg p-1.5 cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4 overflow-y-auto">
+                <div class="text-xs text-slate-500" id="pack-modal-desc">Mô tả sản phẩm</div>
+                
+                <div class="space-y-2">
+                    <label class="block text-xs font-black text-slate-900 uppercase tracking-wider">
+                        Chọn Quy Cách Đóng Gói:
+                    </label>
+                    <div id="pack-options-list" class="space-y-2">
+                        <!-- Injected by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-black text-slate-900 uppercase tracking-wider">
+                        Số Lượng:
+                    </label>
+                    <div class="flex items-center gap-3">
+                        <button type="button" onclick="adjustModalQty(-1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-black cursor-pointer">-</button>
+                        <span id="pack-modal-qty" class="text-sm font-black text-slate-900 w-8 text-center">1</span>
+                        <button type="button" onclick="adjustModalQty(1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-black cursor-pointer">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                <div>
+                    <div class="text-[10px] text-slate-500">Tạm tính:</div>
+                    <div id="pack-modal-total" class="text-sm font-black text-emerald-700">0 đ</div>
+                </div>
+                <button type="button" onclick="confirmAddToCart()" class="py-2.5 px-5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow-md transition flex items-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-cart-plus"></i> Thêm Vào Giỏ Hàng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL GIỎ HÀNG & CHECKOUT 1-CLICK -->
+    <div id="cart-drawer-modal" class="hidden fixed inset-0 z-50 flex items-center justify-end bg-slate-950/80 backdrop-blur-md">
+        <div class="bg-white w-full max-w-md h-full flex flex-col shadow-2xl overflow-hidden border-l border-slate-200">
+            <div class="bg-slate-950 text-white p-5 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-black">Giỏ Hàng Nha Khoa</h3>
+                        <span id="cart-items-count-text" class="text-[10px] text-emerald-400 font-bold">0 sản phẩm</span>
+                    </div>
+                </div>
+                <button type="button" onclick="closeCartModal()" class="text-slate-400 hover:text-white text-lg p-1.5 cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Cart Items List -->
+            <div id="cart-items-container" class="flex-1 p-5 overflow-y-auto space-y-3 divide-y divide-slate-100">
+                <!-- Injected by JavaScript -->
+            </div>
+
+            <!-- Checkout Form & Totals -->
+            <div class="p-5 bg-slate-50 border-t border-slate-200 space-y-3.5">
+                <div class="space-y-1.5 text-xs">
+                    <div class="flex justify-between text-slate-600">
+                        <span>Tổng tiền hàng:</span>
+                        <span id="cart-subtotal-price" class="font-bold text-slate-900">0 đ</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600">
+                        <span>Phí vận chuyển toàn quốc:</span>
+                        <span class="font-bold text-emerald-600">Miễn Phí (0đ)</span>
+                    </div>
+                    <div class="flex justify-between text-xs sm:text-sm font-black text-slate-900 border-t border-slate-200 pt-2">
+                        <span>Tổng thanh toán:</span>
+                        <span id="cart-total-price" class="text-emerald-700 font-black">0 đ</span>
+                    </div>
+                    <div class="text-[10px] text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200 flex items-center gap-1.5">
+                        <i class="fa-solid fa-coins text-amber-500"></i>
+                        <span>Đơn hàng này sẽ tích lũy <b id="cart-loyalty-pts">0</b> điểm thưởng DentalCare Loyalty!</span>
+                    </div>
+                </div>
+
+                <!-- Customer Details for Order -->
+                <div class="space-y-2 pt-2 border-t border-slate-200 text-xs">
+                    <input id="order-customer-name" type="text" placeholder="Họ và tên người nhận *" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold focus:border-emerald-600 outline-none">
+                    <input id="order-customer-phone" type="tel" placeholder="Số điện thoại nhận hàng *" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold focus:border-emerald-600 outline-none">
+                    <input id="order-customer-address" type="text" placeholder="Địa chỉ giao hàng chi tiết *" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold focus:border-emerald-600 outline-none">
+                    <select id="order-payment-method" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 focus:border-emerald-600 outline-none">
+                        <option value="COD" selected>Thanh toán khi nhận hàng (COD)</option>
+                        <option value="VNPAY_SANDBOX">Cổng thanh toán QR VNPay Sandbox</option>
+                        <option value="BANK_TRANSFER">Chuyển khoản ngân hàng trực tiếp</option>
+                    </select>
+                </div>
+
+                <button type="button" onclick="submitDentalOrder()" id="btn-submit-order" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-xs font-black shadow-lg shadow-emerald-500/25 transition flex items-center justify-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-bag-shopping"></i> Đặt Hàng Ngay (1-Click)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TẠO BÀI VIẾT DIỄN ĐÀN CỘNG ĐỒNG -->
+    <div id="forum-post-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-200">
+            <div class="bg-slate-950 text-white p-5 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-amber-600 text-white flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-comments"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-black">Chia Sẻ / Hỏi Đáp Cộng Đồng</h3>
+                        <span class="text-[10px] text-amber-400 font-bold">Cộng đồng nha khoa DentalCare</span>
+                    </div>
+                </div>
+                <button type="button" onclick="closeForumPostModal()" class="text-slate-400 hover:text-white text-lg p-1.5 cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-3.5 overflow-y-auto text-xs">
+                <div>
+                    <label class="block font-bold text-slate-800 mb-1">Chủ đề thảo luận</label>
+                    <select id="forum-new-category" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg font-semibold text-slate-700 focus:border-amber-600 outline-none">
+                        <option value="EXPERIENCE" selected>Kinh Nghiệm Điều Trị (Niềng răng, bọc sứ, implant)</option>
+                        <option value="RECOVERY_TIPS">Mẹo Chăm Sóc Hồi Phục Sau Tiểu Phẫu</option>
+                        <option value="DENTAL_QA">Hỏi Đáp Cùng Bác Sĩ Chuyên Khoa</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-800 mb-1">Họ và tên của bạn</label>
+                    <input id="forum-new-author" type="text" placeholder="Nguyễn Văn A" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg font-semibold focus:border-amber-600 outline-none">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-800 mb-1">Số điện thoại (bảo mật không hiển thị)</label>
+                    <input id="forum-new-phone" type="tel" placeholder="0988xxxxxx" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg font-semibold focus:border-amber-600 outline-none">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-800 mb-1">Tiêu đề bài viết *</label>
+                    <input id="forum-new-title" type="text" placeholder="VD: Kinh nghiệm niềng răng trong suốt Invisalign tháng thứ 3..." class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg font-semibold focus:border-amber-600 outline-none">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-800 mb-1">Nội dung chi tiết *</label>
+                    <textarea id="forum-new-content" rows="4" placeholder="Chia sẻ cảm nhận, câu hỏi hoặc hình ảnh kết quả của bạn..." class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg font-medium focus:border-amber-600 outline-none"></textarea>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2.5">
+                <button type="button" onclick="closeForumPostModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer">
+                    Hủy
+                </button>
+                <button type="button" onclick="submitForumPost()" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-black shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-paper-plane"></i> Gửi Bài Viết
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- FLOATING CONTACT WIDGET (SLEEK EXPANDABLE DOCK - ZERO CONTENT BLOCKING) -->
     <div id="floating-contact-widget" class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 pointer-events-auto select-none transition-all duration-300">
         <!-- 1. Đặt Lịch Nhanh -->
@@ -2646,45 +3297,64 @@ footer { background: #0d3534 !important; }
     </div>
 
     
-        <!-- GOOGLE MAPS LOCATION SECTION -->
-        <section id="location-map" class="py-12 bg-slate-900 border-t border-slate-800 text-white">
+        <!-- MULTI-BRANCH CLINIC DIRECTORY & MAP -->
+        <section id="branches-section" class="py-20 bg-slate-900 text-white border-t border-slate-800">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                    <div class="lg:col-span-5 space-y-4">
-                        <div class="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full text-xs font-bold">
-                            <i class="fa-solid fa-map-pin"></i> Vị Trí Phòng Khám Trên Google Maps
-                        </div>
-                        <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                            Chỉ Đường Đến Nha Khoa DentalCare
+                <div class="text-center max-w-3xl mx-auto space-y-3 mb-12">
+                    <span class="text-xs font-extrabold uppercase tracking-widest text-teal-400 bg-teal-950 px-3.5 py-1 rounded-full border border-teal-800">
+                        <i class="fa-solid fa-map-location-dot mr-1"></i> Mạng Lưới Toàn Quốc
+                    </span>
+                    <h2 class="text-3xl font-black text-white tracking-tight">
+                        Hệ Thống Phòng Khám Nha Khoa DentalCare Luxury
+                    </h2>
+                    <p class="text-slate-400 text-xs sm:text-sm">
+                        Trang thiết bị hiện đại đồng bộ tại TP. Hồ Chí Minh và Hà Nội. Tích hợp định vị GPS thông minh tìm cơ sở gần nhất và mở chỉ đường Google Maps 1-chạm.
+                    </p>
+                    <div class="pt-2">
+                        <button type="button" onclick="locateNearestBranch()" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-black rounded-xl shadow-lg shadow-emerald-500/20 transition cursor-pointer">
+                            <i class="fa-solid fa-crosshairs"></i> Định Vị Chi Nhánh Gần Tôi Nhất (GPS)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Branches Directory Grid -->
+                <div id="branches-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Injected by JavaScript from /api/branches -->
+                </div>
+            </div>
+        </section>
+
+        <!-- DENTAL COMMUNITY FORUM -->
+        <section id="community-forum-section" class="py-20 bg-slate-50 border-t border-slate-200/80">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+                    <div>
+                        <span class="text-xs font-extrabold uppercase tracking-widest text-amber-800 bg-amber-100 px-3.5 py-1 rounded-full border border-amber-200">
+                            <i class="fa-solid fa-users mr-1"></i> Cộng Đồng Bệnh Nhân
+                        </span>
+                        <h2 class="text-3xl font-black text-slate-900 tracking-tight mt-2">
+                            Diễn Đàn Chia Sẻ &amp; Hỏi Đáp Nha Khoa
                         </h2>
-                        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
-                            Phòng khám tọa lạc tại vị trí thuận tiện giao thông, có bãi đỗ ô tô và xe máy rộng rãi miễn phí cho khách hàng.
+                        <p class="text-slate-500 text-xs sm:text-sm mt-1">
+                            Giao lưu kinh nghiệm niềng răng, mẹo hồi phục sau tiểu phẫu và nhận phản hồi từ đội ngũ y bác sĩ.
                         </p>
-                        <div class="space-y-2.5 text-xs text-slate-300">
-                            <div class="flex items-start gap-2.5">
-                                <i class="fa-solid fa-location-dot text-rose-500 text-base mt-0.5 shrink-0"></i>
-                                <div>
-                                    <b class="text-white">Địa chỉ:</b> 36/9/12/7 Nguyễn Triệu Luật, Khu Phố 3, Phường Bình Tân, TP. Hồ Chí Minh
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2.5">
-                                <i class="fa-solid fa-clock text-emerald-400 text-base shrink-0"></i>
-                                <div><b class="text-white">Giờ làm việc:</b> 08:00 - 20:00 (Thứ 2 - Chủ Nhật)</div>
-                            </div>
-                            <div class="flex items-center gap-2.5">
-                                <i class="fa-solid fa-phone text-sky-400 text-base shrink-0"></i>
-                                <div><b class="text-white">Hotline tư vấn:</b> 0977 224 504</div>
-                            </div>
-                        </div>
-                        <div class="pt-2">
-                            <a href="https://www.google.com/maps?q=10.760624,106.587106" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-lg transition">
-                                <i class="fa-solid fa-diamond-turn-right"></i> Mở Ứng Dụng Google Maps Chỉ Đường
-                            </a>
-                        </div>
                     </div>
-                    <div class="lg:col-span-7 h-72 sm:h-80 rounded-2xl overflow-hidden shadow-2xl border border-slate-700">
-                        <iframe src="https://maps.google.com/maps?q=10.760624,106.587106&t=&z=16&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Bản đồ chỉ đường Nha Khoa DentalCare Luxury"></iframe>
-                    </div>
+                    <button type="button" onclick="openNewForumPostModal()" class="self-start md:self-auto px-5 py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white text-xs font-black rounded-xl shadow-md transition flex items-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-pen-to-square"></i> Đăng Câu Hỏi / Chia Sẻ Mới
+                    </button>
+                </div>
+
+                <!-- Forum Category Tabs -->
+                <div class="flex flex-wrap gap-2 mb-8" id="forum-tabs">
+                    <button type="button" onclick="filterForumPosts('ALL')" class="forum-tab-btn active text-xs px-3.5 py-2 rounded-xl font-bold bg-amber-600 text-white shadow-sm transition cursor-pointer">Tất Cả Thảo Luận</button>
+                    <button type="button" onclick="filterForumPosts('EXPERIENCE')" class="forum-tab-btn text-xs px-3.5 py-2 rounded-xl font-bold bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 transition cursor-pointer">Kinh Nghiệm Điều Trị</button>
+                    <button type="button" onclick="filterForumPosts('RECOVERY_TIPS')" class="forum-tab-btn text-xs px-3.5 py-2 rounded-xl font-bold bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 transition cursor-pointer">Mẹo Chăm Sóc Hồi Phục</button>
+                    <button type="button" onclick="filterForumPosts('DENTAL_QA')" class="forum-tab-btn text-xs px-3.5 py-2 rounded-xl font-bold bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 transition cursor-pointer">Hỏi Đáp Bác Sĩ</button>
+                </div>
+
+                <!-- Forum Posts List -->
+                <div id="forum-posts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Injected by JavaScript from /api/forum/posts -->
                 </div>
             </div>
         </section>
@@ -2742,6 +3412,8 @@ footer { background: #0d3534 !important; }
         <!-- Deferred Non-Critical Scripts -->
     <script defer src="js/app.js"></script>
     <script defer src="js/it-team.js"></script>
+    <!-- Agrid User Behavior Analytics Tracking SDK (0ms initial render latency) -->
+    <script defer src="js/agrid-sdk.js"></script>
     <!-- Google Analytics 4 (GA4) Tracker (Deferred for 0ms initial render impact) -->
     <script defer src="https://www.googletagmanager.com/gtag/js?id=G-DENTALCARE2026"></script>
     <script>

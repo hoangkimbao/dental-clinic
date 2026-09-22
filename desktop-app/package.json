@@ -1,0 +1,44 @@
+{
+  "name": "dentalcare-desktop-app",
+  "version": "1.0.0",
+  "description": "DentalCare Luxury Clinic Enterprise PC Command Center, CMS & Notification Hub",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac"
+  },
+  "keywords": [
+    "dentalcare",
+    "clinic-cms",
+    "electron",
+    "notification-hub",
+    "enterprise-desktop"
+  ],
+  "author": "DentalCare Clinic Team",
+  "license": "PROPRIETARY",
+  "dependencies": {
+    "electron-store": "^8.2.0"
+  },
+  "devDependencies": {
+    "electron": "^29.1.5",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "vn.id.nhakhoadentalcare.desktop",
+    "productName": "DentalCare Command Center",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.medical"
+    }
+  }
+}

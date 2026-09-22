@@ -95,6 +95,25 @@ public class SecurityConfig {
                 // IT Team Command Center APIs strictly require ROLE_ADMIN or ROLE_OWNER
                 .requestMatchers("/api/it-team/**").hasAnyRole("ADMIN", "OWNER")
 
+                // Analytics Tracking: public non-blocking event ingestion, admin/owner summary
+                .requestMatchers(HttpMethod.POST, "/api/analytics/events").permitAll()
+                .requestMatchers("/api/analytics/summary").hasAnyRole("ADMIN", "OWNER")
+
+                // Milestone 1: Customer Dental Ecosystem Public Endpoints
+                .requestMatchers(HttpMethod.GET, "/api/dental-services/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/dental-products/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/dental-orders").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/dental-orders/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/warranties/**").permitAll()
+                .requestMatchers("/api/loyalty/**").permitAll()
+                .requestMatchers("/api/dental-ai/**").permitAll()
+                .requestMatchers("/api/forum/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/branches/**").permitAll()
+
+                // Milestone 3: PC Desktop App CMS & Multi-Table Excel Export
+                .requestMatchers("/api/cms/**").permitAll()
+                .requestMatchers("/api/export/**").permitAll()
+
                 // All other /api/** endpoints require JWT Authentication (Dashboard, Staff, EMR, Create Coupons)
                 .requestMatchers("/api/**").authenticated()
                 .anyRequest().permitAll()

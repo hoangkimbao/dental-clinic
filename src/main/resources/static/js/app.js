@@ -35,11 +35,15 @@ let isPortalOpen = false;
 let revenueChart = null;
 let servicePieChart = null;
 
-// ================= GOOGLE ANALYTICS 4 EVENT TRACKER =================
+// ================= GOOGLE ANALYTICS 4 & AGRID EVENT TRACKER =================
 function trackGaEvent(eventName, params = {}) {
     if (typeof gtag === 'function') {
         gtag('event', eventName, params);
         console.log(`📊 [Google Analytics] Event tracked: ${eventName}`, params);
+    }
+    if (window.Agrid && typeof window.Agrid.track === 'function') {
+        const type = (eventName && eventName.includes('funnel')) ? 'BOOKING_FUNNEL' : 'CLICK';
+        window.Agrid.track(type, eventName, params);
     }
 }
 
@@ -113,6 +117,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // WebSocket is now loaded on-demand for staff only
     startFlashSaleCountdown();
     loadDentistsDropdown();
+    initCart();
+    loadDentalServices();
+    loadDentalProducts();
+    loadBranches();
+    loadForumPosts();
 });
 
 // ================= UNIVERSAL AUTH MODAL (LOGIN / REGISTER) =================
@@ -385,6 +394,8 @@ function renderDynamicRoleView() {
         tabItTeam.style.display = ['ROLE_OWNER', 'ROLE_ADMIN'].includes(role) ? 'flex' : 'none';
     }
 
+    const staffM2Tabs = ['tab-inventory', 'tab-b2b-orders', 'tab-attendance', 'tab-doctor-kpi', 'tab-field-intake'];
+
     // 0. IT ADMIN / QUẢN TRỊ VIÊN (ROLE_ADMIN) -> TRUY CẬP ĐẶC VỤ IT VÀ QUẢN TRỊ TOÀN DIỆN
     if (role === 'ROLE_ADMIN') {
         portalTitle.innerHTML = `<i class="fa-solid fa-terminal text-teal-400"></i> IT Command Center &amp; Quản Trị Hệ Thống`;
@@ -408,17 +419,27 @@ function renderDynamicRoleView() {
         const revCard = document.getElementById('card-revenue');
         if (revCard) revCard.style.display = 'flex';
 
+        staffM2Tabs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'flex';
+        });
+
         switchTab('itteam');
         return;
     }
 
-    // 1. KHÁCH HÀNG / BỆNH NHÂN (ROLE_PATIENT) -> 100% KHÔNG THẤY DASHBOARD
+    // 1. KHÁCH HÀNG / BỆNH NHÂN (ROLE_PATIENT) -> 100% KHÔNG THẤY DASHBOARD & STAFF TABS
     if (role === 'ROLE_PATIENT') {
         portalTitle.innerHTML = `<i class="fa-solid fa-user text-brand-400"></i> Cổng Chăm Sóc Khách Hàng`;
         if (tabDashboard) tabDashboard.style.display = 'none';
         if (tabShifts) tabShifts.style.display = 'none';
         const tabCoupons = document.getElementById('tab-coupons'); if (tabCoupons) tabCoupons.style.display = 'none';
         if (staffAdminBar) staffAdminBar.classList.add('hidden');
+
+        staffM2Tabs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
 
         if (tabAppointments) {
             tabAppointments.style.display = 'flex';
@@ -430,7 +451,7 @@ function renderDynamicRoleView() {
         }
         switchTab('appointments');
     } 
-    // 2. CHỦ PHÒNG & LỄ TÂN (ROLE_OWNER, ROLE_RECEPTIONIST) -> MỞ DASHBOARD & QUẢN LÝ ƯU ĐÃI
+    // 2. CHỦ PHÒNG & LỄ TÂN (ROLE_OWNER, ROLE_RECEPTIONIST) -> MỞ DASHBOARD & QUẢN LÝ ƯU ĐÃI & STAFF TABS
     else if (['ROLE_OWNER', 'ROLE_RECEPTIONIST'].includes(role)) {
         portalTitle.innerHTML = `<i class="fa-solid fa-gauge-high text-brand-400"></i> Khu Quản Trị &amp; Điều Phối`;
         if (tabDashboard) tabDashboard.style.display = 'flex';
@@ -454,6 +475,11 @@ function renderDynamicRoleView() {
         const revCard = document.getElementById('card-revenue');
         if (revCard) revCard.style.display = (role === 'ROLE_OWNER') ? 'flex' : 'none';
 
+        staffM2Tabs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'flex';
+        });
+
         switchTab('dashboard');
     }
     // 3. NHA SĨ (ROLE_DENTIST) -> KHÔNG VÀO DASHBOARD
@@ -472,6 +498,14 @@ function renderDynamicRoleView() {
             tabEMR.style.display = 'flex';
             labelEMR.innerText = 'Hồ Sơ Bệnh Án EMR Điều Trị';
         }
+
+        ['tab-inventory', 'tab-attendance', 'tab-doctor-kpi', 'tab-field-intake'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'flex';
+        });
+        const b2bTab = document.getElementById('tab-b2b-orders');
+        if (b2bTab) b2bTab.style.display = 'none';
+
         switchTab('appointments');
     }
     // 4. PHỤ TÁ & TẠP VỤ -> KHÔNG VÀO DASHBOARD
@@ -486,13 +520,21 @@ function renderDynamicRoleView() {
             tabShifts.style.display = 'flex';
             labelShifts.innerText = 'Ca Trực Phân Công';
         }
+
+        const atnTab = document.getElementById('tab-attendance');
+        if (atnTab) atnTab.style.display = 'flex';
+        ['tab-inventory', 'tab-b2b-orders', 'tab-doctor-kpi', 'tab-field-intake'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        });
+
         switchTab('shifts');
     }
 }
 
 // Switch Tabs
 function switchTab(tabId) {
-    const tabs = ['dashboard', 'appointments', 'coupons', 'emr', 'shifts', 'notifications', 'itteam'];
+    const tabs = ['dashboard', 'appointments', 'coupons', 'emr', 'shifts', 'notifications', 'itteam', 'inventory', 'b2b-orders', 'attendance', 'doctor-kpi', 'field-intake'];
     tabs.forEach(t => {
         const sec = document.getElementById(`section-${t}`);
         const btn = document.getElementById(`tab-${t}`);
@@ -515,6 +557,11 @@ function switchTab(tabId) {
     if (tabId === 'coupons') loadDashboardCoupons();
     if (tabId === 'notifications') loadNotifications();
     if (tabId === 'itteam' && typeof initItTeamCommandCenter === 'function') initItTeamCommandCenter();
+    if (tabId === 'inventory') loadInventoryMaterials();
+    if (tabId === 'b2b-orders') loadB2BOrders();
+    if (tabId === 'attendance') loadAttendanceRecords();
+    if (tabId === 'doctor-kpi') loadDoctorKpis();
+    if (tabId === 'field-intake') loadFieldIntakeLeads();
 }
 
 // ================= CHART.JS ANALYTICS INITIALIZER =================
@@ -1799,3 +1846,1462 @@ function init3DAnimations() {
         }
     }
 }
+
+// =========================================================================
+// MILESTONE 1: CUSTOMER DENTAL ECOSYSTEM (CATALOG, SHOP, WARRANTY, AI, BRANCHES, FORUM)
+// =========================================================================
+
+let cachedServices = [];
+let cachedProducts = [];
+let cachedBranches = [];
+let cachedForumPosts = [];
+let currentProductForModal = null;
+let selectedPackagingOption = null;
+let modalPackagingQty = 1;
+let cartItems = [];
+
+// Helper: Currency Formatter
+function formatVND(amount) {
+    if (amount === undefined || amount === null) return '0 đ';
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+}
+
+// -------------------------------------------------------------------------
+// 1. DYNAMIC DENTAL SERVICE CATALOG
+// -------------------------------------------------------------------------
+async function loadDentalServices(category = 'ALL') {
+    const grid = document.getElementById('dynamic-services-grid');
+    if (!grid) return;
+    
+    try {
+        let url = '/api/dental-services';
+        if (category && category !== 'ALL') {
+            url += `?category=${encodeURIComponent(category)}`;
+        }
+        const res = await apiFetch(url);
+        if (res.ok && res.data.success) {
+            cachedServices = res.data.data || [];
+            renderDentalServices(cachedServices);
+        }
+    } catch (err) {
+        console.error('Error loading dental services:', err);
+    }
+}
+
+function renderDentalServices(services) {
+    const grid = document.getElementById('dynamic-services-grid');
+    if (!grid) return;
+
+    if (!services || services.length === 0) {
+        grid.innerHTML = `
+            <div class="col-span-full text-center py-12 text-slate-400 text-xs">
+                <i class="fa-solid fa-folder-open text-3xl mb-2 text-slate-300"></i>
+                <p>Chưa tìm thấy dịch vụ trong chuyên mục này.</p>
+            </div>`;
+        return;
+    }
+
+    const categoryIcons = {
+        'ORTHODONTICS': 'fa-teeth-open',
+        'IMPLANT': 'fa-tooth',
+        'PORCELAIN_CROWNS': 'fa-wand-magic-sparkles',
+        'WHITENING': 'fa-sparkles',
+        'WISDOM_TEETH': 'fa-bone',
+        'GENERAL': 'fa-shield-halved'
+    };
+
+    grid.innerHTML = services.map(svc => {
+        const icon = categoryIcons[svc.category] || 'fa-tooth';
+        return `
+            <div class="card-3d-tilt bg-white p-6 rounded-3xl border border-slate-200/90 hover:border-brand-500 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-brand-50 text-brand-700 flex items-center justify-center text-xl group-hover:scale-110 group-hover:bg-brand-600 group-hover:text-white transition-all shadow-sm">
+                            <i class="fa-solid ${icon}"></i>
+                        </div>
+                        ${svc.isFeatured ? `
+                            <span class="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider bg-rose-50 text-rose-600 border border-rose-200 px-2.5 py-0.5 rounded-full">
+                                <i class="fa-solid fa-fire text-rose-500"></i> Nổi Bật
+                            </span>` : ''}
+                    </div>
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-600 font-mono">${svc.code || ''}</span>
+                    <h3 class="text-base font-extrabold text-slate-900 group-hover:text-brand-700 transition line-clamp-1 mb-2">
+                        ${svc.name}
+                    </h3>
+                    <p class="text-xs text-slate-500 leading-relaxed line-clamp-3 mb-4">
+                        ${svc.description || 'Dịch vụ nha khoa chuẩn quốc tế thực hiện bởi Bác sĩ Chuyên khoa II.'}
+                    </p>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                    <div>
+                        <div class="text-[10px] text-slate-600 font-semibold flex items-center gap-1">
+                            <i class="fa-regular fa-clock"></i> ${svc.durationMinutes || 45} phút
+                        </div>
+                        <div class="text-sm font-black text-brand-700">
+                            ${formatVND(svc.price)}
+                        </div>
+                    </div>
+                    <button type="button" onclick="selectServiceForBooking('${svc.name.replace(/'/g, "\\'")}')" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                        <span>Đặt Lịch</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
+                </div>
+            </div>`;
+    }).join('');
+}
+
+function filterServices(category, btnElement) {
+    document.querySelectorAll('#service-catalog-tabs .service-tab-btn').forEach(btn => {
+        btn.classList.remove('bg-brand-600', 'text-white', 'shadow-sm');
+        btn.classList.add('bg-slate-100', 'text-slate-700');
+    });
+    if (btnElement) {
+        btnElement.classList.remove('bg-slate-100', 'text-slate-700');
+        btnElement.classList.add('bg-brand-600', 'text-white', 'shadow-sm');
+    } else {
+        // Fallback selector by onclick
+        const targetBtn = Array.from(document.querySelectorAll('#service-catalog-tabs .service-tab-btn'))
+            .find(b => b.getAttribute('onclick') && b.getAttribute('onclick').includes(category));
+        if (targetBtn) {
+            targetBtn.classList.remove('bg-slate-100', 'text-slate-700');
+            targetBtn.classList.add('bg-brand-600', 'text-white', 'shadow-sm');
+        }
+    }
+    loadDentalServices(category);
+}
+
+function selectServiceForBooking(serviceName) {
+    const bookingSection = document.getElementById('booking-section');
+    const serviceSelect = document.getElementById('serviceName');
+    if (serviceSelect) {
+        let matched = false;
+        for (let i = 0; i < serviceSelect.options.length; i++) {
+            if (serviceSelect.options[i].value === serviceName || serviceSelect.options[i].text.includes(serviceName)) {
+                serviceSelect.selectedIndex = i;
+                matched = true;
+                break;
+            }
+        }
+        if (!matched) {
+            const opt = new Option(serviceName, serviceName, true, true);
+            serviceSelect.add(opt);
+        }
+    }
+    if (bookingSection) {
+        bookingSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    showToast(`✓ Đã chọn dịch vụ: ${serviceName}`);
+}
+
+// -------------------------------------------------------------------------
+// 2. DENTAL CARE SHOPPING & CART WITH PACKAGING DISCOUNTS
+// -------------------------------------------------------------------------
+function initCart() {
+    try {
+        const saved = localStorage.getItem('DENTAL_CART');
+        cartItems = saved ? JSON.parse(saved) : [];
+        updateCartBadge();
+    } catch (e) {
+        cartItems = [];
+    }
+}
+
+function updateCartBadge() {
+    const badge = document.getElementById('cart-badge-count');
+    const totalQty = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
+    if (badge) {
+        badge.innerText = totalQty;
+        badge.classList.toggle('hidden', totalQty === 0);
+    }
+}
+
+async function loadDentalProducts(category = 'ALL') {
+    const grid = document.getElementById('dental-products-grid');
+    if (!grid) return;
+
+    try {
+        let url = '/api/dental-products';
+        if (category && category !== 'ALL') {
+            url += `?category=${encodeURIComponent(category)}`;
+        }
+        const res = await apiFetch(url);
+        if (res.ok && res.data.success) {
+            cachedProducts = res.data.data || [];
+            renderDentalProducts(cachedProducts);
+        }
+    } catch (err) {
+        console.error('Error loading dental products:', err);
+    }
+}
+
+function renderDentalProducts(products) {
+    const grid = document.getElementById('dental-products-grid');
+    if (!grid) return;
+
+    if (!products || products.length === 0) {
+        grid.innerHTML = `
+            <div class="col-span-full text-center py-12 text-slate-400 text-xs">
+                <i class="fa-solid fa-box-open text-3xl mb-2 text-slate-300"></i>
+                <p>Chưa có sản phẩm trong danh mục này.</p>
+            </div>`;
+        return;
+    }
+
+    grid.innerHTML = products.map(prod => {
+        const packagingCount = (prod.packagingOptions || []).length;
+        const comboOption = (prod.packagingOptions || []).find(p => p.packagingType === 'COMBO_PACK');
+        const comboDiscount = comboOption ? comboOption.discountPercent : 0;
+
+        return `
+            <div class="card-3d-tilt bg-white rounded-3xl border border-slate-200/90 overflow-hidden hover:border-emerald-500 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+                <div class="relative h-48 bg-slate-100 overflow-hidden">
+                    <img loading="lazy" src="${prod.imageUrl || 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&auto=format&fit=crop&q=80'}" 
+                         alt="${prod.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    <span class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-xs text-white text-[10px] font-black uppercase px-2.5 py-1 rounded-lg">
+                        ${prod.brand || 'DentalCare'}
+                    </span>
+                    ${comboDiscount > 0 ? `
+                        <span class="absolute top-3 right-3 bg-rose-600 text-white text-[10px] font-black uppercase px-2.5 py-1 rounded-full shadow-md">
+                            Combo -${comboDiscount}%
+                        </span>` : ''}
+                </div>
+
+                <div class="p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-1 text-amber-500 text-xs mb-1">
+                            <i class="fa-solid fa-star"></i>
+                            <span class="font-bold text-slate-700">${prod.rating || 5.0}</span>
+                            <span class="text-slate-600 text-[10px]">(${prod.reviewsCount || 48} đánh giá)</span>
+                        </div>
+                        <h3 class="font-extrabold text-slate-900 text-sm group-hover:text-emerald-700 transition line-clamp-2 mb-1.5">
+                            ${prod.name}
+                        </h3>
+                        <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed mb-4">
+                            ${prod.description || ''}
+                        </p>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <div>
+                            <span class="text-[10px] text-slate-600 font-medium">Giá tiêu chuẩn</span>
+                            <div class="text-base font-black text-emerald-700">
+                                ${formatVND(prod.basePrice)}
+                            </div>
+                        </div>
+                        <button type="button" onclick="openProductPackagingModal(${prod.id})" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-cart-plus"></i>
+                            <span>Chọn Mua</span>
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+    }).join('');
+}
+
+function filterProducts(category, btnElement) {
+    document.querySelectorAll('#product-shop-tabs .prod-tab-btn').forEach(btn => {
+        btn.classList.remove('bg-emerald-600', 'text-white', 'shadow-sm');
+        btn.classList.add('bg-white', 'text-slate-700');
+    });
+    if (btnElement) {
+        btnElement.classList.remove('bg-white', 'text-slate-700');
+        btnElement.classList.add('bg-emerald-600', 'text-white', 'shadow-sm');
+    } else {
+        const targetBtn = Array.from(document.querySelectorAll('#product-shop-tabs .prod-tab-btn'))
+            .find(b => b.getAttribute('onclick') && b.getAttribute('onclick').includes(category));
+        if (targetBtn) {
+            targetBtn.classList.remove('bg-white', 'text-slate-700');
+            targetBtn.classList.add('bg-emerald-600', 'text-white', 'shadow-sm');
+        }
+    }
+    loadDentalProducts(category);
+}
+
+// Packaging Options Modal
+function openProductPackagingModal(productId) {
+    const product = cachedProducts.find(p => p.id === productId);
+    if (!product) return;
+
+    currentProductForModal = product;
+    modalPackagingQty = 1;
+    document.getElementById('pack-modal-brand').innerText = product.brand || 'DentalCare';
+    document.getElementById('pack-modal-title').innerText = product.name;
+    document.getElementById('pack-modal-desc').innerText = product.description || '';
+    document.getElementById('pack-modal-qty').innerText = '1';
+
+    const options = product.packagingOptions && product.packagingOptions.length > 0 
+        ? product.packagingOptions 
+        : [{ id: 0, packagingType: 'SINGLE_BOX', unitName: 'Hộp Đơn 1 Sản Phẩm', quantityPerUnit: 1, unitPrice: product.basePrice, discountPercent: 0, bonusGifts: 'Miễn phí vận chuyển' }];
+
+    selectedPackagingOption = options[0];
+
+    const list = document.getElementById('pack-options-list');
+    list.innerHTML = options.map((opt, idx) => {
+        const isSelected = idx === 0;
+        return `
+            <div onclick="selectPackagingOption(${opt.id}, ${opt.unitPrice})" id="pack-opt-item-${opt.id}" class="pack-opt-card p-3 rounded-2xl border-2 cursor-pointer transition flex items-center justify-between ${isSelected ? 'border-emerald-600 bg-emerald-50/50' : 'border-slate-200 bg-white hover:border-slate-300'}">
+                <div class="flex items-center gap-3">
+                    <input type="radio" name="packaging_radio" ${isSelected ? 'checked' : ''} class="text-emerald-600 focus:ring-emerald-500">
+                    <div>
+                        <div class="font-black text-xs text-slate-900 flex items-center gap-2">
+                            <span>${opt.unitName}</span>
+                            ${opt.discountPercent > 0 ? `<span class="bg-rose-100 text-rose-700 text-[10px] px-2 py-0.5 rounded-full font-black uppercase">-${opt.discountPercent}% Tiết Kiệm</span>` : ''}
+                        </div>
+                        <div class="text-[11px] text-slate-500 mt-0.5">
+                            ${opt.bonusGifts ? `<i class="fa-solid fa-gift text-amber-500 mr-1"></i>Tặng kèm: <b>${opt.bonusGifts}</b>` : 'Quy cách chuẩn nha khoa'}
+                        </div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-xs font-black text-emerald-700">${formatVND(opt.unitPrice)}</div>
+                    <div class="text-[10px] text-slate-600">Đơn vị: ${opt.quantityPerUnit || 1} cái</div>
+                </div>
+            </div>`;
+    }).join('');
+
+    updateModalTotal();
+    document.getElementById('product-packaging-modal').classList.remove('hidden');
+}
+
+function selectPackagingOption(optionId, price) {
+    if (!currentProductForModal) return;
+    const opt = (currentProductForModal.packagingOptions || []).find(o => o.id === optionId);
+    if (opt) {
+        selectedPackagingOption = opt;
+    }
+    document.querySelectorAll('.pack-opt-card').forEach(card => {
+        card.classList.remove('border-emerald-600', 'bg-emerald-50/50');
+        card.classList.add('border-slate-200', 'bg-white');
+        const radio = card.querySelector('input[type="radio"]');
+        if (radio) radio.checked = false;
+    });
+
+    const activeCard = document.getElementById(`pack-opt-item-${optionId}`);
+    if (activeCard) {
+        activeCard.classList.remove('border-slate-200', 'bg-white');
+        activeCard.classList.add('border-emerald-600', 'bg-emerald-50/50');
+        const radio = activeCard.querySelector('input[type="radio"]');
+        if (radio) radio.checked = true;
+    }
+    updateModalTotal();
+}
+
+function adjustModalQty(delta) {
+    modalPackagingQty = Math.max(1, modalPackagingQty + delta);
+    document.getElementById('pack-modal-qty').innerText = modalPackagingQty;
+    updateModalTotal();
+}
+
+function updateModalTotal() {
+    const unitPrice = selectedPackagingOption ? selectedPackagingOption.unitPrice : (currentProductForModal ? currentProductForModal.basePrice : 0);
+    const total = unitPrice * modalPackagingQty;
+    document.getElementById('pack-modal-total').innerText = formatVND(total);
+}
+
+function closeProductPackagingModal() {
+    document.getElementById('product-packaging-modal').classList.add('hidden');
+    currentProductForModal = null;
+    selectedPackagingOption = null;
+}
+
+function confirmAddToCart() {
+    if (!currentProductForModal) return;
+
+    const opt = selectedPackagingOption || {
+        id: 0,
+        packagingType: 'SINGLE_BOX',
+        unitName: 'Hộp Đơn Tiêu Chuẩn',
+        unitPrice: currentProductForModal.basePrice
+    };
+
+    const existingIndex = cartItems.findIndex(item => 
+        item.productId === currentProductForModal.id && item.packagingOptionId === opt.id
+    );
+
+    if (existingIndex > -1) {
+        cartItems[existingIndex].quantity += modalPackagingQty;
+    } else {
+        cartItems.push({
+            productId: currentProductForModal.id,
+            productName: currentProductForModal.name,
+            productBrand: currentProductForModal.brand,
+            productImageUrl: currentProductForModal.imageUrl,
+            packagingOptionId: opt.id,
+            packagingType: opt.packagingType,
+            unitName: opt.unitName,
+            price: opt.unitPrice,
+            quantity: modalPackagingQty
+        });
+    }
+
+    localStorage.setItem('DENTAL_CART', JSON.stringify(cartItems));
+    updateCartBadge();
+    closeProductPackagingModal();
+    showToast(`✓ Đã thêm ${modalPackagingQty} "${opt.unitName}" vào giỏ hàng!`);
+}
+
+// Cart Drawer Modal
+function openCartModal() {
+    renderCart();
+    document.getElementById('cart-drawer-modal').classList.remove('hidden');
+}
+
+function closeCartModal() {
+    document.getElementById('cart-drawer-modal').classList.add('hidden');
+}
+
+function renderCart() {
+    const container = document.getElementById('cart-items-container');
+    const itemsCountText = document.getElementById('cart-items-count-text');
+    const subtotalText = document.getElementById('cart-subtotal-price');
+    const totalText = document.getElementById('cart-total-price');
+    const loyaltyPtsText = document.getElementById('cart-loyalty-pts');
+
+    if (currentUser) {
+        const nameInput = document.getElementById('order-customer-name');
+        const phoneInput = document.getElementById('order-customer-phone');
+        if (nameInput && !nameInput.value) nameInput.value = currentUser.fullName || currentUser.username;
+        if (phoneInput && !phoneInput.value) phoneInput.value = currentUser.phone || '';
+    }
+
+    const totalQty = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
+    const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const loyaltyPoints = Math.floor(subtotal / 10000);
+
+    if (itemsCountText) itemsCountText.innerText = `${totalQty} sản phẩm`;
+    if (subtotalText) subtotalText.innerText = formatVND(subtotal);
+    if (totalText) totalText.innerText = formatVND(subtotal);
+    if (loyaltyPtsText) loyaltyPtsText.innerText = `+${loyaltyPoints.toLocaleString('vi-VN')}`;
+
+    if (!container) return;
+
+    if (cartItems.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-16 text-slate-400 space-y-3">
+                <i class="fa-solid fa-cart-shopping text-4xl text-slate-300"></i>
+                <div class="text-xs font-bold text-slate-600">Giỏ hàng của bạn đang trống</div>
+                <p class="text-[11px] text-slate-400">Hãy dạo xem các sản phẩm chăm sóc răng miệng chính hãng nhé!</p>
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = cartItems.map((item, idx) => `
+        <div class="pt-3 pb-3 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <img src="${item.productImageUrl || 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=100'}" class="w-12 h-12 rounded-xl object-cover border border-slate-200">
+                <div>
+                    <h4 class="font-extrabold text-xs text-slate-900 line-clamp-1">${item.productName}</h4>
+                    <span class="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">${item.unitName}</span>
+                    <div class="text-xs font-black text-slate-800 mt-1">${formatVND(item.price)}</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="flex items-center border border-slate-200 rounded-lg">
+                    <button type="button" onclick="updateCartItemQty(${idx}, -1)" class="w-6 h-6 text-xs text-slate-600 hover:bg-slate-100 rounded-l font-bold">-</button>
+                    <span class="w-6 text-center text-xs font-bold text-slate-900">${item.quantity}</span>
+                    <button type="button" onclick="updateCartItemQty(${idx}, 1)" class="w-6 h-6 text-xs text-slate-600 hover:bg-slate-100 rounded-r font-bold">+</button>
+                </div>
+                <button type="button" onclick="removeCartItem(${idx})" class="text-slate-400 hover:text-rose-600 p-1 transition" title="Xóa khỏi giỏ">
+                    <i class="fa-solid fa-trash-can text-xs"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function updateCartItemQty(index, delta) {
+    if (!cartItems[index]) return;
+    cartItems[index].quantity += delta;
+    if (cartItems[index].quantity <= 0) {
+        cartItems.splice(index, 1);
+    }
+    localStorage.setItem('DENTAL_CART', JSON.stringify(cartItems));
+    updateCartBadge();
+    renderCart();
+}
+
+function removeCartItem(index) {
+    cartItems.splice(index, 1);
+    localStorage.setItem('DENTAL_CART', JSON.stringify(cartItems));
+    updateCartBadge();
+    renderCart();
+}
+
+async function submitDentalOrder() {
+    if (cartItems.length === 0) {
+        showToast('⚠️ Giỏ hàng của bạn đang trống!');
+        return;
+    }
+
+    const customerName = document.getElementById('order-customer-name').value.trim();
+    const customerPhone = document.getElementById('order-customer-phone').value.trim();
+    const shippingAddress = document.getElementById('order-customer-address').value.trim();
+    const paymentMethod = document.getElementById('order-payment-method').value;
+
+    if (!customerName || !customerPhone || !shippingAddress) {
+        showToast('⚠️ Vui lòng điền đầy đủ Tên, Số điện thoại và Địa chỉ giao hàng!');
+        return;
+    }
+
+    const payload = {
+        customerName: customerName,
+        customerPhone: customerPhone,
+        shippingAddress: shippingAddress,
+        paymentMethod: paymentMethod,
+        items: cartItems.map(item => ({
+            productId: item.productId,
+            packagingOptionId: item.packagingOptionId > 0 ? item.packagingOptionId : null,
+            quantity: item.quantity
+        }))
+    };
+
+    const submitBtn = document.getElementById('btn-submit-order');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Đang tạo đơn hàng...';
+    }
+
+    try {
+        const res = await apiFetch('/api/dental-orders', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok && res.data.success) {
+            const order = res.data.data;
+            cartItems = [];
+            localStorage.removeItem('DENTAL_CART');
+            updateCartBadge();
+            closeCartModal();
+
+            showToast(`🎉 Đặt hàng thành công! Mã đơn: ${order.orderCode}. Tích lũy +${order.loyaltyPointsEarned || 0} điểm thưởng!`);
+        } else {
+            showToast('⚠️ ' + (res.data?.message || 'Không thể khởi tạo đơn hàng. Vui lòng thử lại!'));
+        }
+    } catch (err) {
+        console.error('Submit order error:', err);
+        showToast('⚠️ Có lỗi xảy ra trong quá trình đặt hàng!');
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fa-solid fa-bag-shopping"></i> Đặt Hàng Ngay (1-Click)';
+        }
+    }
+}
+
+// -------------------------------------------------------------------------
+// 3. PORCELAIN CROWN WARRANTY & QR VERIFICATION
+// -------------------------------------------------------------------------
+async function searchWarranty() {
+    const input = document.getElementById('warranty-search-input');
+    const query = input ? input.value.trim() : '';
+    if (!query) {
+        showToast('⚠️ Vui lòng nhập Mã thẻ bảo hành hoặc Mã QR!');
+        return;
+    }
+
+    const resultCard = document.getElementById('warranty-result-card');
+    if (!resultCard) return;
+
+    try {
+        resultCard.classList.remove('hidden');
+        resultCard.innerHTML = `
+            <div class="text-center py-6 text-slate-400">
+                <i class="fa-solid fa-spinner animate-spin text-2xl text-sky-400 mb-2"></i>
+                <div class="text-xs">Đang truy vấn cơ sở dữ liệu phôi sứ chính hãng...</div>
+            </div>`;
+
+        const res = await apiFetch(`/api/warranties/lookup?query=${encodeURIComponent(query)}`);
+        if (res.ok && res.data.success) {
+            const wr = res.data.data;
+            const statusBg = wr.status === 'ACTIVE' 
+                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' 
+                : 'bg-rose-500/20 text-rose-300 border-rose-500/40';
+            const statusLabel = wr.status === 'ACTIVE' ? 'Đang Hiệu Lực' : 'Hết Hạn / Tạm Dừng';
+
+            resultCard.innerHTML = `
+                <div class="p-6 rounded-2xl bg-slate-800/90 border border-sky-500/40 shadow-xl space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-700/80 pb-3">
+                        <div class="flex items-center gap-2.5">
+                            <i class="fa-solid fa-certificate text-sky-400 text-xl"></i>
+                            <div>
+                                <span class="text-[10px] text-sky-300 font-extrabold uppercase tracking-widest">Thẻ Bảo Hành Điện Tử</span>
+                                <h4 class="text-sm font-black text-white font-mono">${wr.serialCode}</h4>
+                            </div>
+                        </div>
+                        <span class="text-xs font-black px-3 py-1 rounded-full border ${statusBg}">
+                            ● ${statusLabel}
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div>
+                            <span class="text-slate-400 text-[11px]">Chủ sở hữu:</span>
+                            <div class="font-bold text-white">${wr.patientName} (${wr.patientPhone})</div>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 text-[11px]">Dòng phôi sứ chính hãng:</span>
+                            <div class="font-bold text-amber-300">${wr.crownType} - Màu ${wr.shadeCode || 'A1'}</div>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 text-[11px]">Vị trí răng phục hình:</span>
+                            <div class="font-bold text-sky-300">Răng số: ${wr.teethNumbers}</div>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 text-[11px]">Labo chế tác kỹ thuật số:</span>
+                            <div class="font-bold text-white">${wr.laboPartner}</div>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 text-[11px]">Ngày phục hình:</span>
+                            <div class="font-medium text-slate-300">${wr.issueDate || '2026-01-15'}</div>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 text-[11px]">Thời hạn bảo hành:</span>
+                            <div class="font-bold text-emerald-400">${wr.warrantyYears} Năm (Đến ${wr.expiryDate || '2041-01-15'})</div>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-700/80 flex items-center justify-between text-[11px] text-slate-400">
+                        <span class="font-mono text-[10px]">QR Code: ${wr.qrVerificationCode}</span>
+                        <span class="text-emerald-400 font-bold"><i class="fa-solid fa-circle-check"></i> Xác thực nguồn gốc 100%</span>
+                    </div>
+                </div>`;
+        } else {
+            resultCard.innerHTML = `
+                <div class="p-4 rounded-xl bg-rose-950/40 border border-rose-800 text-rose-300 text-xs text-center space-y-1">
+                    <i class="fa-solid fa-triangle-exclamation text-rose-400 text-lg"></i>
+                    <p class="font-bold">Không tìm thấy thông tin thẻ bảo hành với từ khóa "${query}"</p>
+                    <p class="text-[11px] text-rose-400">Vui lòng kiểm tra lại mã số in trên thẻ cứng hoặc liên hệ hotline phòng khám để được hỗ trợ.</p>
+                </div>`;
+        }
+    } catch (err) {
+        console.error('Warranty search error:', err);
+        resultCard.innerHTML = `
+            <div class="p-4 rounded-xl bg-rose-950/40 border border-rose-800 text-rose-300 text-xs text-center">
+                Không thể kết nối đến máy chủ bảo hành. Vui lòng thử lại sau!
+            </div>`;
+    }
+}
+
+function quickSearchWarranty(code) {
+    const input = document.getElementById('warranty-search-input');
+    if (input) {
+        input.value = code;
+        searchWarranty();
+    }
+}
+
+// -------------------------------------------------------------------------
+// 4. AI DENTAL DIAGNOSTIC VISION (9ROUTER GATEWAY & CLINICAL RULES)
+// -------------------------------------------------------------------------
+function selectAiSample(symptomText, pathologyKey) {
+    const input = document.getElementById('ai-symptoms-input');
+    if (input) {
+        input.value = symptomText;
+        input.focus();
+    }
+}
+
+async function runAiDiagnostic() {
+    const symptoms = (document.getElementById('ai-symptoms-input')?.value || '').trim();
+    const patientName = (document.getElementById('ai-patient-name')?.value || '').trim();
+    const patientPhone = (document.getElementById('ai-patient-phone')?.value || '').trim();
+
+    if (!symptoms) {
+        showToast('⚠️ Vui lòng mô tả triệu chứng hoặc chọn mẫu bệnh lý bên dưới!');
+        return;
+    }
+
+    const placeholder = document.getElementById('ai-diag-placeholder');
+    const loading = document.getElementById('ai-diag-loading');
+    const result = document.getElementById('ai-diag-result');
+
+    if (placeholder) placeholder.classList.add('hidden');
+    if (result) result.classList.add('hidden');
+    if (loading) loading.classList.remove('hidden');
+
+    try {
+        const payload = {
+            patientName: patientName || 'Khách Hàng Trực Tuyến',
+            patientPhone: patientPhone || '',
+            symptomsDescription: symptoms,
+            modelUsed: '9router/gemini-2.5-flash'
+        };
+
+        const res = await apiFetch('/api/dental-ai/diagnose', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok && res.data.success) {
+            const diag = res.data.data;
+            const riskColors = {
+                'LOW': 'bg-emerald-100 text-emerald-800 border-emerald-300',
+                'MEDIUM': 'bg-amber-100 text-amber-800 border-amber-300',
+                'HIGH': 'bg-rose-100 text-rose-800 border-rose-300',
+                'URGENT': 'bg-red-200 text-red-900 border-red-400 animate-pulse'
+            };
+
+            const riskBadge = riskColors[diag.riskLevel] || 'bg-slate-100 text-slate-800';
+
+            result.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold">
+                                <i class="fa-solid fa-stethoscope"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-purple-700 font-black uppercase">Kết Quả Chẩn Đoán AI</span>
+                                <h3 class="text-sm font-black text-slate-900">${diag.pathologyName}</h3>
+                            </div>
+                        </div>
+                        <span class="text-[11px] font-black uppercase px-3 py-1 rounded-full border ${riskBadge}">
+                            ${diag.riskLevel}
+                        </span>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-2 text-xs">
+                        <div class="flex items-center justify-between text-slate-600">
+                            <span>Độ chuẩn xác lâm sàng:</span>
+                            <span class="font-black text-purple-700">${Math.round(diag.confidenceScore * 100)}%</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2">
+                            <div class="bg-gradient-to-r from-purple-500 to-indigo-600 h-2 rounded-full" style="width: ${Math.round(diag.confidenceScore * 100)}%"></div>
+                        </div>
+                        <div class="pt-2 text-slate-700 font-medium leading-relaxed">
+                            <b>Phát hiện lâm sàng:</b> ${diag.clinicalFindings}
+                        </div>
+                    </div>
+
+                    <div class="bg-purple-50/70 p-4 rounded-2xl border border-purple-200/80 space-y-2 text-xs">
+                        <div class="font-bold text-purple-900 flex items-center gap-1.5">
+                            <i class="fa-solid fa-user-doctor text-purple-700"></i> Phác đồ & Lời khuyên điều trị:
+                        </div>
+                        <p class="text-purple-950 font-medium leading-relaxed">${diag.treatmentAdvice}</p>
+                        <div class="flex items-center justify-between pt-2 border-t border-purple-200 text-[11px]">
+                            <span class="text-purple-800">Chi phí dự kiến:</span>
+                            <span class="font-black text-purple-900">${diag.estimatedCostRange || 'Liên hệ để nhận báo giá'}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button type="button" onclick="selectServiceForBooking('${diag.pathologyName.replace(/'/g, "\\'")}')" class="flex-1 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-black shadow-md transition flex items-center justify-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-calendar-check"></i> Đặt Lịch Khám Ưu Tiên
+                        </button>
+                    </div>
+                </div>`;
+            result.classList.remove('hidden');
+        } else {
+            showToast('⚠️ Không thể phân tích bệnh lý. Vui lòng thử lại!');
+            if (placeholder) placeholder.classList.remove('hidden');
+        }
+    } catch (err) {
+        console.error('AI diagnostic error:', err);
+        showToast('⚠️ Có lỗi xảy ra khi kết nối máy chủ AI!');
+        if (placeholder) placeholder.classList.remove('hidden');
+    } finally {
+        if (loading) loading.classList.add('hidden');
+    }
+}
+
+// -------------------------------------------------------------------------
+// 5. MULTI-BRANCH DIRECTORY WITH GPS DISTANCE CALCULATION
+// -------------------------------------------------------------------------
+async function loadBranches() {
+    const grid = document.getElementById('branches-grid');
+    if (!grid) return;
+
+    try {
+        const res = await apiFetch('/api/branches');
+        if (res.ok && res.data.success) {
+            cachedBranches = res.data.data || [];
+            renderBranches(cachedBranches);
+        }
+    } catch (err) {
+        console.error('Error loading branches:', err);
+    }
+}
+
+function renderBranches(branches, nearestId = null, distanceKm = null) {
+    const grid = document.getElementById('branches-grid');
+    if (!grid) return;
+
+    if (!branches || branches.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-center py-8 text-slate-400 text-xs">Đang cập nhật danh sách cơ sở...</div>`;
+        return;
+    }
+
+    grid.innerHTML = branches.map(b => {
+        const isNearest = nearestId && b.id === nearestId;
+        const facilitiesList = (b.facilities || '').split(',').map(f => f.trim()).filter(Boolean);
+
+        return `
+            <div class="card-3d-tilt rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between ${isNearest ? 'bg-gradient-to-b from-emerald-950/80 to-slate-900 border-2 border-emerald-400 shadow-2xl shadow-emerald-500/20' : 'bg-slate-800/80 border border-slate-700/80 hover:border-teal-500'}">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full ${isNearest ? 'bg-emerald-500 text-slate-950 font-extrabold' : 'bg-slate-700 text-teal-300'}">
+                            ${isNearest ? `📍 GẦN BẠN NHẤT (${distanceKm} km)` : b.city}
+                        </span>
+                        <span class="text-xs font-mono font-bold text-slate-400">${b.branchCode}</span>
+                    </div>
+
+                    <h3 class="text-sm font-black text-white mb-2 leading-snug">${b.branchName}</h3>
+                    <p class="text-xs text-slate-300 mb-3 flex items-start gap-1.5">
+                        <i class="fa-solid fa-location-dot text-teal-400 shrink-0 mt-0.5"></i>
+                        <span>${b.address}</span>
+                    </p>
+
+                    <div class="space-y-1.5 text-xs text-slate-400 mb-4">
+                        <div class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-phone text-amber-400 text-[11px]"></i>
+                            <a href="tel:${b.phone}" class="hover:text-white font-bold">${b.phone}</a>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-clock text-sky-400 text-[11px]"></i>
+                            <span>${b.openingHours || '08:00 - 20:00 (Cả T7 & CN)'}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-1 mb-4">
+                        ${facilitiesList.map(f => `
+                            <span class="text-[9px] bg-slate-700/60 text-teal-200 px-2 py-0.5 rounded-md border border-slate-600/50">
+                                ${f}
+                            </span>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-700/80 flex items-center justify-between">
+                    <a href="https://www.google.com/maps?q=${b.latitude},${b.longitude}" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-teal-300 hover:text-teal-200 flex items-center gap-1">
+                        <span>Chỉ Đường</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    </a>
+                    <a href="#booking-section" onclick="showLandingPage()" class="px-3 py-1.5 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold rounded-xl transition">
+                        Đặt Lịch Tại Đây
+                    </a>
+                </div>
+            </div>`;
+    }).join('');
+}
+
+function locateNearestBranch() {
+    if (!navigator.geolocation) {
+        showToast('⚠️ Trình duyệt của bạn không hỗ trợ định vị GPS.');
+        queryNearestBranch(10.760624, 106.587106); // Fallback: HCM Central
+        return;
+    }
+
+    showToast('📍 Đang xác định vị trí của bạn...');
+
+    navigator.geolocation.getCurrentPosition(
+        async (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            await queryNearestBranch(lat, lon);
+        },
+        async (err) => {
+            console.warn('Geolocation failed, fallback to Ho Chi Minh City coordinates:', err);
+            showToast('⚠️ Không thể lấy GPS, áp dụng tọa độ TP. Hồ Chí Minh mặc định.');
+            await queryNearestBranch(10.760624, 106.587106);
+        },
+        { timeout: 8000 }
+    );
+}
+
+async function queryNearestBranch(lat, lon) {
+    try {
+        const res = await apiFetch(`/api/branches/nearest?latitude=${lat}&longitude=${lon}`);
+        if (res.ok && res.data.success) {
+            const data = res.data.data;
+            const nearestBranch = data.branch;
+            const distanceKm = data.distanceKm;
+
+            showToast(`✓ Cơ sở gần bạn nhất: ${nearestBranch.branchName} (Cách ${distanceKm} km)!`);
+            renderBranches(cachedBranches, nearestBranch.id, distanceKm);
+
+            const grid = document.getElementById('branches-grid');
+            if (grid) grid.scrollIntoView({ behavior: 'smooth' });
+        }
+    } catch (err) {
+        console.error('Nearest branch query error:', err);
+    }
+}
+
+// -------------------------------------------------------------------------
+// 6. DENTAL COMMUNITY FORUM (POSTS, LIKES, INTERACTIONS)
+// -------------------------------------------------------------------------
+async function loadForumPosts(category = 'ALL') {
+    const container = document.getElementById('forum-posts-container');
+    if (!container) return;
+
+    try {
+        let url = '/api/forum/posts';
+        if (category && category !== 'ALL') {
+            url += `?category=${encodeURIComponent(category)}`;
+        }
+        const res = await apiFetch(url);
+        if (res.ok && res.data.success) {
+            cachedForumPosts = res.data.data || [];
+            renderForumPosts(cachedForumPosts);
+        }
+    } catch (err) {
+        console.error('Error loading forum posts:', err);
+    }
+}
+
+function renderForumPosts(posts) {
+    const container = document.getElementById('forum-posts-container');
+    if (!container) return;
+
+    if (!posts || posts.length === 0) {
+        container.innerHTML = `
+            <div class="col-span-full text-center py-12 text-slate-400 text-xs">
+                <i class="fa-solid fa-comments text-3xl mb-2 text-slate-300"></i>
+                <p>Chưa có bài viết thảo luận trong chuyên mục này.</p>
+            </div>`;
+        return;
+    }
+
+    const categoryLabels = {
+        'EXPERIENCE': { name: 'Kinh Nghiệm Điều Trị', color: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+        'RECOVERY_TIPS': { name: 'Mẹo Hồi Phục', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+        'DENTAL_QA': { name: 'Hỏi Đáp Bác Sĩ', color: 'bg-amber-50 text-amber-700 border-amber-200' }
+    };
+
+    container.innerHTML = posts.map(post => {
+        const cat = categoryLabels[post.category] || { name: 'Thảo Luận', color: 'bg-slate-50 text-slate-700 border-slate-200' };
+
+        return `
+            <div class="bg-white rounded-3xl p-6 border border-slate-200/90 hover:border-amber-500 hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border ${cat.color}">
+                            ${cat.name}
+                        </span>
+                        <span class="text-[11px] text-slate-600 font-semibold"><i class="fa-regular fa-clock"></i> 2 giờ trước</span>
+                    </div>
+
+                    <h3 class="text-sm font-black text-slate-900 mb-2 hover:text-amber-700 transition">
+                        ${post.title}
+                    </h3>
+                    <p class="text-xs text-slate-600 leading-relaxed line-clamp-4 mb-4">
+                        ${post.content}
+                    </p>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-black">
+                            ${(post.authorName || 'B')[0]}
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-slate-900">${post.authorName}</div>
+                            <div class="text-[10px] text-slate-600 font-medium">Bệnh nhân DentalCare</div>
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="likeForumPost(${post.id}, this)" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-600 text-xs font-bold transition cursor-pointer">
+                        <i class="fa-regular fa-heart text-rose-500"></i>
+                        <span class="post-like-count">${post.likesCount || 0}</span>
+                    </button>
+                </div>
+            </div>`;
+    }).join('');
+}
+
+function filterForumPosts(category, btnElement) {
+    document.querySelectorAll('#forum-tabs .forum-tab-btn').forEach(btn => {
+        btn.classList.remove('bg-amber-600', 'text-white', 'shadow-sm');
+        btn.classList.add('bg-white', 'text-slate-700');
+    });
+    if (btnElement) {
+        btnElement.classList.remove('bg-white', 'text-slate-700');
+        btnElement.classList.add('bg-amber-600', 'text-white', 'shadow-sm');
+    } else {
+        const targetBtn = Array.from(document.querySelectorAll('#forum-tabs .forum-tab-btn'))
+            .find(b => b.getAttribute('onclick') && b.getAttribute('onclick').includes(category));
+        if (targetBtn) {
+            targetBtn.classList.remove('bg-white', 'text-slate-700');
+            targetBtn.classList.add('bg-amber-600', 'text-white', 'shadow-sm');
+        }
+    }
+    loadForumPosts(category);
+}
+
+function openNewForumPostModal() {
+    if (currentUser) {
+        const authorInput = document.getElementById('forum-new-author');
+        const phoneInput = document.getElementById('forum-new-phone');
+        if (authorInput && !authorInput.value) authorInput.value = currentUser.fullName || currentUser.username;
+        if (phoneInput && !phoneInput.value) phoneInput.value = currentUser.phone || '';
+    }
+    document.getElementById('forum-post-modal').classList.remove('hidden');
+}
+
+function closeForumPostModal() {
+    document.getElementById('forum-post-modal').classList.add('hidden');
+}
+
+async function submitForumPost() {
+    const author = (document.getElementById('forum-new-author')?.value || '').trim();
+    const phone = (document.getElementById('forum-new-phone')?.value || '').trim();
+    const category = document.getElementById('forum-new-category')?.value || 'EXPERIENCE';
+    const title = (document.getElementById('forum-new-title')?.value || '').trim();
+    const content = (document.getElementById('forum-new-content')?.value || '').trim();
+
+    if (!author || !title || !content) {
+        showToast('⚠️ Vui lòng điền Họ tên, Tiêu đề và Nội dung bài viết!');
+        return;
+    }
+
+    try {
+        const payload = {
+            authorName: author,
+            authorPhone: phone,
+            category: category,
+            title: title,
+            content: content
+        };
+
+        const res = await apiFetch('/api/forum/posts', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok && res.data.success) {
+            showToast('✓ Đã đăng bài viết thành công lên Diễn đàn cộng đồng!');
+            closeForumPostModal();
+            loadForumPosts(category);
+        } else {
+            showToast('⚠️ ' + (res.data?.message || 'Không thể đăng bài viết!'));
+        }
+    } catch (err) {
+        console.error('Forum post error:', err);
+        showToast('⚠️ Có lỗi xảy ra khi gửi bài viết!');
+    }
+}
+
+async function likeForumPost(postId, btnElement) {
+    try {
+        const res = await apiFetch(`/api/forum/posts/${postId}/like`, { method: 'POST' });
+        if (res.ok && res.data.success) {
+            const updated = res.data.data;
+            if (btnElement) {
+                const countSpan = btnElement.querySelector('.post-like-count');
+                if (countSpan) countSpan.innerText = updated.likesCount;
+                btnElement.classList.add('text-rose-600', 'bg-rose-50');
+                const heartIcon = btnElement.querySelector('i');
+                if (heartIcon) {
+                    heartIcon.classList.remove('fa-regular');
+                    heartIcon.classList.add('fa-solid');
+                }
+            }
+        }
+    } catch (err) {
+        console.error('Like post error:', err);
+    }
+}
+
+// ================= MILESTONE 2: STAFF & B2B OPERATIONS =================
+
+// 1. KHO VẬT TƯ & KHÍ CỤ NHA KHOA
+async function loadInventoryMaterials() {
+    const tbody = document.getElementById('inventory-table-body');
+    if (!tbody) return;
+    try {
+        const catFilter = document.getElementById('filter-inventory-category')?.value || '';
+        let url = '/api/dental-materials';
+        if (catFilter) url += `?category=${encodeURIComponent(catFilter)}`;
+        
+        const res = await apiFetch(url);
+        if (res.ok && res.data && res.data.data) {
+            const list = res.data.data;
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-400">Không có vật tư nào trong danh mục.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = list.map(m => {
+                const isLow = m.stockQuantity <= (m.minSafetyStock || 0);
+                const stockBadge = isLow
+                    ? `<span class="bg-rose-950 text-rose-300 border border-rose-800 px-2 py-0.5 rounded font-black text-[11px] animate-pulse">Cảnh báo: ${m.stockQuantity}</span>`
+                    : `<span class="text-emerald-400 font-bold">${m.stockQuantity}</span>`;
+                const priceFormatted = (m.unitPrice || 0).toLocaleString('vi-VN') + ' đ';
+                return `
+                    <tr class="hover:bg-slate-700/40 transition">
+                        <td class="py-3 px-4 font-mono font-bold text-amber-300">${m.materialCode || ('MAT-' + m.id)}</td>
+                        <td class="py-3 px-4 font-bold text-white">${m.materialName || ''}</td>
+                        <td class="py-3 px-4"><span class="bg-slate-900 text-slate-300 px-2 py-0.5 rounded text-[11px] font-bold border border-slate-700">${m.category || ''}</span></td>
+                        <td class="py-3 px-4 text-slate-300">${m.manufacturer || '-'}</td>
+                        <td class="py-3 px-4 text-center text-slate-300 font-bold">${m.unit || 'Cái'}</td>
+                        <td class="py-3 px-4 text-right">${stockBadge}</td>
+                        <td class="py-3 px-4 text-right font-mono text-slate-300">${priceFormatted}</td>
+                        <td class="py-3 px-4 text-center">
+                            <button onclick="handleQuickStockAdjust(${m.id}, ${m.stockQuantity})" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition">
+                                <i class="fa-solid fa-arrows-up-down mr-1"></i> Điều Chỉnh
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    } catch (e) {
+        console.error('loadInventoryMaterials error:', e);
+        if (tbody) tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-rose-400">Lỗi khi tải kho vật tư.</td></tr>`;
+    }
+}
+
+async function handleQuickStockAdjust(materialId, currentStock) {
+    const input = prompt(`Điều chỉnh tồn kho (Hiện tại: ${currentStock}). Nhập số lượng thay đổi (dương để nhập kho, âm để xuất kho):`, "10");
+    if (input === null) return;
+    const delta = parseInt(input, 10);
+    if (isNaN(delta) || delta === 0) {
+        alert('Số lượng nhập không hợp lệ!');
+        return;
+    }
+    const reason = prompt("Lý do điều chỉnh tồn kho:", delta > 0 ? "Nhập bổ sung từ nhà phân phối" : "Xuất tiêu hao phòng khám");
+    if (!reason) return;
+
+    try {
+        const res = await apiFetch(`/api/dental-materials/${materialId}/stock`, {
+            method: 'POST',
+            body: JSON.stringify({ quantityChange: delta, reason: reason })
+        });
+        if (res.ok && res.data.success) {
+            showToast(`✓ Đã điều chỉnh tồn kho thành công! Tồn kho mới: ${res.data.data.stockQuantity}`);
+            loadInventoryMaterials();
+        } else {
+            alert(res.data?.message || 'Không thể điều chỉnh tồn kho!');
+        }
+    } catch (e) {
+        console.error('Adjust stock error:', e);
+    }
+}
+
+// 2. ĐƠN HÀNG VẬT TƯ B2B (ĐẠI LÝ CẤP 2)
+async function loadB2BOrders() {
+    const tbody = document.getElementById('b2b-orders-table-body');
+    if (!tbody) return;
+    try {
+        const res = await apiFetch('/api/material-orders');
+        if (res.ok && res.data && res.data.data) {
+            const orders = res.data.data;
+            if (orders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Chưa có đơn đặt hàng B2B nào.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = orders.map(ord => {
+                const totalFormatted = (ord.totalAmount || 0).toLocaleString('vi-VN');
+                let statusBadge = `<span class="bg-amber-950 text-amber-300 border border-amber-800 px-2 py-0.5 rounded font-bold text-[11px]">${ord.status}</span>`;
+                if (ord.status === 'APPROVED') statusBadge = `<span class="bg-emerald-950 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded font-bold text-[11px]">ĐÃ DUYỆT</span>`;
+                if (ord.status === 'REJECTED') statusBadge = `<span class="bg-rose-950 text-rose-300 border border-rose-800 px-2 py-0.5 rounded font-bold text-[11px]">TỪ CHỐI</span>`;
+
+                const agentName = ord.agent ? (ord.agent.agentName || ord.agent.name || ord.agent.code) : 'Đại lý #1';
+                const dateStr = ord.orderDate ? new Date(ord.orderDate).toLocaleDateString('vi-VN') : '-';
+
+                let actionBtns = '-';
+                if (ord.status === 'PENDING') {
+                    actionBtns = `
+                        <div class="flex items-center justify-center gap-1.5">
+                            <button onclick="handleApproveB2BOrder(${ord.id})" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition">
+                                Duyệt
+                            </button>
+                            <button onclick="handleRejectB2BOrder(${ord.id})" class="px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold transition">
+                                Từ chối
+                            </button>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <tr class="hover:bg-slate-700/40 transition">
+                        <td class="py-3 px-4 font-mono font-bold text-sky-400">${ord.orderCode || ('ORD-' + ord.id)}</td>
+                        <td class="py-3 px-4 font-bold text-white">${agentName}</td>
+                        <td class="py-3 px-4 text-slate-300">${dateStr}</td>
+                        <td class="py-3 px-4 text-right font-mono font-bold text-white">${totalFormatted} đ</td>
+                        <td class="py-3 px-4 text-center">${statusBadge}</td>
+                        <td class="py-3 px-4 text-slate-300 text-xs">${ord.notes || ord.rejectionReason || '-'}</td>
+                        <td class="py-3 px-4 text-center">${actionBtns}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    } catch (e) {
+        console.error('loadB2BOrders error:', e);
+        if (tbody) tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-400">Lỗi khi tải đơn đặt hàng B2B.</td></tr>`;
+    }
+}
+
+async function handleApproveB2BOrder(orderId) {
+    if (!confirm('Xác nhận duyệt xuất kho cho đơn đặt hàng B2B này?')) return;
+    try {
+        const res = await apiFetch(`/api/material-orders/${orderId}/status`, {
+            method: 'PUT',
+            body: JSON.stringify({ status: 'APPROVED', notes: 'Quản trị viên phê duyệt xuất kho' })
+        });
+        if (res.ok && res.data.success) {
+            showToast('✓ Phê duyệt đơn hàng thành công! Kho đã được trừ tự động.');
+            loadB2BOrders();
+            loadInventoryMaterials();
+        } else {
+            alert(res.data?.message || 'Lỗi khi phê duyệt đơn hàng!');
+        }
+    } catch (e) {
+        console.error('Approve order error:', e);
+    }
+}
+
+async function handleRejectB2BOrder(orderId) {
+    const reason = prompt('Nhập lý do từ chối đơn hàng:', 'Vượt hạn mức tín dụng công nợ');
+    if (!reason) return;
+    try {
+        const res = await apiFetch(`/api/material-orders/${orderId}/status`, {
+            method: 'PUT',
+            body: JSON.stringify({ status: 'REJECTED', notes: reason })
+        });
+        if (res.ok && res.data.success) {
+            showToast('✓ Đã từ chối đơn đặt hàng.');
+            loadB2BOrders();
+        } else {
+            alert(res.data?.message || 'Lỗi khi từ chối đơn hàng!');
+        }
+    } catch (e) {
+        console.error('Reject order error:', e);
+    }
+}
+
+// 3. CHẤM CÔNG NHÂN SỰ ĐỊNH VỊ GPS
+async function loadAttendanceRecords() {
+    const tbody = document.getElementById('attendance-table-body');
+    if (!tbody) return;
+    try {
+        const res = await apiFetch('/api/attendance');
+        if (res.ok && res.data && res.data.data) {
+            const list = res.data.data;
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">Chưa có nhật ký chấm công hôm nay.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = list.map(a => {
+                const staffName = a.staff ? (a.staff.fullName || a.staff.username) : 'Nhân sự';
+                const shiftInfo = a.shift ? (a.shift.shiftType || 'Ca trực') : 'Ca sáng';
+                const inTime = a.checkInTime ? new Date(a.checkInTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '-';
+                const outTime = a.checkOutTime ? new Date(a.checkOutTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '<span class="text-slate-500">Đang trực</span>';
+                
+                let statusBadge = `<span class="bg-emerald-950 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded font-bold text-[11px]">ĐÚNG GIỜ</span>`;
+                if (a.status === 'LATE') statusBadge = `<span class="bg-amber-950 text-amber-300 border border-amber-800 px-2 py-0.5 rounded font-bold text-[11px]">ĐI MUỘN</span>`;
+                if (a.status === 'CHECKED_OUT') statusBadge = `<span class="bg-sky-950 text-sky-300 border border-sky-800 px-2 py-0.5 rounded font-bold text-[11px]">ĐÃ RA CA</span>`;
+
+                const gpsBadge = a.gpsVerified 
+                    ? `<span class="text-emerald-400 font-bold"><i class="fa-solid fa-circle-check"></i> Hợp lệ</span>` 
+                    : `<span class="text-slate-500"><i class="fa-solid fa-circle-xmark"></i> Không</span>`;
+
+                return `
+                    <tr class="hover:bg-slate-700/40 transition">
+                        <td class="py-2.5 px-3 font-bold text-white">${staffName}</td>
+                        <td class="py-2.5 px-3 text-slate-300">${shiftInfo}</td>
+                        <td class="py-2.5 px-3 font-mono text-emerald-400 font-bold">${inTime}</td>
+                        <td class="py-2.5 px-3 font-mono text-slate-300">${outTime}</td>
+                        <td class="py-2.5 px-3 text-center">${gpsBadge}</td>
+                        <td class="py-2.5 px-3 text-center">${statusBadge}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    } catch (e) {
+        console.error('loadAttendanceRecords error:', e);
+        if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-rose-400">Lỗi khi tải nhật ký chấm công.</td></tr>`;
+    }
+}
+
+async function handleQuickCheckIn(shiftId = 1) {
+    try {
+        const payload = {
+            shiftId: shiftId,
+            latitude: 10.760624,
+            longitude: 106.587106,
+            ipAddress: '192.168.1.15'
+        };
+        const res = await apiFetch('/api/attendance/check-in', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        if (res.ok && res.data.success) {
+            showToast('✓ Chấm công vào ca thành công! Tọa độ GPS hợp lệ.');
+            loadAttendanceRecords();
+        } else {
+            alert(res.data?.message || 'Chấm công thất bại!');
+        }
+    } catch (e) {
+        console.error('Check-in error:', e);
+    }
+}
+
+async function handleQuickCheckOut(shiftId = 1) {
+    try {
+        const payload = {
+            shiftId: shiftId,
+            notes: 'Kết thúc ca trực lâm sàng'
+        };
+        const res = await apiFetch('/api/attendance/check-out', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        if (res.ok && res.data.success) {
+            showToast('✓ Chấm công ra ca thành công!');
+            loadAttendanceRecords();
+        } else {
+            alert(res.data?.message || 'Chấm công ra ca thất bại!');
+        }
+    } catch (e) {
+        console.error('Check-out error:', e);
+    }
+}
+
+// 4. KPI & NĂNG SUẤT BÁC SĨ NHA KHOA
+async function loadDoctorKpis() {
+    const tbody = document.getElementById('doctor-kpi-table-body');
+    const cards = document.getElementById('doctor-kpi-cards');
+    if (!tbody) return;
+    try {
+        const res = await apiFetch('/api/staff-kpi/doctors');
+        if (res.ok && res.data && res.data.data) {
+            const list = res.data.data;
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-400">Chưa có dữ liệu KPI bác sĩ.</td></tr>`;
+                return;
+            }
+
+            if (cards) {
+                cards.innerHTML = list.slice(0, 3).map((kpi, idx) => {
+                    const docName = kpi.doctorName || ('Bác sĩ #' + (kpi.doctorId || (idx + 1)));
+                    const rev = (kpi.totalRevenue || 0).toLocaleString('vi-VN');
+                    const badgeColor = idx === 0 ? 'text-amber-400 border-amber-600 bg-amber-950/40' : 'text-sky-400 border-sky-600 bg-sky-950/40';
+                    return `
+                        <div class="p-4 rounded-2xl border ${badgeColor} space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="font-extrabold text-sm text-white">${docName}</span>
+                                <span class="text-xs font-black px-2 py-0.5 rounded bg-slate-900 border border-slate-700">Hạng #${idx + 1}</span>
+                            </div>
+                            <div class="text-2xl font-black text-white">${kpi.kpiScore || 0} <span class="text-xs text-slate-400 font-normal">điểm</span></div>
+                            <div class="flex justify-between text-xs text-slate-300">
+                                <span>Doanh số: <strong class="text-emerald-400">${rev} đ</strong></span>
+                                <span>Chuyển đổi: <strong class="text-yellow-300">${kpi.conversionRate || 0}%</strong></span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            tbody.innerHTML = list.map(kpi => {
+                const docName = kpi.doctorName || ('Bác sĩ #' + (kpi.doctorId || ''));
+                const rev = (kpi.totalRevenue || 0).toLocaleString('vi-VN') + ' đ';
+                return `
+                    <tr class="hover:bg-slate-700/40 transition">
+                        <td class="py-3 px-4 font-bold text-white">${docName}</td>
+                        <td class="py-3 px-4 text-center font-bold text-slate-300">${kpi.totalConsultations || 0}</td>
+                        <td class="py-3 px-4 text-center font-mono text-purple-400 font-bold">${kpi.orthoCases || 0}</td>
+                        <td class="py-3 px-4 text-center font-mono text-teal-400 font-bold">${kpi.implantCases || 0}</td>
+                        <td class="py-3 px-4 text-center font-mono text-slate-300">${kpi.generalCases || 0}</td>
+                        <td class="py-3 px-4 text-right font-mono font-bold text-emerald-400">${rev}</td>
+                        <td class="py-3 px-4 text-center font-bold text-yellow-400">${kpi.conversionRate || 0}%</td>
+                        <td class="py-3 px-4 text-center">
+                            <span class="bg-yellow-950 text-yellow-300 border border-yellow-800 px-2 py-0.5 rounded font-black text-xs">
+                                ${kpi.kpiScore || 0}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    } catch (e) {
+        console.error('loadDoctorKpis error:', e);
+        if (tbody) tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-rose-400">Lỗi khi tải bảng đánh giá KPI.</td></tr>`;
+    }
+}
+
+// 5. TIẾP NHẬN BỆNH NHÂN HIỆN TRƯỜNG & HỌC ĐƯỜNG
+async function loadFieldIntakeLeads() {
+    const tbody = document.getElementById('field-intake-table-body');
+    if (!tbody) return;
+    try {
+        const res = await apiFetch('/api/field-intake');
+        if (res.ok && res.data && res.data.data) {
+            const leads = res.data.data;
+            if (leads.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Chưa có hồ sơ tiếp nhận hiện trường nào.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = leads.map(l => {
+                let statusBadge = `<span class="bg-purple-950 text-purple-300 border border-purple-800 px-2 py-0.5 rounded font-bold text-[11px]">${l.status}</span>`;
+                if (l.status === 'CONVERTED') statusBadge = `<span class="bg-emerald-950 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded font-bold text-[11px]">ĐÃ ĐẾN KHÁM</span>`;
+                if (l.status === 'CONTACTED') statusBadge = `<span class="bg-sky-950 text-sky-300 border border-sky-800 px-2 py-0.5 rounded font-bold text-[11px]">ĐÃ TƯ VẤN</span>`;
+
+                const patientDisplay = l.studentClass ? `${l.patientName} (${l.studentClass})` : l.patientName;
+
+                return `
+                    <tr class="hover:bg-slate-700/40 transition">
+                        <td class="py-2.5 px-3 font-mono font-bold text-purple-300">${l.leadCode || ('INT-' + l.id)}</td>
+                        <td class="py-2.5 px-3 font-bold text-white">${patientDisplay}</td>
+                        <td class="py-2.5 px-3 font-mono text-slate-300">${l.phone || '-'}</td>
+                        <td class="py-2.5 px-3 text-slate-400 text-xs">${l.eventName || '-'}</td>
+                        <td class="py-2.5 px-3 text-slate-200 text-xs">${l.screeningFindings || '-'}</td>
+                        <td class="py-2.5 px-3 text-center font-mono text-yellow-300 text-xs font-bold">${l.voucherCode || '-'}</td>
+                        <td class="py-2.5 px-3 text-center">${statusBadge}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    } catch (e) {
+        console.error('loadFieldIntakeLeads error:', e);
+        if (tbody) tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-400">Lỗi khi tải danh sách hồ sơ hiện trường.</td></tr>`;
+    }
+}
+
+async function handleQuickCreateLead(event) {
+    if (event) event.preventDefault();
+    const eventName = document.getElementById('intake-event-name')?.value || '';
+    const patientName = document.getElementById('intake-patient-name')?.value || '';
+    const phone = document.getElementById('intake-phone')?.value || '';
+    const studentClass = document.getElementById('intake-class')?.value || '';
+    const findings = document.getElementById('intake-findings')?.value || '';
+    const recommendation = document.getElementById('intake-recommendation')?.value || '';
+    const voucher = document.getElementById('intake-voucher')?.value || '';
+
+    if (!patientName || !phone) {
+        alert('Vui lòng điền họ tên và số điện thoại!');
+        return;
+    }
+
+    try {
+        const payload = {
+            eventName: eventName,
+            patientName: patientName,
+            phone: phone,
+            studentClass: studentClass,
+            screeningFindings: findings,
+            recommendation: recommendation,
+            voucherCode: voucher,
+            eventType: 'SCHOOL_OUTREACH'
+        };
+
+        const res = await apiFetch('/api/field-intake', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok && res.data.success) {
+            showToast('✓ Tiếp nhận hồ sơ khám hiện trường thành công!');
+            document.getElementById('intake-patient-name').value = '';
+            document.getElementById('intake-phone').value = '';
+            document.getElementById('intake-findings').value = '';
+            loadFieldIntakeLeads();
+        } else {
+            alert(res.data?.message || 'Lỗi khi lưu hồ sơ tiếp nhận!');
+        }
+    } catch (e) {
+        console.error('Create lead error:', e);
+    }
+}
+
