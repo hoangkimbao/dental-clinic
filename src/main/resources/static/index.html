@@ -408,14 +408,14 @@ footer { background: #0d3534 !important; }
                 </div>
             </a>
 
-            <!-- Public Nav Links (Desktop) -->
-            <div class="hidden lg:flex items-center space-x-2.5 xl:space-x-4 text-xs font-bold text-slate-700">
-                <a href="#home" onclick="showLandingPage()" class="hover:text-teal-700 transition flex items-center gap-1.5 py-2 px-2.5 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-house text-teal-600"></i> Trang Chủ</a>
-                <a href="#dynamic-catalog" onclick="showLandingPage()" class="hover:text-teal-700 transition flex items-center gap-1.5 py-2 px-2.5 rounded-lg hover:bg-slate-100"><span class="brand-nav-badge-icon w-4 h-4" data-dental-service="GENERAL"><svg class="w-full h-full" viewBox="0 0 64 64" fill="none"><path d="M32 6 L14 14 V28 C14 42 22 52 32 58 C42 52 50 42 50 28 V14 L32 6 Z" fill="#087a72" fill-opacity="0.2" stroke="#087a72" stroke-width="3"/><path d="M32 24 V38 M25 31 H39" stroke="#0d9488" stroke-width="3" stroke-linecap="round"/></svg></span> Dịch Vụ</a>
-                <a href="#doctors" onclick="showLandingPage()" class="hover:text-teal-700 transition flex items-center gap-1.5 py-2 px-2.5 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-user-doctor text-teal-600"></i> Bác Sĩ</a>
-                <a href="#pricing" onclick="showLandingPage()" class="hover:text-teal-700 transition flex items-center gap-1.5 py-2 px-2.5 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-tags text-emerald-600"></i> Bảng Giá</a>
-                <a href="#testimonials" onclick="showLandingPage()" class="hover:text-teal-700 transition flex items-center gap-1.5 py-2 px-2.5 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-star text-amber-500"></i> Đánh Giá</a>
-                <a href="#faq" onclick="showLandingPage()" class="hover:text-teal-700 transition flex items-center gap-1.5 py-2 px-2.5 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-circle-question text-sky-600"></i> Hỏi Đáp FAQ</a>
+            <!-- Public Nav Links (Desktop & Tablet) -->
+            <div class="hidden md:flex items-center space-x-1 lg:space-x-3 text-xs font-bold text-slate-700">
+                <a href="#home" onclick="showLandingPage()" class="hover:text-teal-700 transition flex items-center gap-1 py-1.5 px-2 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-house text-teal-600"></i> Trang Chủ</a>
+                <a href="#dynamic-catalog" onclick="showLandingPage()" class="hover:text-teal-700 transition flex items-center gap-1 py-1.5 px-2 rounded-lg hover:bg-slate-100"><span class="brand-nav-badge-icon w-3.5 h-3.5" data-dental-service="GENERAL"><svg class="w-full h-full" viewBox="0 0 64 64" fill="none"><path d="M32 6 L14 14 V28 C14 42 22 52 32 58 C42 52 50 42 50 28 V14 L32 6 Z" fill="#087a72" fill-opacity="0.2" stroke="#087a72" stroke-width="3"/><path d="M32 24 V38 M25 31 H39" stroke="#0d9488" stroke-width="3" stroke-linecap="round"/></svg></span> Dịch Vụ</a>
+                <a href="#doctors" onclick="showLandingPage()" class="hover:text-teal-700 transition flex items-center gap-1 py-1.5 px-2 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-user-doctor text-teal-600"></i> Bác Sĩ</a>
+                <a href="#pricing" onclick="showLandingPage()" class="hover:text-teal-700 transition flex items-center gap-1 py-1.5 px-2 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-tags text-emerald-600"></i> Bảng Giá</a>
+                <a href="#testimonials" onclick="showLandingPage()" class="hover:text-teal-700 transition flex items-center gap-1 py-1.5 px-2 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-star text-amber-500"></i> Đánh Giá</a>
+                <a href="#faq" onclick="showLandingPage()" class="hover:text-teal-700 transition flex items-center gap-1 py-1.5 px-2 rounded-lg hover:bg-slate-100"><i class="fa-solid fa-circle-question text-sky-600"></i> Hỏi Đáp FAQ</a>
             </div>
 
             <!-- Action Buttons & Auth Profile -->
@@ -466,14 +466,14 @@ footer { background: #0d3534 !important; }
                 </div>
 
                 <!-- Mobile Hamburger Button (WCAG 44x44px target) -->
-                <button id="mobile-menu-btn" onclick="toggleMobileMenu()" aria-expanded="false" aria-controls="mobile-menu-drawer" aria-label="Mở thực đơn điều hướng" class="lg:hidden w-11 h-11 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer">
+                <button id="mobile-menu-btn" onclick="toggleMobileMenu()" aria-expanded="false" aria-controls="mobile-menu-drawer" aria-label="Mở thực đơn điều hướng" class="md:hidden w-11 h-11 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer">
                     <i id="mobile-menu-icon" class="fa-solid fa-bars text-lg"></i>
                 </button>
             </div>
         </div>
 
         <!-- Mobile Menu Dropdown Drawer -->
-        <div id="mobile-menu-drawer" class="hidden lg:hidden bg-white/95 backdrop-blur-xl border-b border-slate-200 px-5 py-4 space-y-3 shadow-2xl max-h-[80vh] overflow-y-auto">
+        <div id="mobile-menu-drawer" class="hidden md:hidden bg-white/95 backdrop-blur-xl border-b border-slate-200 px-5 py-4 space-y-3 shadow-2xl max-h-[80vh] overflow-y-auto">
             <div class="flex flex-col space-y-1.5 font-bold text-sm text-slate-700">
                 <a href="#home" onclick="showLandingPage(); closeMobileMenu();" class="py-2.5 px-4 min-h-[44px] rounded-xl hover:bg-slate-100 flex items-center gap-2.5"><i class="fa-solid fa-house text-teal-600 w-5"></i> Trang Chủ</a>
                 <a href="#dynamic-catalog" onclick="showLandingPage(); closeMobileMenu();" class="py-2.5 px-4 min-h-[44px] rounded-xl hover:bg-slate-100 flex items-center gap-2.5"><span class="brand-nav-badge-icon w-5" data-dental-service="GENERAL"><svg class="w-full h-full" viewBox="0 0 64 64" fill="none"><path d="M32 6 L14 14 V28 C14 42 22 52 32 58 C42 52 50 42 50 28 V14 L32 6 Z" fill="#087a72" stroke="#087a72" stroke-width="2"/></svg></span> Dịch Vụ Nha Khoa</a>
@@ -481,7 +481,7 @@ footer { background: #0d3534 !important; }
                 <a href="#pricing" onclick="showLandingPage(); closeMobileMenu();" class="py-2.5 px-4 min-h-[44px] rounded-xl hover:bg-slate-100 flex items-center gap-2.5"><i class="fa-solid fa-tags text-emerald-600 w-5"></i> Bảng Giá So Sánh</a>
                 <a href="#testimonials" onclick="showLandingPage(); closeMobileMenu();" class="py-2.5 px-4 min-h-[44px] rounded-xl hover:bg-slate-100 flex items-center gap-2.5"><i class="fa-solid fa-star text-amber-500 w-5"></i> Đánh Giá Thực Tế</a>
                 <a href="#faq" onclick="showLandingPage(); closeMobileMenu();" class="py-2.5 px-4 min-h-[44px] rounded-xl hover:bg-slate-100 flex items-center gap-2.5"><i class="fa-solid fa-circle-question text-sky-600 w-5"></i> Hỏi Đáp Thắc Mắc FAQ</a>
-                <a href="#warranty-section" onclick="showLandingPage(); closeMobileMenu();" class="py-2.5 px-4 min-h-[44px] rounded-xl hover:bg-sky-50 text-sky-700 flex items-center gap-2.5"><span class="brand-nav-badge-icon w-5" data-dental-badge="WARRANTY"><svg class="w-full h-full" viewBox="0 0 64 64" fill="none"><path d="M32 6 C40 10 49 10 52 14 C52 30 46 47 32 58 C18 47 12 30 12 14 C15 10 24 10 32 6 Z" fill="#0284c7" stroke="#fbbf24" stroke-width="2.5"/><rect x="25" y="24" width="14" height="14" rx="2" fill="#ffffff"/><circle cx="32" cy="14" r="3" fill="#f59e0b"/></svg></span> Tra Cứu Thẻ Bảo Hành QR</a>
+                <a href="#warranty-section" onclick="showLandingPage(); closeMobileMenu();" class="py-2.5 px-4 min-h-[44px] rounded-xl hover:bg-sky-50 text-sky-700 flex items-center gap-2.5"><span class="brand-nav-badge-icon w-5" data-dental-badge="WARRANTY"><svg class="w-full h-full" viewBox="0 0 64 64" fill="none"><path d="M32 6 C40 10 49 10 52 14 C52 30 46 47 32 58 C18 47 12 30 12 14 C15 10 24 10 32 6 Z" fill="#0284c7" stroke="#fbbf24" stroke-width="2.5"/><rect x="25" y="24" width="14" height="14" rx="2" fill="#ffffff"/><circle cx="32" cy="32" r="3" fill="#f59e0b"/></svg></span> Tra Cứu Thẻ Bảo Hành QR</a>
                 <a href="#ai-diagnostic-section" onclick="showLandingPage(); closeMobileMenu();" class="py-2.5 px-4 min-h-[44px] rounded-xl hover:bg-purple-50 text-purple-700 flex items-center gap-2.5"><span class="brand-nav-badge-icon w-5" data-dental-badge="AI_DOCTOR"><svg class="w-full h-full" viewBox="0 0 64 64" fill="none"><polygon points="22,14 42,14 50,22 50,42 42,50 22,50 14,42 14,22" fill="#7c3aed" stroke="#38bdf8" stroke-width="2"/><circle cx="32" cy="32" r="5" stroke="#2dd4bf" stroke-width="2" fill="#0f172a"/><circle cx="32" cy="32" r="2" fill="#fef08a"/></svg></span> AI Khám Nhanh Răng Miệng</a>
             </div>
             <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
@@ -493,7 +493,6 @@ footer { background: #0d3534 !important; }
                 </a>
             </div>
         </div>
-    </nav>
     </nav>
 
     <!-- Mobile Menu Backdrop Overlay -->
