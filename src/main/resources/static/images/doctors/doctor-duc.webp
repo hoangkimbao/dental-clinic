@@ -1,0 +1,32 @@
+<svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="BS. CKI Nguyễn Minh Đức">
+    <defs>
+        <linearGradient id="bg-duc-w" x1="0" y1="0" x2="400" y2="400" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#047857"/>
+            <stop offset="60%" stop-color="#059669"/>
+            <stop offset="100%" stop-color="#065f46"/>
+        </linearGradient>
+        <linearGradient id="coat-duc-w" x1="100" y1="240" x2="300" y2="400" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="100%" stop-color="#f1f5f9"/>
+        </linearGradient>
+    </defs>
+    <rect width="400" height="400" rx="32" fill="url(#bg-duc-w)"/>
+    <circle cx="200" cy="180" r="150" fill="#ffffff" fill-opacity="0.08"/>
+    <path d="M70 400 C70 300 130 260 200 260 C270 260 330 300 330 400 Z" fill="url(#coat-duc-w)"/>
+    <polygon points="175,260 225,260 200,330" fill="#e2e8f0"/>
+    <polygon points="196,265 204,265 206,315 200,325 194,315" fill="#047857"/>
+    <path d="M148 260 C148 340 180 360 200 360 C220 360 252 340 252 260" stroke="#475569" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="200" cy="365" r="14" fill="#6ee7b7" stroke="#047857" stroke-width="4"/>
+    <rect x="175" y="210" width="50" height="60" rx="8" fill="#fed7aa"/>
+    <circle cx="140" cy="165" r="16" fill="#fed7aa"/>
+    <circle cx="260" cy="165" r="16" fill="#fed7aa"/>
+    <ellipse cx="200" cy="160" rx="58" ry="70" fill="#fed7aa"/>
+    <path d="M142 140 C140 80 260 80 258 140 C245 100 155 100 142 140 Z" fill="#334155"/>
+    <circle cx="175" cy="152" r="5" fill="#1e293b"/>
+    <circle cx="225" cy="152" r="5" fill="#1e293b"/>
+    <path d="M200 154 L196 174 L204 174" stroke="#ea580c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M178 190 Q200 214 222 190 Z" fill="#991b1b"/>
+    <path d="M182 190 Q200 198 218 190 Z" fill="#ffffff"/>
+    <rect x="90" y="320" width="70" height="24" rx="4" fill="#047857"/>
+    <text x="125" y="336" font-family="system-ui, sans-serif" font-weight="900" font-size="8" fill="#ffffff" text-anchor="middle">TRƯỞNG KHOA</text>
+</svg>

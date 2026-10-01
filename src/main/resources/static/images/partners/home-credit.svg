@@ -1,0 +1,8 @@
+<svg viewBox="0 0 160 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Home Credit Logo">
+    <g transform="translate(6, 4)">
+        <rect x="2" y="2" width="36" height="36" rx="10" fill="#E31837"/>
+        <path d="M12 20 L20 12 L28 20 M15 18 V26 H25 V18" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="48" y="24" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="15" fill="#E31837">home</text>
+    <text x="48" y="38" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="15" fill="#231F20">credit</text>
+</svg>

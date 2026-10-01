@@ -1,0 +1,40 @@
+<svg viewBox="0 0 500 320" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Niềng Răng Chỉnh Nha 3D">
+    <defs>
+        <linearGradient id="bg-art-ortho" x1="0" y1="0" x2="500" y2="320" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#042f2e"/>
+            <stop offset="60%" stop-color="#115e59"/>
+            <stop offset="100%" stop-color="#0f766e"/>
+        </linearGradient>
+        <linearGradient id="gold-art" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#fde047"/>
+            <stop offset="100%" stop-color="#ca8a04"/>
+        </linearGradient>
+    </defs>
+    <rect width="500" height="320" rx="24" fill="url(#bg-art-ortho)"/>
+    <circle cx="420" cy="80" r="120" fill="#ffffff" fill-opacity="0.04"/>
+    <circle cx="80" cy="240" r="100" fill="#ffffff" fill-opacity="0.04"/>
+    
+    <!-- Dental Arch with Brackets Graphic -->
+    <g transform="translate(130, 40)">
+        <!-- Tooth Arch Contour -->
+        <path d="M20 160 C20 40 220 40 220 160" stroke="#5eead4" stroke-width="8" stroke-dasharray="8 6" stroke-linecap="round"/>
+        <!-- Teeth shapes along the arch -->
+        <rect x="30" y="110" width="28" height="36" rx="8" fill="#ffffff" stroke="#0d9488" stroke-width="2"/>
+        <rect x="65" y="70" width="30" height="40" rx="8" fill="#ffffff" stroke="#0d9488" stroke-width="2"/>
+        <rect x="105" y="50" width="32" height="42" rx="8" fill="#ffffff" stroke="#0d9488" stroke-width="2"/>
+        <rect x="145" y="70" width="30" height="40" rx="8" fill="#ffffff" stroke="#0d9488" stroke-width="2"/>
+        <rect x="180" y="110" width="28" height="36" rx="8" fill="#ffffff" stroke="#0d9488" stroke-width="2"/>
+        
+        <!-- Archwire -->
+        <path d="M25 128 C25 65 215 65 215 128" stroke="url(#gold-art)" stroke-width="4" stroke-linecap="round"/>
+        <!-- Precision Brackets with Gems -->
+        <rect x="38" y="122" width="12" height="12" rx="3" fill="#0f766e" stroke="#fde047" stroke-width="1.5"/>
+        <rect x="74" y="84" width="12" height="12" rx="3" fill="#0f766e" stroke="#fde047" stroke-width="1.5"/>
+        <rect x="115" y="66" width="12" height="12" rx="3" fill="#0f766e" stroke="#fde047" stroke-width="1.5"/>
+        <rect x="154" y="84" width="12" height="12" rx="3" fill="#0f766e" stroke="#fde047" stroke-width="1.5"/>
+        <rect x="188" y="122" width="12" height="12" rx="3" fill="#0f766e" stroke="#fde047" stroke-width="1.5"/>
+    </g>
+    
+    <text x="40" y="275" font-family="system-ui, sans-serif" font-weight="900" font-size="18" fill="#ffffff">Cẩm Nang Niềng Răng &amp; Bảng Giá 2026</text>
+    <text x="40" y="295" font-family="system-ui, sans-serif" font-weight="600" font-size="12" fill="#5eead4">Chỉnh nha thẩm mỹ &bull; Khớp cắn chuẩn y khoa</text>
+</svg>

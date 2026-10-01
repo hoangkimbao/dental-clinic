@@ -1,0 +1,9 @@
+<svg viewBox="0 0 160 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="HD SAISON Logo">
+    <g transform="translate(6, 4)">
+        <rect x="2" y="4" width="40" height="32" rx="6" fill="#ED1C24"/>
+        <path d="M30 4 L42 20 L30 36 Z" fill="#FFD100"/>
+        <text x="7" y="26" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="17" fill="#FFFFFF">HD</text>
+    </g>
+    <text x="52" y="29" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="16" fill="#231F20" letter-spacing="1">SAISON</text>
+    <text x="52" y="38" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="7" fill="#64748b">TÀI CHÍNH TIÊU DÙNG</text>
+</svg>

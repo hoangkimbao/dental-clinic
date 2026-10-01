@@ -1,0 +1,20 @@
+<svg viewBox="0 0 500 320" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Nhổ Răng Khôn Sóng Siêu Âm Piezotome">
+    <defs>
+        <linearGradient id="bg-art-wis-w" x1="0" y1="0" x2="500" y2="320" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#1e1b4b"/>
+            <stop offset="60%" stop-color="#4338ca"/>
+            <stop offset="100%" stop-color="#6366f1"/>
+        </linearGradient>
+    </defs>
+    <rect width="500" height="320" rx="24" fill="url(#bg-art-wis-w)"/>
+    <circle cx="420" cy="80" r="120" fill="#ffffff" fill-opacity="0.04"/>
+    <g transform="translate(190, 40)">
+        <path d="M30 60 C30 35 45 25 60 25 C75 25 90 35 90 60 C90 85 85 100 80 115 C75 130 75 160 70 170 C65 160 62 135 60 125 C58 135 55 160 50 170 C45 160 45 130 40 115 C35 100 30 85 30 60 Z" fill="#ffffff" stroke="#a5b4fc" stroke-width="2"/>
+        <path d="M42 45 Q60 55 78 45" stroke="#cbd5e1" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="60" cy="90" r="45" stroke="#818cf8" stroke-width="2.5" stroke-dasharray="6 4" fill="none"/>
+        <circle cx="60" cy="90" r="65" stroke="#a5b4fc" stroke-width="1.5" stroke-dasharray="8 6" fill="none"/>
+        <circle cx="60" cy="90" r="85" stroke="#c7d2fe" stroke-width="1" stroke-dasharray="10 8" fill="none"/>
+    </g>
+    <text x="40" y="275" font-family="system-ui, sans-serif" font-weight="900" font-size="18" fill="#ffffff">Nhổ Răng Khôn Sóng Siêu Âm Piezotome</text>
+    <text x="40" y="295" font-family="system-ui, sans-serif" font-weight="600" font-size="12" fill="#c7d2fe">Công nghệ Piezotome êm ái &bull; Lành thương thần tốc</text>
+</svg>

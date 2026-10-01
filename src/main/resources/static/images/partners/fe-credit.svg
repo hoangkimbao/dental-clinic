@@ -1,0 +1,8 @@
+<svg viewBox="0 0 160 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="FE Credit Logo">
+    <g transform="translate(6, 4)">
+        <rect x="2" y="4" width="36" height="32" rx="8" fill="#EE2E24"/>
+        <text x="7" y="26" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="18" fill="#FFFFFF">FE</text>
+    </g>
+    <text x="48" y="29" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="18" fill="#00A651">CREDIT</text>
+    <text x="49" y="39" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="7" fill="#64748b">VAY TIÊU DÙNG TÍN CHẤP</text>
+</svg>

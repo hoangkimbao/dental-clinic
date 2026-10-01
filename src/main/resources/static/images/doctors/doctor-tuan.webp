@@ -1,0 +1,31 @@
+<svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="BS. Lê Minh Tuấn">
+    <defs>
+        <linearGradient id="bg-tuan-w" x1="0" y1="0" x2="400" y2="400" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#0284c7"/>
+            <stop offset="60%" stop-color="#0369a1"/>
+            <stop offset="100%" stop-color="#075985"/>
+        </linearGradient>
+        <linearGradient id="coat-tuan-w" x1="100" y1="240" x2="300" y2="400" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="100%" stop-color="#e0f2fe"/>
+        </linearGradient>
+    </defs>
+    <rect width="400" height="400" rx="32" fill="url(#bg-tuan-w)"/>
+    <circle cx="200" cy="180" r="150" fill="#ffffff" fill-opacity="0.08"/>
+    <path d="M70 400 C70 300 130 260 200 260 C270 260 330 300 330 400 Z" fill="url(#coat-tuan-w)"/>
+    <polygon points="170,260 230,260 200,320" fill="#0284c7"/>
+    <path d="M150 260 C150 340 180 360 200 360 C220 360 250 340 250 260" stroke="#334155" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="200" cy="365" r="14" fill="#38bdf8" stroke="#0369a1" stroke-width="4"/>
+    <rect x="175" y="210" width="50" height="60" rx="8" fill="#fed7aa"/>
+    <circle cx="140" cy="165" r="16" fill="#fed7aa"/>
+    <circle cx="260" cy="165" r="16" fill="#fed7aa"/>
+    <ellipse cx="200" cy="160" rx="58" ry="68" fill="#fed7aa"/>
+    <path d="M142 140 C140 75 255 75 258 140 C245 95 155 95 142 140 Z" fill="#0f172a"/>
+    <circle cx="176" cy="150" r="5" fill="#0f172a"/>
+    <circle cx="224" cy="150" r="5" fill="#0f172a"/>
+    <path d="M200 152 L196 172 L204 172" stroke="#ea580c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M176 186 Q200 212 224 186 Z" fill="#991b1b"/>
+    <path d="M180 186 Q200 196 220 186 Z" fill="#ffffff"/>
+    <rect x="95" y="320" width="60" height="24" rx="4" fill="#0369a1"/>
+    <text x="125" y="336" font-family="system-ui, sans-serif" font-weight="900" font-size="8.5" fill="#ffffff" text-anchor="middle">INVISALIGN</text>
+</svg>

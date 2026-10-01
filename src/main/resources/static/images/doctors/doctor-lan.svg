@@ -1,0 +1,69 @@
+<svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="BS. Hoàng Ngọc Lan">
+    <defs>
+        <linearGradient id="bg-lan" x1="0" y1="0" x2="400" y2="400" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4f46e5"/>
+            <stop offset="60%" stop-color="#6366f1"/>
+            <stop offset="100%" stop-color="#4338ca"/>
+        </linearGradient>
+        <linearGradient id="coat-lan" x1="100" y1="240" x2="300" y2="400" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="100%" stop-color="#f5f3ff"/>
+        </linearGradient>
+    </defs>
+    <rect width="400" height="400" rx="32" fill="url(#bg-lan)"/>
+    <circle cx="200" cy="180" r="150" fill="#ffffff" fill-opacity="0.08"/>
+    
+    <!-- Long Hair Backing -->
+    <path d="M125 150 C120 280 140 340 160 360 L240 360 C260 340 280 280 275 150 Z" fill="#1e1b4b"/>
+    
+    <!-- Doctor Body / Lab Coat -->
+    <path d="M70 400 C70 300 130 260 200 260 C270 260 330 300 330 400 Z" fill="url(#coat-lan)"/>
+    <!-- Medical Scrub V-neck -->
+    <polygon points="175,260 225,260 200,315" fill="#6366f1"/>
+    
+    <!-- Stethoscope -->
+    <path d="M155 260 C155 330 180 350 200 350 C220 350 245 330 245 260" stroke="#475569" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="200" cy="355" r="13" fill="#a5b4fc" stroke="#4338ca" stroke-width="3"/>
+    
+    <!-- Neck -->
+    <rect x="180" y="210" width="40" height="60" rx="6" fill="#fde68a"/>
+    
+    <!-- Head & Ears -->
+    <circle cx="145" cy="168" r="14" fill="#fde68a"/>
+    <circle cx="255" cy="168" r="14" fill="#fde68a"/>
+    <!-- Pearl Earrings -->
+    <circle cx="144" cy="178" r="4.5" fill="#ffffff"/>
+    <circle cx="256" cy="178" r="4.5" fill="#ffffff"/>
+    
+    <ellipse cx="200" cy="165" rx="54" ry="64" fill="#fde68a"/>
+    
+    <!-- Hair Front / Bangs -->
+    <path d="M136 160 C136 95 264 95 264 160 C250 115 220 110 200 115 C180 110 150 115 136 160 Z" fill="#1e1b4b"/>
+    
+    <!-- Eyebrows Soft Arc -->
+    <path d="M165 142 Q178 136 190 142" stroke="#1e1b4b" stroke-width="3" stroke-linecap="round"/>
+    <path d="M210 142 Q222 136 235 142" stroke="#1e1b4b" stroke-width="3" stroke-linecap="round"/>
+    
+    <!-- Eyes Gentle Sparkle -->
+    <circle cx="178" cy="154" r="5" fill="#1e1b4b"/>
+    <circle cx="180" cy="152" r="1.5" fill="#ffffff"/>
+    <circle cx="222" cy="154" r="5" fill="#1e1b4b"/>
+    <circle cx="224" cy="152" r="1.5" fill="#ffffff"/>
+    <!-- Lashes -->
+    <path d="M172 148 L176 150 M228 148 L224 150" stroke="#1e1b4b" stroke-width="2"/>
+    
+    <!-- Cheerful Cheeks -->
+    <circle cx="162" cy="172" r="8" fill="#fda4af" fill-opacity="0.4"/>
+    <circle cx="238" cy="172" r="8" fill="#fda4af" fill-opacity="0.4"/>
+    
+    <!-- Nose -->
+    <path d="M200 158 L197 174 L203 174" stroke="#d97706" stroke-width="2" stroke-linecap="round"/>
+    
+    <!-- Radiant Caring Smile -->
+    <path d="M180 190 Q200 212 220 190 Z" fill="#e11d48"/>
+    <path d="M184 190 Q200 198 216 190 Z" fill="#ffffff"/>
+    
+    <!-- Pediatric Dentistry Badge -->
+    <rect x="95" y="320" width="55" height="24" rx="4" fill="#4338ca"/>
+    <text x="122" y="336" font-family="system-ui, sans-serif" font-weight="900" font-size="8.5" fill="#ffffff" text-anchor="middle">PEDIATRIC</text>
+</svg>

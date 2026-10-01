@@ -891,6 +891,88 @@
         },
 
         /**
+         * Get 0% Installment Financial Partner SVG Logo
+         * @param {string} partnerKey - VPBANK, SHINHAN, FECREDIT, HOMECREDIT, HDSAISON, TECHCOMBANK
+         * @param {Object} [options]
+         * @returns {string} SVG HTML string
+         */
+        getPartnerLogoSvg: function (partnerKey, options = {}) {
+            const cls = options.className || 'h-7 w-auto';
+            const cleanKey = String(partnerKey || '').toUpperCase().replace(/[-_\s]/g, '');
+            switch (cleanKey) {
+                case 'VPBANK':
+                    return `<svg class="${cls}" viewBox="0 0 160 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="VPBank">
+                        <g transform="translate(6, 4)">
+                            <path d="M18 4 C14 8 10 16 14 24 C18 16 26 12 28 8 Z" fill="#00B14F"/>
+                            <path d="M22 6 C20 12 20 20 28 24 C28 16 32 10 36 6 Z" fill="#00B14F"/>
+                            <path d="M12 14 C16 18 24 22 26 30 C20 28 14 24 10 20 Z" fill="#ED1C24"/>
+                            <path d="M16 22 C22 24 28 26 28 36 C24 32 18 28 14 26 Z" fill="#00B14F"/>
+                        </g>
+                        <text x="48" y="27" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-style="italic" font-size="20" fill="#00B14F">VP</text>
+                        <text x="82" y="27" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="19" fill="#003B1F">Bank</text>
+                        <text x="48" y="38" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="7" fill="#64748b" letter-spacing="1">VIETNAM PROSPERITY</text>
+                    </svg>`;
+                case 'SHINHAN':
+                case 'SHINHANBANK':
+                    return `<svg class="${cls}" viewBox="0 0 160 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Shinhan Bank">
+                        <g transform="translate(6, 4)">
+                            <circle cx="20" cy="20" r="16" fill="#0046FF"/>
+                            <path d="M12 24 C16 18 22 14 28 12 C26 16 22 20 16 22 Z" fill="#FDB813"/>
+                            <path d="M15 18 C20 13 26 10 30 9 C27 14 24 17 19 19 Z" fill="#FFFFFF"/>
+                        </g>
+                        <text x="48" y="27" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="16" fill="#002D72">Shinhan</text>
+                        <text x="114" y="27" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="15" fill="#0046FF">Bank</text>
+                        <text x="48" y="38" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="7.5" fill="#64748b">NGÂN HÀNG SHINHAN</text>
+                    </svg>`;
+                case 'FECREDIT':
+                    return `<svg class="${cls}" viewBox="0 0 160 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="FE Credit">
+                        <g transform="translate(6, 4)">
+                            <rect x="2" y="4" width="36" height="32" rx="8" fill="#EE2E24"/>
+                            <text x="7" y="26" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="18" fill="#FFFFFF">FE</text>
+                        </g>
+                        <text x="48" y="29" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="18" fill="#00A651">CREDIT</text>
+                        <text x="49" y="39" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="7" fill="#64748b">VAY TIÊU DÙNG TÍN CHẤP</text>
+                    </svg>`;
+                case 'HOMECREDIT':
+                    return `<svg class="${cls}" viewBox="0 0 160 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Home Credit">
+                        <g transform="translate(6, 4)">
+                            <rect x="2" y="2" width="36" height="36" rx="10" fill="#E31837"/>
+                            <path d="M12 20 L20 12 L28 20 M15 18 V26 H25 V18" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </g>
+                        <text x="48" y="24" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="15" fill="#E31837">home</text>
+                        <text x="48" y="38" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="15" fill="#231F20">credit</text>
+                    </svg>`;
+                case 'HDSAISON':
+                    return `<svg class="${cls}" viewBox="0 0 160 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="HD SAISON">
+                        <g transform="translate(6, 4)">
+                            <rect x="2" y="4" width="40" height="32" rx="6" fill="#ED1C24"/>
+                            <path d="M30 4 L42 20 L30 36 Z" fill="#FFD100"/>
+                            <text x="7" y="26" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="17" fill="#FFFFFF">HD</text>
+                        </g>
+                        <text x="52" y="29" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="16" fill="#231F20" letter-spacing="1">SAISON</text>
+                        <text x="52" y="38" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="7" fill="#64748b">TÀI CHÍNH TIÊU DÙNG</text>
+                    </svg>`;
+                case 'TECHCOMBANK':
+                    return `<svg class="${cls}" viewBox="0 0 160 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Techcombank">
+                        <g transform="translate(6, 12)">
+                            <rect x="0" y="0" width="16" height="16" transform="rotate(45 8 8)" fill="#ED1C24"/>
+                            <rect x="8" y="0" width="16" height="16" transform="rotate(45 16 8)" fill="#ED1C24"/>
+                            <rect x="6" y="2" width="12" height="12" transform="rotate(45 12 8)" fill="#FFFFFF"/>
+                        </g>
+                        <text x="44" y="25" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="14.5" fill="#ED1C24" letter-spacing="0.5">TECHCOM</text>
+                        <text x="119" y="25" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="14.5" fill="#000000" letter-spacing="0.5">BANK</text>
+                        <text x="44" y="36" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="7.5" fill="#64748b">VƯỢT TRỘI HƠN MỖI NGÀY</text>
+                    </svg>`;
+                default:
+                    return `<svg class="${cls}" viewBox="0 0 160 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="4" width="156" height="40" rx="8" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4 4"/><text x="80" y="28" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#64748b" text-anchor="middle">${cleanKey}</text></svg>`;
+            }
+        },
+
+        renderPartnerLogo: function (bankCode, options = {}) {
+            return DentalIcons.getPartnerLogoSvg(bankCode, options);
+        },
+
+        /**
          * Get Standalone UI SVG helper (for offline / zero-font-load immunity)
          * @param {string} iconKey - HOTLINE, ZALO, CALENDAR, SCROLL_TOP, CART, STAR, CHECK, CLOSE, PAPER_PLANE
          * @param {Object} [options]
@@ -930,6 +1012,7 @@
          * - data-dental-logo="full|mark"
          * - data-dental-service="KEY"
          * - data-dental-badge="KEY"
+         * - data-dental-partner="KEY"
          * - data-dental-ui="KEY"
          */
         injectAll: function (rootElement = document) {
@@ -955,6 +1038,13 @@
                 const key = el.getAttribute('data-dental-badge');
                 const cls = el.getAttribute('data-dental-class') || '';
                 el.innerHTML = DentalIcons.getBadgeSvg(key, { className: cls });
+            });
+
+            // Installment Partners
+            rootElement.querySelectorAll('[data-dental-partner]').forEach(el => {
+                const key = el.getAttribute('data-dental-partner');
+                const cls = el.getAttribute('data-dental-class') || '';
+                el.innerHTML = DentalIcons.getPartnerLogoSvg(key, { className: cls });
             });
 
             // UI Icons

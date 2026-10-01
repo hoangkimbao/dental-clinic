@@ -1,0 +1,16 @@
+<svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Default Doctor Avatar">
+    <defs>
+        <linearGradient id="bg-def" x1="0" y1="0" x2="400" y2="400" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#0f766e"/>
+            <stop offset="100%" stop-color="#0284c7"/>
+        </linearGradient>
+    </defs>
+    <rect width="400" height="400" rx="32" fill="url(#bg-def)"/>
+    <circle cx="200" cy="180" r="150" fill="#ffffff" fill-opacity="0.08"/>
+    <!-- Abstract Doctor Avatar Silhouette with Stethoscope -->
+    <path d="M90 390 C90 300 140 260 200 260 C260 260 310 300 310 390 Z" fill="#ffffff"/>
+    <polygon points="175,260 225,260 200,315" fill="#0d9488"/>
+    <ellipse cx="200" cy="165" rx="55" ry="65" fill="#fde68a"/>
+    <path d="M150 260 C150 330 180 350 200 350 C220 350 250 330 250 260" stroke="#334155" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="200" cy="355" r="12" fill="#38bdf8"/>
+</svg>

@@ -1,0 +1,33 @@
+<svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="BS.CKII Trần Văn Thắng">
+    <defs>
+        <linearGradient id="bg-thang-w" x1="0" y1="0" x2="400" y2="400" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#0f766e"/>
+            <stop offset="60%" stop-color="#0d9488"/>
+            <stop offset="100%" stop-color="#115e59"/>
+        </linearGradient>
+        <linearGradient id="coat-thang-w" x1="100" y1="240" x2="300" y2="400" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="100%" stop-color="#e2e8f0"/>
+        </linearGradient>
+    </defs>
+    <rect width="400" height="400" rx="32" fill="url(#bg-thang-w)"/>
+    <circle cx="200" cy="180" r="150" fill="#ffffff" fill-opacity="0.08"/>
+    <path d="M70 400 C70 300 130 260 200 260 C270 260 330 300 330 400 Z" fill="url(#coat-thang-w)"/>
+    <polygon points="170,260 230,260 200,320" fill="#0f766e"/>
+    <path d="M150 260 C150 340 180 360 200 360 C220 360 250 340 250 260" stroke="#475569" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="200" cy="365" r="14" fill="#94a3b8" stroke="#334155" stroke-width="4"/>
+    <rect x="175" y="210" width="50" height="60" rx="8" fill="#fde68a"/>
+    <circle cx="140" cy="165" r="16" fill="#fde68a"/>
+    <circle cx="260" cy="165" r="16" fill="#fde68a"/>
+    <ellipse cx="200" cy="160" rx="58" ry="70" fill="#fde68a"/>
+    <path d="M142 140 C140 85 260 85 258 140 C245 105 155 105 142 140 Z" fill="#1e293b"/>
+    <circle cx="175" cy="152" r="5" fill="#1e293b"/>
+    <circle cx="225" cy="152" r="5" fill="#1e293b"/>
+    <rect x="156" y="140" width="38" height="24" rx="6" stroke="#0f172a" stroke-width="3" fill="#ffffff" fill-opacity="0.15"/>
+    <rect x="206" y="140" width="38" height="24" rx="6" stroke="#0f172a" stroke-width="3" fill="#ffffff" fill-opacity="0.15"/>
+    <line x1="194" y1="150" x2="206" y2="150" stroke="#0f172a" stroke-width="3"/>
+    <path d="M178 190 Q200 215 222 190 Z" fill="#be123c"/>
+    <path d="M182 190 Q200 200 218 190 Z" fill="#ffffff"/>
+    <rect x="95" y="320" width="48" height="24" rx="4" fill="#0f766e"/>
+    <text x="119" y="336" font-family="system-ui, sans-serif" font-weight="900" font-size="9" fill="#ffffff" text-anchor="middle">IMPLANT</text>
+</svg>

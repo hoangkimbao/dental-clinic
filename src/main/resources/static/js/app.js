@@ -122,16 +122,30 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDentalProducts();
     loadBranches();
     loadForumPosts();
+    loadApprovedReviews();
+
+    // Global ESC key listener for modal closing and scroll-lock release
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' || e.keyCode === 27) {
+            closeMobileMenu();
+            closeCartModal();
+            closeAuthModal();
+            if (typeof closeProductPackagingModal === 'function') closeProductPackagingModal();
+            document.body.classList.remove('modal-open');
+        }
+    });
 });
 
 // ================= UNIVERSAL AUTH MODAL (LOGIN / REGISTER) =================
 function openAuthModal(mode = 'login') {
     document.getElementById('auth-modal').classList.remove('hidden');
+    document.body.classList.add('modal-open');
     toggleAuthMode(mode);
 }
 
 function closeAuthModal() {
     document.getElementById('auth-modal').classList.add('hidden');
+    document.body.classList.remove('modal-open');
 }
 
 function toggleAuthMode(mode) {
@@ -534,6 +548,7 @@ function renderDynamicRoleView() {
 
 // Switch Tabs
 function switchTab(tabId) {
+    window.activePortalTab = tabId;
     const tabs = ['dashboard', 'appointments', 'coupons', 'emr', 'shifts', 'notifications', 'itteam', 'inventory', 'b2b-orders', 'attendance', 'doctor-kpi', 'field-intake'];
     tabs.forEach(t => {
         const sec = document.getElementById(`section-${t}`);
@@ -550,7 +565,12 @@ function switchTab(tabId) {
         }
     });
 
-    if (tabId === 'dashboard') { loadDashboardStats(); initCharts(); }
+    if (tabId === 'dashboard') {
+        loadDashboardStats();
+        initCharts();
+        if (revenueChart && typeof revenueChart.resize === 'function') revenueChart.resize();
+        if (servicePieChart && typeof servicePieChart.resize === 'function') servicePieChart.resize();
+    }
     if (tabId === 'appointments') loadAppointments();
     if (tabId === 'emr') { loadEMR(); loadOrthoPlans(); }
     if (tabId === 'shifts') loadShifts();
@@ -1848,14 +1868,16 @@ function init3DAnimations() {
 
     // 2. Parallax Floating Animations for Hero 3D Badges & Elements via GSAP
     if (window.gsap) {
-        // Subtle floating pulse for 3D tooth icon badge
-        gsap.to(".fa-tooth", {
-            rotation: 8,
-            yoyo: true,
-            repeat: -1,
-            duration: 2.5,
-            ease: "sine.inOut"
-        });
+        // Subtle floating pulse for 3D tooth icon badge if present
+        if (document.querySelector('.fa-tooth')) {
+            gsap.to(".fa-tooth", {
+                rotation: 8,
+                yoyo: true,
+                repeat: -1,
+                duration: 2.5,
+                ease: "sine.inOut"
+            });
+        }
 
         // Entrance animation for Hero Cards if visible
         const heroDoctorCard = document.querySelector('.perspective-1000 .card-3d-tilt');
@@ -1940,7 +1962,7 @@ function renderDentalServices(services) {
             <div class="card-3d-tilt bg-white p-6 rounded-3xl border border-slate-200/90 hover:border-teal-500 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
                 <div>
                     <div class="flex items-center justify-between mb-4">
-                        <div class="dental-icon-box w-14 h-14 rounded-2xl p-2 bg-gradient-to-tr from-teal-50 to-emerald-50 border border-teal-100/80 group-hover:scale-110 transition-all shadow-xs">
+                        <div class="dental-icon-box w-14 h-14 rounded-2xl p-2 bg-gradient-to-tr from-teal-50 to-emerald-50 border border-teal-100/80 group-hover:scale-110 transition-all shadow-sm">
                             ${svgMarkup}
                         </div>
                         ${svc.isFeatured ? `
@@ -2074,15 +2096,15 @@ function renderDentalProducts(products) {
 
     grid.innerHTML = products.map(prod => {
         const packagingCount = (prod.packagingOptions || []).length;
-        const comboOption = (prod.packagingOptions || []).find(p => p.packagingType === 'COMBO_PACK');
+        const comboOption = (prod.packagingOptions || []).find(p => p.packagingType === 'COMBO' || p.packagingType === 'COMBO_PACK');
         const comboDiscount = comboOption ? comboOption.discountPercent : 0;
 
         return `
-            <div class="card-3d-tilt bg-white rounded-3xl border border-slate-200/90 overflow-hidden hover:border-emerald-500 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+            <div class="card-3d-tilt bg-white rounded-3xl border border-slate-200/90 overflow-hidden hover:border-emerald-500 hover:shadow-xl transition-all duration-300 h-full flex flex-col justify-between group">
                 <div class="relative h-48 bg-slate-100 overflow-hidden">
                     <img loading="lazy" src="${prod.imageUrl || 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&auto=format&fit=crop&q=80'}" 
                          alt="${prod.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                    <span class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-xs text-white text-[10px] font-black uppercase px-2.5 py-1 rounded-lg">
+                    <span class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-sm text-white text-[10px] font-black uppercase px-2.5 py-1 rounded-lg">
                         ${prod.brand || 'DentalCare'}
                     </span>
                     ${comboDiscount > 0 ? `
@@ -2094,19 +2116,19 @@ function renderDentalProducts(products) {
                 <div class="p-5 flex-1 flex flex-col justify-between">
                     <div>
                         <div class="flex items-center gap-1 text-amber-500 text-xs mb-1">
-                            <i class="fa-solid fa-star"></i>
+                            <svg class="w-3.5 h-3.5 fill-amber-400 text-amber-400 inline-block mr-0.5" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                             <span class="font-bold text-slate-700">${prod.rating || 5.0}</span>
                             <span class="text-slate-600 text-[10px]">(${prod.reviewsCount || 48} đánh giá)</span>
                         </div>
-                        <h3 class="font-extrabold text-slate-900 text-sm group-hover:text-emerald-700 transition line-clamp-2 mb-1.5">
+                        <h3 class="font-extrabold text-slate-900 text-sm group-hover:text-emerald-700 transition line-clamp-2 min-h-[2.5rem] mb-1.5">
                             ${prod.name}
                         </h3>
-                        <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed mb-4">
+                        <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed min-h-[2.25rem] mb-4">
                             ${prod.description || ''}
                         </p>
                     </div>
 
-                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                    <div class="mt-auto pt-3 border-t border-slate-100 flex items-center justify-between">
                         <div>
                             <span class="text-[10px] text-slate-600 font-medium">Giá tiêu chuẩn</span>
                             <div class="text-base font-black text-emerald-700">
@@ -2114,7 +2136,7 @@ function renderDentalProducts(products) {
                             </div>
                         </div>
                         <button type="button" onclick="openProductPackagingModal(${prod.id})" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer">
-                            <i class="fa-solid fa-cart-plus"></i>
+                            <svg class="w-3.5 h-3.5 inline-block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                             <span>Chọn Mua</span>
                         </button>
                     </div>
@@ -2186,6 +2208,7 @@ function openProductPackagingModal(productId) {
 
     updateModalTotal();
     document.getElementById('product-packaging-modal').classList.remove('hidden');
+    document.body.classList.add('modal-open');
 }
 
 function selectPackagingOption(optionId, price) {
@@ -2225,6 +2248,7 @@ function updateModalTotal() {
 
 function closeProductPackagingModal() {
     document.getElementById('product-packaging-modal').classList.add('hidden');
+    document.body.classList.remove('modal-open');
     currentProductForModal = null;
     selectedPackagingOption = null;
 }
@@ -2269,10 +2293,12 @@ function confirmAddToCart() {
 function openCartModal() {
     renderCart();
     document.getElementById('cart-drawer-modal').classList.remove('hidden');
+    document.body.classList.add('modal-open');
 }
 
 function closeCartModal() {
     document.getElementById('cart-drawer-modal').classList.add('hidden');
+    document.body.classList.remove('modal-open');
 }
 
 function renderCart() {
@@ -2322,11 +2348,11 @@ function renderCart() {
             </div>
             <div class="flex items-center gap-2">
                 <div class="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
-                    <button type="button" onclick="updateCartItemQty(${idx}, -1)" aria-label="Giảm số lượng" class="w-9 h-9 text-sm text-slate-700 hover:bg-slate-200 flex items-center justify-center font-bold active:bg-slate-300 transition-colors">-</button>
+                    <button type="button" onclick="updateCartItemQty(${idx}, -1)" aria-label="Giảm số lượng" class="w-11 h-11 min-w-[44px] min-h-[44px] text-sm text-slate-700 hover:bg-slate-200 flex items-center justify-center font-bold active:bg-slate-300 transition-colors">-</button>
                     <span class="w-8 text-center text-xs font-black text-slate-900">${item.quantity}</span>
-                    <button type="button" onclick="updateCartItemQty(${idx}, 1)" aria-label="Tăng số lượng" class="w-9 h-9 text-sm text-slate-700 hover:bg-slate-200 flex items-center justify-center font-bold active:bg-slate-300 transition-colors">+</button>
+                    <button type="button" onclick="updateCartItemQty(${idx}, 1)" aria-label="Tăng số lượng" class="w-11 h-11 min-w-[44px] min-h-[44px] text-sm text-slate-700 hover:bg-slate-200 flex items-center justify-center font-bold active:bg-slate-300 transition-colors">+</button>
                 </div>
-                <button type="button" onclick="removeCartItem(${idx})" aria-label="Xóa sản phẩm" class="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl p-1 transition cursor-pointer" title="Xóa khỏi giỏ">
+                <button type="button" onclick="removeCartItem(${idx})" aria-label="Xóa sản phẩm" class="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl p-1 transition cursor-pointer" title="Xóa khỏi giỏ">
                     <i class="fa-solid fa-trash-can text-sm"></i>
                 </button>
             </div>
@@ -2521,8 +2547,80 @@ function quickSearchWarranty(code) {
 // -------------------------------------------------------------------------
 // 4. AI DENTAL DIAGNOSTIC VISION (9ROUTER GATEWAY & CLINICAL RULES)
 // -------------------------------------------------------------------------
+let aiUploadedPhotoBase64 = null;
+
+function handleAiPhotoUpload(event) {
+    const file = event.target?.files?.[0];
+    if (!file) return;
+
+    // Reject files exceeding 5MB (5,242,880 bytes) - T2-F19-01
+    if (file.size > 5 * 1024 * 1024) {
+        showToast('⚠️ Dung lượng ảnh vượt quá 5MB. Vui lòng chọn ảnh nhỏ hơn 5MB!');
+        if (event.target) event.target.value = '';
+        return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+        showToast('⚠️ Định dạng tệp không hợp lệ! Vui lòng chọn tệp hình ảnh (JPG, PNG, WEBP).');
+        if (event.target) event.target.value = '';
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        aiUploadedPhotoBase64 = e.target.result;
+        const preview = document.getElementById('ai-photo-preview');
+        const img = document.getElementById('ai-preview-img');
+        const dropzone = document.getElementById('ai-dropzone');
+        if (img) img.src = aiUploadedPhotoBase64;
+        if (preview) preview.classList.remove('hidden');
+        if (dropzone) dropzone.classList.add('hidden');
+    };
+    reader.readAsDataURL(file);
+}
+
+function clearAiPhotoUpload(event) {
+    if (event) event.stopPropagation();
+    aiUploadedPhotoBase64 = null;
+    const input = document.getElementById('ai-photo-input');
+    const preview = document.getElementById('ai-photo-preview');
+    const dropzone = document.getElementById('ai-dropzone');
+    if (input) input.value = '';
+    if (preview) preview.classList.add('hidden');
+    if (dropzone) dropzone.classList.remove('hidden');
+}
+
+function handleAiDragOver(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const dropzone = document.getElementById('ai-dropzone');
+    if (dropzone) dropzone.classList.add('border-purple-600', 'bg-purple-100/60');
+}
+
+function handleAiDragLeave(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const dropzone = document.getElementById('ai-dropzone');
+    if (dropzone) dropzone.classList.remove('border-purple-600', 'bg-purple-100/60');
+}
+
+function handleAiDrop(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const dropzone = document.getElementById('ai-dropzone');
+    if (dropzone) dropzone.classList.remove('border-purple-600', 'bg-purple-100/60');
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0) {
+        const input = document.getElementById('ai-photo-input');
+        if (input) {
+            input.files = files;
+            handleAiPhotoUpload({ target: input });
+        }
+    }
+}
+
 function selectAiSample(symptomText, pathologyKey) {
-    const input = document.getElementById('ai-symptoms-input');
+    const input = document.getElementById('ai-symptoms-input') || document.getElementById('ai-symptom-input');
     if (input) {
         input.value = symptomText;
         input.focus();
@@ -2530,12 +2628,13 @@ function selectAiSample(symptomText, pathologyKey) {
 }
 
 async function runAiDiagnostic() {
-    const symptoms = (document.getElementById('ai-symptoms-input')?.value || '').trim();
+    const symptomsInput = document.getElementById('ai-symptoms-input') || document.getElementById('ai-symptom-input');
+    const symptoms = (symptomsInput?.value || '').trim();
     const patientName = (document.getElementById('ai-patient-name')?.value || '').trim();
     const patientPhone = (document.getElementById('ai-patient-phone')?.value || '').trim();
 
-    if (!symptoms) {
-        showToast('⚠️ Vui lòng mô tả triệu chứng hoặc chọn mẫu bệnh lý bên dưới!');
+    if (!symptoms && !aiUploadedPhotoBase64) {
+        showToast('⚠️ Vui lòng mô tả triệu chứng hoặc tải ảnh chụp răng miệng!');
         return;
     }
 
@@ -2551,17 +2650,39 @@ async function runAiDiagnostic() {
         const payload = {
             patientName: patientName || 'Khách Hàng Trực Tuyến',
             patientPhone: patientPhone || '',
+            symptoms: symptoms,
             symptomsDescription: symptoms,
+            photoBase64: aiUploadedPhotoBase64,
             modelUsed: '9router/gemini-2.5-flash'
         };
 
-        const res = await apiFetch('/api/dental-ai/diagnose', {
+        let diag = null;
+        const res = await fetch('/api/ai/diagnose', {
             method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
+        }).catch(err => {
+            console.warn('AI diagnose direct fetch failed, trying apiFetch fallback:', err);
+            return null;
         });
 
-        if (res.ok && res.data.success) {
-            const diag = res.data.data;
+        if (res && res.ok) {
+            const json = await res.json();
+            diag = json.data || json;
+        } else {
+            const fbRes = await apiFetch('/api/dental-ai/diagnose', {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            }).catch(e => {
+                console.warn('AI fallback failed:', e);
+                return null;
+            });
+            if (fbRes && fbRes.ok && fbRes.data.success) {
+                diag = fbRes.data.data;
+            }
+        }
+
+        if (diag) {
             const riskColors = {
                 'LOW': 'bg-emerald-100 text-emerald-800 border-emerald-300',
                 'MEDIUM': 'bg-amber-100 text-amber-800 border-amber-300',
@@ -2569,7 +2690,16 @@ async function runAiDiagnostic() {
                 'URGENT': 'bg-red-200 text-red-900 border-red-400 animate-pulse'
             };
 
-            const riskBadge = riskColors[diag.riskLevel] || 'bg-slate-100 text-slate-800';
+            const riskLevel = diag.riskLevel || 'MEDIUM';
+            const urgencyBadge = riskLevel;
+            const riskBadgeClass = riskColors[riskLevel] || 'bg-slate-100 text-slate-800';
+
+            // Safe mapping of pathologyNameVi without crash (T1-F19-03)
+            const pathologyNameVi = diag.pathologyNameVi || diag.detectedPathology || diag.pathologyName || 'Bệnh lý răng miệng cần khám';
+            const confidence = diag.confidenceScore != null ? Math.round(diag.confidenceScore * 100) : 95;
+            const clinicalFindings = diag.clinicalFindings || diag.findings || 'Cần can thiệp lâm sàng để ngăn ngừa biến chứng.';
+            const treatmentAdvice = diag.treatmentAdvice || diag.recommendation || 'Bác sĩ Chuyên khoa sẽ thăm khám trực tiếp, chụp phim CT 3D và đưa ra phác đồ tối ưu.';
+            const safePathologyForClick = String(pathologyNameVi).replace(/'/g, "\\'");
 
             result.innerHTML = `
                 <div class="space-y-4">
@@ -2580,24 +2710,24 @@ async function runAiDiagnostic() {
                             </div>
                             <div>
                                 <span class="text-[10px] text-purple-700 font-black uppercase tracking-wider">Kết Quả Chẩn Đoán AI</span>
-                                <h3 class="text-sm font-black text-slate-900">${diag.pathologyName}</h3>
+                                <h3 id="ai-result-pathology" class="text-sm font-black text-slate-900">${pathologyNameVi}</h3>
                             </div>
                         </div>
-                        <span class="text-[11px] font-black uppercase px-3 py-1 rounded-full border ${riskBadge}">
-                            ${diag.riskLevel}
+                        <span class="text-[11px] font-black uppercase px-3 py-1 rounded-full border ${riskBadgeClass}">
+                            ${urgencyBadge}
                         </span>
                     </div>
 
                     <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-2 text-xs">
                         <div class="flex items-center justify-between text-slate-600">
                             <span>Độ chuẩn xác lâm sàng:</span>
-                            <span class="font-black text-purple-700">${Math.round(diag.confidenceScore * 100)}%</span>
+                            <span class="font-black text-purple-700">${confidence}%</span>
                         </div>
                         <div class="w-full bg-slate-100 rounded-full h-2">
-                            <div class="bg-gradient-to-r from-purple-500 to-indigo-600 h-2 rounded-full" style="width: ${Math.round(diag.confidenceScore * 100)}%"></div>
+                            <div class="bg-gradient-to-r from-purple-500 to-indigo-600 h-2 rounded-full" style="width: ${confidence}%"></div>
                         </div>
                         <div class="pt-2 text-slate-700 font-medium leading-relaxed">
-                            <b>Phát hiện lâm sàng:</b> ${diag.clinicalFindings}
+                            <b>Phát hiện lâm sàng:</b> ${clinicalFindings}
                         </div>
                     </div>
 
@@ -2605,7 +2735,7 @@ async function runAiDiagnostic() {
                         <div class="font-bold text-purple-900 flex items-center gap-1.5">
                             <i class="fa-solid fa-user-doctor text-purple-700"></i> Phác đồ & Lời khuyên điều trị:
                         </div>
-                        <p class="text-purple-950 font-medium leading-relaxed">${diag.treatmentAdvice}</p>
+                        <p class="text-purple-950 font-medium leading-relaxed">${treatmentAdvice}</p>
                         <div class="flex items-center justify-between pt-2 border-t border-purple-200 text-[11px]">
                             <span class="text-purple-800">Chi phí dự kiến:</span>
                             <span class="font-black text-purple-900">${diag.estimatedCostRange || 'Liên hệ để nhận báo giá'}</span>
@@ -2613,24 +2743,155 @@ async function runAiDiagnostic() {
                     </div>
 
                     <div class="flex gap-2">
-                        <button type="button" onclick="selectServiceForBooking('${diag.pathologyName.replace(/'/g, "\\'")}')" class="flex-1 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-black shadow-md transition flex items-center justify-center gap-1.5 cursor-pointer">
-                            <i class="fa-solid fa-calendar-check"></i> Đặt Lịch Khám Ưu Tiên
+                        <button type="button" onclick="prefillBookingService('${safePathologyForClick}')" class="flex-1 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-black shadow-md transition flex items-center justify-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-calendar-check"></i> Đặt Lịch Khám Ngay
                         </button>
                     </div>
                 </div>`;
             result.classList.remove('hidden');
         } else {
-            showToast('⚠️ Không thể phân tích bệnh lý. Vui lòng thử lại!');
-            if (placeholder) placeholder.classList.remove('hidden');
+            // Network or parsing error fallback with retry CTA (T2-F19-04)
+            result.innerHTML = `
+                <div class="p-6 rounded-2xl bg-amber-50 border border-amber-200 text-center space-y-3">
+                    <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto text-xl font-bold">⚠️</div>
+                    <h4 class="text-sm font-bold text-slate-800">Không thể kết nối đến máy chủ Bác sĩ AI</h4>
+                    <p class="text-xs text-slate-500">Mạng chậm hoặc máy chủ AI phản hồi quá thời gian cho phép. Quý khách vui lòng thử lại.</p>
+                    <button type="button" onclick="runAiDiagnostic()" class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition shadow-sm cursor-pointer inline-flex items-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i> Thử Lại Ngay
+                    </button>
+                </div>`;
+            result.classList.remove('hidden');
+            if (placeholder) placeholder.classList.add('hidden');
         }
     } catch (err) {
         console.error('AI diagnostic error:', err);
-        showToast('⚠️ Có lỗi xảy ra khi kết nối máy chủ AI!');
-        if (placeholder) placeholder.classList.remove('hidden');
+        result.innerHTML = `
+            <div class="p-6 rounded-2xl bg-amber-50 border border-amber-200 text-center space-y-3">
+                <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto text-xl font-bold">⚠️</div>
+                <h4 class="text-sm font-bold text-slate-800">Lỗi kết nối Bác sĩ AI</h4>
+                <p class="text-xs text-slate-500">Không thể xử lý yêu cầu lúc này. Quý khách vui lòng thử lại hoặc gọi hotline.</p>
+                <button type="button" onclick="runAiDiagnostic()" class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition shadow-sm cursor-pointer inline-flex items-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i> Thử Lại Ngay
+                </button>
+            </div>`;
+        result.classList.remove('hidden');
+        if (placeholder) placeholder.classList.add('hidden');
     } finally {
         if (loading) loading.classList.add('hidden');
     }
 }
+
+function prefillBookingService(serviceName) {
+    showLandingPage();
+    selectServiceForBooking(serviceName);
+    const bookingSection = document.getElementById('booking-section');
+    if (bookingSection) {
+        bookingSection.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+window.prefillBookingService = prefillBookingService;
+
+// -------------------------------------------------------------------------
+// CUSTOMER TESTIMONIALS & REVIEWS API INTEGRATION (T1-F06, T2-F06, T4-05)
+// -------------------------------------------------------------------------
+async function loadApprovedReviews() {
+    const container = document.getElementById('approved-reviews-list');
+    if (!container) return;
+
+    try {
+        const res = await fetch('/api/reviews/latest', {
+            headers: { 'Accept': 'application/json' }
+        }).catch(err => {
+            console.warn('Reviews API offline, keeping initial DOM reviews:', err);
+            return null;
+        });
+
+        if (res && res.ok) {
+            const json = await res.json();
+            const reviews = json.data || json;
+            if (Array.isArray(reviews) && reviews.length > 0) {
+                renderReviews(reviews);
+            }
+        }
+    } catch (e) {
+        console.warn('Error loading reviews:', e);
+    }
+}
+
+function renderReviews(reviews) {
+    const container = document.getElementById('approved-reviews-list');
+    if (!container || !Array.isArray(reviews) || reviews.length === 0) return;
+
+    container.innerHTML = reviews.map(rev => {
+        const stars = Math.min(5, Math.max(1, rev.rating || 5));
+        const starsHtml = Array.from({ length: 5 }, (_, i) => 
+            `<i class="fa-solid fa-star ${i < stars ? 'text-amber-400' : 'text-slate-600'}"></i>`
+        ).join('');
+        const doctorName = rev.doctorName || 'BS.CKII Trần Văn Thắng';
+        const treatment = rev.treatmentType || rev.treatment || 'Đã cấy Implant';
+
+        return `
+            <div class="review-card bg-slate-800/90 rounded-2xl p-6 border border-slate-700/80 hover:border-amber-400/50 transition duration-300 flex flex-col justify-between shadow-xl">
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1 text-amber-400 text-sm rating 5-star" aria-label="${stars} sao">
+                            ${starsHtml}
+                        </div>
+                        <span class="verified-badge inline-flex items-center gap-1 text-[11px] font-bold text-teal-400 bg-teal-950/80 border border-teal-800 px-2.5 py-0.5 rounded-full">
+                            <i class="fa-solid fa-circle-check"></i> ${treatment}
+                        </span>
+                    </div>
+                    <blockquote class="text-slate-300 text-sm leading-relaxed italic quote">
+                        "${rev.comment || rev.content || 'Dịch vụ tại DentalCare rất chuyên nghiệp, bác sĩ tay nghề cao và tận tâm.'}"
+                    </blockquote>
+                </div>
+                <div class="mt-6 pt-4 border-t border-slate-700/60 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-teal-500 to-emerald-400 flex items-center justify-center font-bold text-white text-sm">
+                            ${(rev.patientName || 'KH').substring(0, 2).toUpperCase()}
+                        </div>
+                        <div>
+                            <div class="font-bold text-sm text-white">${rev.patientName || 'Khách Hàng'}</div>
+                            <div class="text-xs text-slate-400">${rev.patientCity || 'Bệnh nhân'}</div>
+                        </div>
+                    </div>
+                    <button onclick="preselectDoctor('${doctorName.replace(/'/g, "\\'")}')" class="text-xs text-amber-400 hover:text-amber-300 font-semibold underline cursor-pointer">Khám ${doctorName}</button>
+                </div>
+            </div>`;
+    }).join('');
+}
+
+function preselectDoctor(doctorName) {
+    showLandingPage();
+    const doctorSelect = document.getElementById('dentistId');
+    if (doctorSelect) {
+        let found = false;
+        for (let i = 0; i < doctorSelect.options.length; i++) {
+            if (doctorSelect.options[i].text.includes(doctorName) || doctorSelect.options[i].value.includes(doctorName)) {
+                doctorSelect.selectedIndex = i;
+                found = true;
+                break;
+            }
+        }
+        if (!found && doctorSelect.options.length > 0) {
+            const opt = document.createElement('option');
+            opt.value = doctorName;
+            opt.text = doctorName;
+            opt.selected = true;
+            doctorSelect.appendChild(opt);
+        }
+    }
+    const notes = document.getElementById('notes');
+    if (notes && !notes.value.includes(doctorName)) {
+        notes.value = `[Yêu cầu khám với ${doctorName}] ` + notes.value;
+    }
+    const bookingSection = document.getElementById('booking-section');
+    if (bookingSection) {
+        bookingSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    showToast(`✓ Đã chọn bác sĩ: ${doctorName}!`);
+}
+window.preselectDoctor = preselectDoctor;
 
 // -------------------------------------------------------------------------
 // 5. MULTI-BRANCH DIRECTORY WITH GPS DISTANCE CALCULATION

@@ -1,0 +1,65 @@
+<svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="ThS. BS Trần Thị Thu Thảo">
+    <defs>
+        <linearGradient id="bg-thao" x1="0" y1="0" x2="400" y2="400" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#0284c7"/>
+            <stop offset="60%" stop-color="#0ea5e9"/>
+            <stop offset="100%" stop-color="#0369a1"/>
+        </linearGradient>
+        <linearGradient id="coat-thao" x1="100" y1="240" x2="300" y2="400" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="100%" stop-color="#f0f9ff"/>
+        </linearGradient>
+    </defs>
+    <rect width="400" height="400" rx="32" fill="url(#bg-thao)"/>
+    <circle cx="200" cy="180" r="150" fill="#ffffff" fill-opacity="0.08"/>
+    
+    <!-- Long Hair Backing -->
+    <path d="M125 150 C120 280 140 340 160 360 L240 360 C260 340 280 280 275 150 Z" fill="#0f172a"/>
+    
+    <!-- Doctor Body / Lab Coat -->
+    <path d="M70 400 C70 300 130 260 200 260 C270 260 330 300 330 400 Z" fill="url(#coat-thao)"/>
+    <polygon points="175,260 225,260 200,315" fill="#0ea5e9"/>
+    
+    <!-- Stethoscope -->
+    <path d="M155 260 C155 330 180 350 200 350 C220 350 245 330 245 260" stroke="#475569" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="200" cy="355" r="13" fill="#7dd3fc" stroke="#0284c7" stroke-width="3"/>
+    
+    <!-- Neck -->
+    <rect x="180" y="210" width="40" height="60" rx="6" fill="#fed7aa"/>
+    
+    <!-- Head & Ears -->
+    <circle cx="145" cy="168" r="14" fill="#fed7aa"/>
+    <circle cx="255" cy="168" r="14" fill="#fed7aa"/>
+    <circle cx="144" cy="178" r="4.5" fill="#38bdf8"/>
+    <circle cx="256" cy="178" r="4.5" fill="#38bdf8"/>
+    
+    <ellipse cx="200" cy="165" rx="54" ry="64" fill="#fed7aa"/>
+    
+    <!-- Elegant Hair Style -->
+    <path d="M136 160 C136 90 264 90 264 160 C250 110 220 105 200 110 C180 105 150 110 136 160 Z" fill="#0f172a"/>
+    
+    <!-- Eyebrows -->
+    <path d="M165 142 Q178 136 190 142" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+    <path d="M210 142 Q222 136 235 142" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+    
+    <!-- Eyes -->
+    <circle cx="178" cy="154" r="5" fill="#0f172a"/>
+    <circle cx="180" cy="152" r="1.5" fill="#ffffff"/>
+    <circle cx="222" cy="154" r="5" fill="#0f172a"/>
+    <circle cx="224" cy="152" r="1.5" fill="#ffffff"/>
+    
+    <!-- Cheerful Cheeks -->
+    <circle cx="162" cy="172" r="8" fill="#fda4af" fill-opacity="0.4"/>
+    <circle cx="238" cy="172" r="8" fill="#fda4af" fill-opacity="0.4"/>
+    
+    <!-- Nose -->
+    <path d="M200 158 L197 174 L203 174" stroke="#ea580c" stroke-width="2" stroke-linecap="round"/>
+    
+    <!-- Smile -->
+    <path d="M180 190 Q200 212 220 190 Z" fill="#e11d48"/>
+    <path d="M184 190 Q200 198 216 190 Z" fill="#ffffff"/>
+    
+    <!-- Ortho France Badge -->
+    <rect x="90" y="320" width="70" height="24" rx="4" fill="#0369a1"/>
+    <text x="125" y="336" font-family="system-ui, sans-serif" font-weight="900" font-size="8" fill="#ffffff" text-anchor="middle">CHỈNH NHA (PHÁP)</text>
+</svg>

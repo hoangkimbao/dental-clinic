@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Quản lý Phòng Khám - DentalCare Luxury Clinic</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --color-bg: oklch(98% 0.005 240);
+            --color-surface: oklch(100% 0 0);
+            --color-surface-subtle: oklch(96% 0.008 240);
+            --color-border: oklch(91% 0.01 240);
+            --color-border-hover: oklch(78% 0.02 240);
+
+            --color-text-primary: oklch(22% 0.02 240);
+            --color-text-secondary: oklch(45% 0.02 240);
+            --color-text-muted: oklch(62% 0.015 240);
+
+            --color-brand-primary: oklch(48% 0.14 230);
+            --color-brand-hover: oklch(40% 0.15 230);
+            --color-brand-light: oklch(95% 0.03 230);
+
+            --color-status-success: oklch(55% 0.15 145);
+            --color-status-success-bg: oklch(96% 0.03 145);
+            --color-status-warning: oklch(65% 0.16 75);
+            --color-status-warning-bg: oklch(96% 0.04 75);
+            --color-status-info: oklch(52% 0.14 220);
+            --color-status-info-bg: oklch(95% 0.03 220);
+            --color-danger: oklch(55% 0.2 25);
+            --color-danger-bg: oklch(96% 0.03 25);
+
+            --space-2xs: 0.25rem;
+            --space-xs: 0.5rem;
+            --space-sm: 0.75rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+
+            --focus-ring: 3px solid oklch(50% 0.2 250);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-bg);
+            color: var(--color-text-primary);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        :focus-visible {
+            outline: var(--focus-ring);
+            outline-offset: 2px;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 260px;
+            background-color: var(--color-surface);
+            border-right: 1px solid var(--color-border);
+            display: flex;
+            flex-direction: column;
+            padding: var(--space-lg);
+            position: fixed;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            z-index: 50;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-xl);
+            text-decoration: none;
+        }
+
+        .brand-link {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: var(--color-text-primary);
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--color-brand-primary), #0284c7);
+            color: white;
+            display: grid;
+            place-items: center;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 8px rgba(14, 165, 233, 0.25);
+        }
+
+        .sidebar-close-btn {
+            display: none;
+            background: transparent;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            padding: 0.25rem 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            color: var(--color-text-secondary);
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2xs);
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: 0.65rem var(--space-sm);
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: var(--radius-md);
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        .nav-item a:hover {
+            background-color: var(--color-surface-subtle);
+            color: var(--color-text-primary);
+        }
+
+        .nav-item a.active {
+            background-color: var(--color-brand-light);
+            color: var(--color-brand-primary);
+            font-weight: 600;
+        }
+
+        /* Mobile Backdrop Overlay */
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(2px);
+            z-index: 45;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar-backdrop.active {
+            display: block;
+        }
+
+        /* Main Content Layout */
+        .main-wrapper {
+            margin-left: 260px;
+            flex: 1;
+            padding: var(--space-xl);
+            min-width: 0;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-xl);
+            gap: var(--space-md);
+        }
+
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .sidebar-toggle-btn {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-border);
+            background: var(--color-surface);
+            cursor: pointer;
+            color: var(--color-text-primary);
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .top-bar h1 {
+            font-size: 1.65rem;
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: 0.45rem 0.85rem;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            flex-shrink: 0;
+        }
+
+        .avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--color-brand-light);
+            color: var(--color-brand-primary);
+            display: grid;
+            place-items: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        /* Metrics Summary Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+
+        .metric-card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .metric-title {
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-2xs);
+        }
+
+        .metric-value {
+            font-size: 1.85rem;
+            font-weight: 700;
+            color: var(--color-text-primary);
+        }
+
+        .metric-sub {
+            font-size: 0.8rem;
+            color: var(--color-status-success);
+            margin-top: var(--space-2xs);
+            font-weight: 600;
+        }
+
+        /* Chart Card */
+        .chart-card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-xl);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+            padding-bottom: var(--space-sm);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .chart-header h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: var(--space-xs);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 280px;
+            width: 100%;
+        }
+
+        /* Table & Data Views */
+        .data-card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .card-header {
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+        }
+
+        .card-header h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .data-table th {
+            background-color: var(--color-surface-subtle);
+            color: var(--color-text-secondary);
+            font-weight: 600;
+            padding: var(--space-sm) var(--space-lg);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .data-table td {
+            padding: var(--space-md) var(--space-lg);
+            border-bottom: 1px solid var(--color-border);
+            color: var(--color-text-primary);
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover {
+            background-color: oklch(99% 0.005 240);
+        }
+
+        /* Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0.25rem 0.65rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-confirmed {
+            background-color: var(--color-status-success-bg);
+            color: var(--color-status-success);
+        }
+
+        .badge-examining {
+            background-color: var(--color-status-info-bg);
+            color: var(--color-status-info);
+        }
+
+        .badge-pending {
+            background-color: var(--color-status-warning-bg);
+            color: var(--color-status-warning);
+        }
+
+        /* Action Buttons */
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--color-border);
+            background: var(--color-surface);
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-sm:hover {
+            background: var(--color-surface-subtle);
+            border-color: var(--color-border-hover);
+        }
+
+        .btn-primary {
+            background: var(--color-brand-primary);
+            color: white;
+            border-color: var(--color-brand-primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--color-brand-hover);
+            border-color: var(--color-brand-hover);
+            color: white;
+        }
+
+        /* Accessible Modal Overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-md);
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-xl);
+            width: 100%;
+            max-width: 580px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.96) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-header {
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-text-primary);
+        }
+
+        .modal-close-btn {
+            background: transparent;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            width: 36px;
+            height: 36px;
+            display: grid;
+            place-items: center;
+            font-size: 1.1rem;
+            cursor: pointer;
+            color: var(--color-text-secondary);
+            transition: all 0.15s ease;
+        }
+
+        .modal-close-btn:hover {
+            background: var(--color-surface-subtle);
+            color: var(--color-text-primary);
+        }
+
+        .modal-body {
+            padding: var(--space-lg);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .modal-footer {
+            padding: var(--space-md) var(--space-lg);
+            border-top: 1px solid var(--color-border);
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--space-sm);
+            background: var(--color-surface-subtle);
+        }
+
+        .emr-grid {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: var(--space-xs) var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+
+        .emr-label {
+            font-weight: 600;
+            color: var(--color-text-secondary);
+        }
+
+        .emr-value {
+            color: var(--color-text-primary);
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-xs);
+            margin-bottom: var(--space-xs);
+            cursor: pointer;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            margin-top: 4px;
+            width: 16px;
+            height: 16px;
+            accent-color: var(--color-brand-primary);
+        }
+
+        /* Toast feedback */
+        .toast-notification {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #0f172a;
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            z-index: 200;
+            display: none;
+            animation: toastPop 0.2s ease;
+        }
+
+        .toast-notification.active {
+            display: block;
+        }
+
+        @keyframes toastPop {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Mobile Responsive Viewport (< 768px) */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                box-shadow: 4px 0 24px rgba(0,0,0,0.15);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .sidebar-close-btn {
+                display: block;
+            }
+            .sidebar-toggle-btn {
+                display: flex;
+            }
+            .main-wrapper {
+                margin-left: 0;
+                padding: var(--space-md);
+            }
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--space-sm);
+            }
+            .top-bar-left {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .user-profile {
+                width: 100%;
+            }
+            .metrics-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: var(--space-sm);
+            }
+            .metric-card {
+                padding: var(--space-md);
+            }
+            .metric-value {
+                font-size: 1.5rem;
+            }
+            .emr-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-2xs);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Sidebar Backdrop Overlay -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="sidebar">
+        <div class="sidebar-brand">
+            <a href="index.html" class="brand-link">
+                <span class="brand-icon">D</span>
+                <span>DentalCare Admin</span>
+            </a>
+            <button class="sidebar-close-btn" aria-label="Đóng menu quản trị" onclick="toggleSidebar(false)">✕</button>
+        </div>
+
+        <nav aria-label="Menu quản trị phòng khám">
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="#" class="active" aria-current="page">📊 Tổng quan lịch hẹn</a></li>
+                <li class="nav-item"><a href="#" onclick="showToast('Chức năng Hồ sơ bệnh nhân đang đồng bộ EMR')">📁 Hồ sơ Bệnh nhân</a></li>
+                <li class="nav-item"><a href="#" onclick="showToast('Lịch bác sĩ được tải từ hệ thống Clinic Cloud')">👨‍⚕️ Lịch làm việc Bác sĩ</a></li>
+                <li class="nav-item"><a href="#" onclick="showToast('Báo cáo doanh thu đã được tổng hợp đến ngày hôm nay')">📈 Báo cáo Doanh thu</a></li>
+                <li class="nav-item" style="margin-top: var(--space-lg); border-top: 1px solid var(--color-border); padding-top: var(--space-sm);">
+                    <a href="index.html">← Trở về Trang chủ</a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-wrapper">
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button id="sidebarToggle" class="sidebar-toggle-btn" aria-label="Mở menu quản trị" onclick="toggleSidebar(true)">
+                    ☰
+                </button>
+                <div>
+                    <h1>Dashboard Điều hành Phòng khám</h1>
+                    <p id="currentDateDisplay" style="font-size: 0.9rem; color: var(--color-text-secondary); margin-top: 2px;">
+                        Đang đồng bộ dữ liệu thời gian thực...
+                    </p>
+                </div>
+            </div>
+
+            <div class="user-profile">
+                <div class="avatar">Đ</div>
+                <div>
+                    <div style="font-size: 0.875rem; font-weight: 600;">BS. CKI Nguyễn Minh Đức</div>
+                    <div style="font-size: 0.75rem; color: var(--color-text-muted);">Trưởng Khoa Lâm Sàng & Quản Trị</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Metrics Overview -->
+        <section class="metrics-grid" aria-label="Chỉ số quan trọng trong ngày">
+            <article class="metric-card">
+                <div class="metric-title">Tổng lịch hẹn hôm nay</div>
+                <div class="metric-value" id="metricTotal">28</div>
+                <div class="metric-sub">+4 so với hôm qua</div>
+            </article>
+
+            <article class="metric-card">
+                <div class="metric-title">Bệnh nhân mới</div>
+                <div class="metric-value">12</div>
+                <div class="metric-sub">42% tổng lịch hẹn</div>
+            </article>
+
+            <article class="metric-card">
+                <div class="metric-title">Đã hoàn thành khám</div>
+                <div class="metric-value" id="metricCompleted">18</div>
+                <div class="metric-sub" style="color: var(--color-brand-primary);">64% tiến độ ca khám</div>
+            </article>
+
+            <article class="metric-card">
+                <div class="metric-title">Doanh thu dự kiến (ngày)</div>
+                <div class="metric-value">45.2M</div>
+                <div class="metric-sub">VNĐ (đã bao gồm cọc)</div>
+            </article>
+        </section>
+
+        <!-- Trend Chart Section -->
+        <section class="chart-card" aria-label="Biểu đồ xu hướng lượt khám">
+            <div class="chart-header">
+                <div>
+                    <h2>Biểu đồ Xu hướng Lượt khám & Doanh thu</h2>
+                    <p style="font-size: 0.85rem; color: var(--color-text-secondary);">Thống kê lượt khám lâm sàng và doanh thu điều trị theo thời gian thực</p>
+                </div>
+                <div class="chart-actions">
+                    <button class="btn-sm" id="btnChart7d" onclick="switchChartRange(7)" style="background: var(--color-brand-light); color: var(--color-brand-primary);">7 Ngày Qua</button>
+                    <button class="btn-sm" id="btnChart30d" onclick="switchChartRange(30)">30 Ngày Qua</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="clinicTrendChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Appointments Table -->
+        <section class="data-card" aria-label="Danh sách bệnh nhân">
+            <div class="card-header">
+                <div>
+                    <h2>Danh sách ca khám trong ngày</h2>
+                    <p style="font-size: 0.85rem; color: var(--color-text-secondary); margin-top: 2px;">Cập nhật tự động theo trạng thái tiếp nhận & điều trị</p>
+                </div>
+                <button class="btn-sm btn-primary" onclick="refreshAppointmentsData()">
+                    🔄 F5 Làm mới dữ liệu
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="data-table" aria-label="Danh sách ca khám hôm nay">
+                    <thead>
+                        <tr>
+                            <th scope="col">Giờ khám</th>
+                            <th scope="col">Bệnh nhân</th>
+                            <th scope="col">Số điện thoại</th>
+                            <th scope="col">Dịch vụ yêu cầu</th>
+                            <th scope="col">Bác sĩ phụ trách</th>
+                            <th scope="col">Trạng thái</th>
+                            <th scope="col">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointmentsTableBody">
+                        <!-- Populated dynamically by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Interactive Accessible Modals -->
+    <div id="dashboardModal" class="modal-overlay" onclick="handleModalBackdropClick(event)" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modalTitle">Tiêu đề Modal</h3>
+                <button class="modal-close-btn" aria-label="Đóng cửa sổ" onclick="closeDashboardModal()">✕</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Injected dynamically -->
+            </div>
+            <div class="modal-footer" id="modalFooter">
+                <!-- Injected dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toastNotification" class="toast-notification" role="status" aria-live="polite">
+        Thông báo hệ thống
+    </div>
+
+    <script>
+        // State & Sample Live Appointments Data
+        let appointments = [
+            {
+                id: 'BN-01',
+                time: '08:30',
+                name: 'Trần Văn Nam',
+                phone: '0912 345 888',
+                service: 'Trồng răng Implant Thụy Sĩ',
+                doctor: 'BS. CKI Nguyễn Minh Đức',
+                status: 'confirmed',
+                statusText: 'Đã xác nhận',
+                history: 'Mất răng số 46, đã kiểm tra xương hàm CT Cone Beam 3D ngày 28/09. Huyết áp ổn định 120/80 mmHg.',
+                chair: 'Ghế VIP 01 - Khoa Cấy ghép Implant'
+            },
+            {
+                id: 'BN-02',
+                time: '09:15',
+                name: 'Lê Thị Hoàng Yến',
+                phone: '0988 234 123',
+                service: 'Niềng răng Invisalign',
+                doctor: 'ThS. BS Trần Thị Thu Thảo',
+                status: 'arrived',
+                statusText: 'Đã tới phòng khám',
+                history: 'Thay khay niềng đợt 14, kiểm tra khớp cắn và chỉ số di chuyển răng 3D ClinCheck.',
+                chair: 'Ghế 03 - Khoa Chỉnh nha'
+            },
+            {
+                id: 'BN-03',
+                time: '10:00',
+                name: 'Phạm Quốc Bảo',
+                phone: '0903 555 789',
+                service: 'Tẩy trắng răng Laser Whitening',
+                doctor: 'BS. CKI Nguyễn Minh Đức',
+                status: 'pending',
+                statusText: 'Chờ xác nhận',
+                history: 'Khách hàng mới, đăng ký qua Landing Page. Cần kiểm tra men răng và lấy cao răng trước khi tẩy trắng.',
+                chair: 'Ghế 02 - Khoa Nha khoa Thẩm mỹ'
+            },
+            {
+                id: 'BN-04',
+                time: '14:00',
+                name: 'Nguyễn Thị Mai',
+                phone: '0977 111 999',
+                service: 'Nhổ răng khôn Piezotome',
+                doctor: 'BS. CKI Nguyễn Minh Đức',
+                status: 'confirmed',
+                statusText: 'Đã xác nhận',
+                history: 'Răng khôn 38 mọc lệch 90 độ ép răng số 7, đã kiểm tra đông máu và chụp phim toàn cảnh Panorama.',
+                chair: 'Ghế VIP 02 - Khoa Tiểu phẫu trong miệng'
+            }
+        ];
+
+        // Initialize UI & Components on DOM ready
+        document.addEventListener('DOMContentLoaded', () => {
+            initDateDisplay();
+            initTrendChart();
+            renderAppointmentsTable();
+
+            // Global ESC key listener for modal and mobile drawer
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeDashboardModal();
+                    toggleSidebar(false);
+                }
+            });
+        });
+
+        // Date Display
+        function initDateDisplay() {
+            const dateEl = document.getElementById('currentDateDisplay');
+            if (dateEl) {
+                const now = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                dateEl.textContent = now.toLocaleDateString('vi-VN', options);
+            }
+        }
+
+        // Responsive Sidebar Toggle
+        function toggleSidebar(open) {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            if (!sidebar || !backdrop) return;
+
+            if (open) {
+                sidebar.classList.add('open');
+                backdrop.classList.add('active');
+                document.body.classList.add('modal-open');
+            } else {
+                sidebar.classList.remove('open');
+                backdrop.classList.remove('active');
+                if (!document.getElementById('dashboardModal').classList.contains('active')) {
+                    document.body.classList.remove('modal-open');
+                }
+            }
+        }
+
+        // Dynamic Appointments Table Rendering
+        function renderAppointmentsTable() {
+            const tbody = document.getElementById('appointmentsTableBody');
+            if (!tbody) return;
+
+            tbody.innerHTML = appointments.map((item) => {
+                let badgeClass = 'badge-confirmed';
+                if (item.status === 'pending') badgeClass = 'badge-pending';
+                if (item.status === 'examining') badgeClass = 'badge-examining';
+
+                return `
+                    <tr>
+                        <td style="font-weight: 700; color: var(--color-brand-primary);">${item.time}</td>
+                        <td style="font-weight: 600;">${item.name}</td>
+                        <td>${item.phone}</td>
+                        <td>${item.service}</td>
+                        <td>${item.doctor}</td>
+                        <td><span class="status-badge ${badgeClass}">${item.statusText}</span></td>
+                        <td>
+                            <div style="display: flex; gap: 6px;">
+                                <button class="btn-sm" onclick="openPatientRecordModal('${item.id}')" title="Xem bệnh án điện tử">Xem hồ sơ</button>
+                                <button class="btn-sm" onclick="openStartExamModal('${item.id}')" style="color: var(--color-brand-primary);" title="Tiếp nhận vào ghế khám">Vào khám</button>
+                                <button class="btn-sm" onclick="openCallReminderModal('${item.id}')" title="Liên hệ điện thoại nhắc lịch">Gọi nhắc lịch</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Modal Handlers
+        function openDashboardModal(title, bodyHtml, footerHtml) {
+            const modal = document.getElementById('dashboardModal');
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').innerHTML = bodyHtml;
+            document.getElementById('modalFooter').innerHTML = footerHtml;
+            modal.classList.add('active');
+            document.body.classList.add('modal-open');
+        }
+
+        function closeDashboardModal() {
+            const modal = document.getElementById('dashboardModal');
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.classList.remove('modal-open');
+            }
+        }
+
+        function handleModalBackdropClick(event) {
+            if (event.target.id === 'dashboardModal') {
+                closeDashboardModal();
+            }
+        }
+
+        // Modal 1: Xem hồ sơ (EMR Snapshot)
+        function openPatientRecordModal(patientId) {
+            const patient = appointments.find(p => p.id === patientId);
+            if (!patient) return;
+
+            const bodyHtml = `
+                <div class="emr-grid">
+                    <span class="emr-label">Mã bệnh nhân:</span>
+                    <span class="emr-value" style="font-family: monospace; font-weight: 700; color: var(--color-brand-primary);">${patient.id}-2026</span>
+                    
+                    <span class="emr-label">Họ và tên:</span>
+                    <span class="emr-value" style="font-weight: 700;">${patient.name}</span>
+                    
+                    <span class="emr-label">Số điện thoại:</span>
+                    <span class="emr-value">${patient.phone}</span>
+                    
+                    <span class="emr-label">Dịch vụ điều trị:</span>
+                    <span class="emr-value">${patient.service}</span>
+                    
+                    <span class="emr-label">Bác sĩ phụ trách:</span>
+                    <span class="emr-value">${patient.doctor}</span>
+                    
+                    <span class="emr-label">Vị trí thực hiện:</span>
+                    <span class="emr-value">${patient.chair}</span>
+                </div>
+                <div style="background: var(--color-surface-subtle); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-md); margin-top: var(--space-xs);">
+                    <div style="font-weight: 600; font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 4px;">Tiền sử bệnh lý & Ghi chú lâm sàng:</div>
+                    <div style="font-size: 0.9rem;">${patient.history}</div>
+                </div>
+            `;
+
+            const footerHtml = `
+                <button class="btn-sm" onclick="window.print()">🖨️ In Phiếu Khám</button>
+                <button class="btn-sm btn-primary" onclick="closeDashboardModal()">Đóng Cửa Sổ</button>
+            `;
+
+            openDashboardModal(`Hồ Sơ Bệnh Án Điện Tử — ${patient.name}`, bodyHtml, footerHtml);
+        }
+
+        // Modal 2: Vào khám (Clinical Intake)
+        function openStartExamModal(patientId) {
+            const patient = appointments.find(p => p.id === patientId);
+            if (!patient) return;
+
+            const bodyHtml = `
+                <div style="margin-bottom: var(--space-md);">
+                    Bệnh nhân <strong>${patient.name}</strong> (${patient.service}) đang được chuẩn bị tiếp nhận vào ghế khám.
+                </div>
+                <div style="background: var(--color-surface-subtle); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-md); margin-bottom: var(--space-md);">
+                    <div style="font-weight: 700; margin-bottom: var(--space-xs); font-size: 0.9rem;">Checklist Chuẩn bị Lâm sàng:</div>
+                    <label class="checklist-item">
+                        <input type="checkbox" id="chkVital" checked>
+                        <span>Đã kiểm tra chỉ số sinh hiệu (Huyết áp, Mạch, Thân nhiệt)</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" id="chkFilm" checked>
+                        <span>Phim chụp X-Quang / CT Cone Beam đã sẵn sàng trên màn hình</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" id="chkConsent" checked>
+                        <span>Bệnh nhân đã ký phiếu đồng thuận điều trị y khoa</span>
+                    </label>
+                </div>
+                <div style="margin-bottom: var(--space-xs);">
+                    <label style="font-weight: 600; font-size: 0.85rem; color: var(--color-text-secondary); display: block; margin-bottom: 4px;">Chỉ định ghế nha khoa tiếp nhận:</label>
+                    <input type="text" value="${patient.chair}" id="txtChair" style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 0.9rem;">
+                </div>
+            `;
+
+            const footerHtml = `
+                <button class="btn-sm" onclick="closeDashboardModal()">Hủy bỏ</button>
+                <button class="btn-sm btn-primary" onclick="confirmStartExam('${patient.id}')">Bắt Đầu Ca Khám</button>
+            `;
+
+            openDashboardModal(`Tiếp Nhận Ca Khám — ${patient.name}`, bodyHtml, footerHtml);
+        }
+
+        function confirmStartExam(patientId) {
+            const patient = appointments.find(p => p.id === patientId);
+            if (patient) {
+                patient.status = 'examining';
+                patient.statusText = 'Đang trong ca khám';
+                renderAppointmentsTable();
+                closeDashboardModal();
+                showToast(`✓ Đã đưa bệnh nhân ${patient.name} vào ca khám lâm sàng.`);
+            }
+        }
+
+        // Modal 3: Gọi nhắc lịch (Call Reminder)
+        function openCallReminderModal(patientId) {
+            const patient = appointments.find(p => p.id === patientId);
+            if (!patient) return;
+
+            const cleanPhone = patient.phone.replace(/[^0-9]/g, '');
+
+            const bodyHtml = `
+                <div style="margin-bottom: var(--space-md);">
+                    Thực hiện cuộc gọi nhắc lịch khám cho bệnh nhân <strong>${patient.name}</strong>.
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; background: var(--color-brand-light); border: 1px solid var(--color-brand-primary); border-radius: var(--radius-md); padding: var(--space-md); margin-bottom: var(--space-md);">
+                    <div>
+                        <div style="font-size: 0.8rem; color: var(--color-brand-primary); font-weight: 600;">Hotline Tiếp nhận:</div>
+                        <div style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-primary);">${patient.phone}</div>
+                    </div>
+                    <a href="tel:${cleanPhone}" class="btn-sm btn-primary" style="padding: 0.6rem 1rem; text-decoration: none;">📞 Gọi Ngay</a>
+                </div>
+                <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: var(--space-xs);">Ghi nhận kết quả cuộc gọi:</div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="radio" name="callResult" value="confirmed" checked>
+                        <span>Khách xác nhận sẽ đến đúng giờ khám (${patient.time})</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="radio" name="callResult" value="rescheduled">
+                        <span>Khách xin chuyển sang khung giờ chiều hoặc hôm sau</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="radio" name="callResult" value="no_answer">
+                        <span>Chưa nghe máy — Hệ thống đã gửi tin nhắn Zalo nhắc hẹn</span>
+                    </label>
+                </div>
+            `;
+
+            const footerHtml = `
+                <button class="btn-sm" onclick="closeDashboardModal()">Đóng</button>
+                <button class="btn-sm btn-primary" onclick="confirmCallReminder('${patient.id}')">Lưu Kết Quả</button>
+            `;
+
+            openDashboardModal(`Nhắc Lịch Hẹn Khám — ${patient.name}`, bodyHtml, footerHtml);
+        }
+
+        function confirmCallReminder(patientId) {
+            const patient = appointments.find(p => p.id === patientId);
+            if (patient) {
+                const selectedRadio = document.querySelector('input[name="callResult"]:checked');
+                if (selectedRadio && selectedRadio.value === 'confirmed') {
+                    patient.status = 'confirmed';
+                    patient.statusText = 'Đã nhắc & Xác nhận';
+                }
+                renderAppointmentsTable();
+                closeDashboardModal();
+                showToast(`✓ Đã lưu kết quả liên hệ nhắc lịch cho ${patient.name}.`);
+            }
+        }
+
+        // F5 Refresh Action
+        function refreshAppointmentsData() {
+            showToast('🔄 Đang đồng bộ dữ liệu phòng khám thời gian thực...');
+            setTimeout(() => {
+                renderAppointmentsTable();
+                showToast('✓ Dữ liệu lịch hẹn và chỉ số điều hành đã cập nhật mới nhất.');
+            }, 500);
+        }
+
+        // Toast Feedback System
+        function showToast(message) {
+            const toast = document.getElementById('toastNotification');
+            if (!toast) return;
+            toast.textContent = message;
+            toast.classList.add('active');
+            clearTimeout(window.toastTimer);
+            window.toastTimer = setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+
+        // Chart.js Trend Visualizer
+        let trendChart = null;
+        const chartData7d = {
+            labels: ['Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật', 'Thứ 2', 'Thứ 3', 'Hôm nay'],
+            visits: [22, 25, 34, 38, 26, 27, 28],
+            revenue: [32, 38, 54, 62, 41, 44, 45.2]
+        };
+
+        const chartData30d = {
+            labels: ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4'],
+            visits: [165, 182, 195, 210],
+            revenue: [260, 295, 310, 340]
+        };
+
+        function initTrendChart() {
+            const ctx = document.getElementById('clinicTrendChart');
+            if (!ctx) return;
+
+            trendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData7d.labels,
+                    datasets: [
+                        {
+                            label: 'Lượt khám (bệnh nhân)',
+                            data: chartData7d.visits,
+                            borderColor: '#0d9488',
+                            backgroundColor: 'rgba(13, 148, 136, 0.12)',
+                            tension: 0.35,
+                            fill: true,
+                            yAxisID: 'yVisits',
+                            borderWidth: 2.5,
+                            pointBackgroundColor: '#0d9488',
+                            pointRadius: 4
+                        },
+                        {
+                            label: 'Doanh thu (triệu VNĐ)',
+                            data: chartData7d.revenue,
+                            borderColor: '#0284c7',
+                            backgroundColor: 'rgba(2, 132, 199, 0.08)',
+                            tension: 0.35,
+                            fill: false,
+                            yAxisID: 'yRevenue',
+                            borderWidth: 2.5,
+                            pointBackgroundColor: '#0284c7',
+                            pointRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: { family: "'Plus Jakarta Sans', sans-serif", size: 12, weight: 600 }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleFont: { family: "'Plus Jakarta Sans', sans-serif", size: 13, weight: 700 },
+                            bodyFont: { family: "'Plus Jakarta Sans', sans-serif", size: 12 }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false }
+                        },
+                        yVisits: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: { display: true, text: 'Lượt khám (ca)', font: { size: 11, weight: 600 } },
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                        },
+                        yRevenue: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: { display: true, text: 'Doanh thu (Triệu VNĐ)', font: { size: 11, weight: 600 } },
+                            grid: { drawOnChartArea: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function switchChartRange(days) {
+            if (!trendChart) return;
+            const btn7d = document.getElementById('btnChart7d');
+            const btn30d = document.getElementById('btnChart30d');
+
+            if (days === 7) {
+                trendChart.data.labels = chartData7d.labels;
+                trendChart.data.datasets[0].data = chartData7d.visits;
+                trendChart.data.datasets[1].data = chartData7d.revenue;
+                btn7d.style.background = 'var(--color-brand-light)';
+                btn7d.style.color = 'var(--color-brand-primary)';
+                btn30d.style.background = 'var(--color-surface)';
+                btn30d.style.color = 'var(--color-text-primary)';
+            } else {
+                trendChart.data.labels = chartData30d.labels;
+                trendChart.data.datasets[0].data = chartData30d.visits;
+                trendChart.data.datasets[1].data = chartData30d.revenue;
+                btn30d.style.background = 'var(--color-brand-light)';
+                btn30d.style.color = 'var(--color-brand-primary)';
+                btn7d.style.background = 'var(--color-surface)';
+                btn7d.style.color = 'var(--color-text-primary)';
+            }
+            trendChart.update();
+        }
+    </script>
+</body>
+</html>

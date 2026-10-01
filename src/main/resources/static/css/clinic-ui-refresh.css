@@ -1,4 +1,25 @@
 /* DentalCare UI refresh — visual layer only; application structure and JS hooks stay intact. */
+/* CRITICAL CSS SPECIFICITY FIX: .hidden must always win over .flex and .grid */
+.hidden, [hidden] {
+    display: none !important;
+}
+
+/* Modal Open Scroll Lock */
+body.modal-open {
+    overflow: hidden !important;
+    touch-action: none;
+}
+
+/* Mobile Menu Backdrop Overlay */
+#mobile-menu-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 40;
+    transition: opacity 0.3s ease;
+}
+
 :root {
     /* Brand Authority: Medical Emerald/Teal & Luxury Navy (R4, R5) */
     --clinic-ink: #102f31;
@@ -103,7 +124,7 @@ body, p, span, h1, h2, h3, h4, h5, h6, a, div {
 #doctors::before { content: ''; position: absolute; width: 32rem; height: 32rem; border: 1px solid rgba(231, 247, 239, .13); border-radius: 50%; left: -18rem; top: -12rem; pointer-events: none; }
 #doctors .bg-slate-900 { background: rgba(255,255,255,.07) !important; border-color: rgba(222, 244, 235, .19) !important; backdrop-filter: blur(12px); }
 #doctors .bg-slate-900:hover { background: rgba(255,255,255,.12) !important; transform: translateY(-5px); }
-#doctors img { filter: saturate(.75); }
+#doctors img { filter: saturate(1.05) contrast(1.02); }
 
 /* Offers and price cards */
 #promotions .grid > div { border-radius: 1.4rem !important; border-color: rgba(8,122,114,.2) !important; box-shadow: 0 12px 28px rgba(22, 70, 60, .06) !important; }

@@ -1,0 +1,23 @@
+<svg viewBox="0 0 500 320" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Dán Sứ Veneer Thẩm Mỹ">
+    <defs>
+        <linearGradient id="bg-art-ven-w" x1="0" y1="0" x2="500" y2="320" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#14532d"/>
+            <stop offset="60%" stop-color="#15803d"/>
+            <stop offset="100%" stop-color="#16a34a"/>
+        </linearGradient>
+        <linearGradient id="facet-ven-w" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="100%" stop-color="#bbf7d0"/>
+        </linearGradient>
+    </defs>
+    <rect width="500" height="320" rx="24" fill="url(#bg-art-ven-w)"/>
+    <circle cx="420" cy="80" r="120" fill="#ffffff" fill-opacity="0.04"/>
+    <g transform="translate(190, 40)">
+        <path d="M40 70 C40 40 80 40 80 70 C80 120 70 160 60 170 C50 160 40 120 40 70 Z" fill="#4ade80" fill-opacity="0.2" stroke="#86efac" stroke-width="2"/>
+        <path d="M35 60 C35 32 85 32 85 60 C85 105 78 145 60 155 C42 145 35 105 35 60 Z" fill="url(#facet-ven-w)" stroke="#ffffff" stroke-width="2.5"/>
+        <path d="M48 50 L52 65 L67 68 L52 71 L48 86 L44 71 L29 68 L44 65 Z" fill="#fef08a"/>
+        <path d="M72 100 L74 108 L82 110 L74 112 L72 120 L70 112 L62 110 L70 108 Z" fill="#fef08a"/>
+    </g>
+    <text x="40" y="275" font-family="system-ui, sans-serif" font-weight="900" font-size="18" fill="#ffffff">Dán Sứ Veneer Siêu Mỏng 0.2mm</text>
+    <text x="40" y="295" font-family="system-ui, sans-serif" font-weight="600" font-size="12" fill="#86efac">Bảo tồn tối đa răng thật &bull; Nụ cười trắng sáng tự nhiên</text>
+</svg>

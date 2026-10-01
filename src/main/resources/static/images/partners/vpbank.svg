@@ -1,0 +1,11 @@
+<svg viewBox="0 0 160 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="VPBank Logo">
+    <g transform="translate(6, 4)">
+        <path d="M18 4 C14 8 10 16 14 24 C18 16 26 12 28 8 Z" fill="#00B14F"/>
+        <path d="M22 6 C20 12 20 20 28 24 C28 16 32 10 36 6 Z" fill="#00B14F"/>
+        <path d="M12 14 C16 18 24 22 26 30 C20 28 14 24 10 20 Z" fill="#ED1C24"/>
+        <path d="M16 22 C22 24 28 26 28 36 C24 32 18 28 14 26 Z" fill="#00B14F"/>
+    </g>
+    <text x="48" y="27" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-style="italic" font-size="20" fill="#00B14F">VP</text>
+    <text x="82" y="27" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="19" fill="#003B1F">Bank</text>
+    <text x="48" y="38" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="7" fill="#64748b" letter-spacing="1">VIETNAM PROSPERITY</text>
+</svg>

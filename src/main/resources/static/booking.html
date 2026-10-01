@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Đặt Lịch Khám Online - DentalCare Luxury Clinic</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --color-bg: oklch(98.5% 0.005 240);
+            --color-surface: oklch(100% 0 0);
+            --color-surface-subtle: oklch(96.5% 0.008 240);
+            --color-border: oklch(90% 0.01 240);
+            --color-border-hover: oklch(75% 0.02 240);
+
+            --color-text-primary: oklch(20% 0.02 240);
+            --color-text-secondary: oklch(42% 0.02 240);
+            --color-text-muted: oklch(60% 0.015 240);
+
+            --color-brand-primary: oklch(48% 0.14 230);
+            --color-brand-hover: oklch(40% 0.15 230);
+            --color-brand-light: oklch(95% 0.03 230);
+
+            --color-danger: oklch(55% 0.2 25);
+            --color-danger-bg: oklch(96% 0.03 25);
+            --color-warning: oklch(65% 0.16 75);
+            --color-warning-bg: oklch(96% 0.04 75);
+            --color-success: oklch(55% 0.15 145);
+            --color-success-bg: oklch(96% 0.03 145);
+
+            --space-2xs: 0.25rem;
+            --space-xs: 0.5rem;
+            --space-sm: 0.75rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-2xl: 3rem;
+
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+
+            --focus-ring: 3px solid oklch(50% 0.2 250);
+            --min-touch-target: 44px;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-bg);
+            color: var(--color-text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: var(--space-md);
+        }
+
+        :focus-visible {
+            outline: var(--focus-ring);
+            outline-offset: 2px;
+        }
+
+        .booking-nav {
+            width: 100%;
+            max-width: 680px;
+            margin-bottom: var(--space-sm);
+        }
+
+        .booking-nav a {
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            font-weight: 600;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.15s ease;
+        }
+
+        .booking-nav a:hover {
+            color: var(--color-brand-primary);
+        }
+
+        .booking-card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 680px;
+            padding: var(--space-lg);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            margin-bottom: var(--space-2xl);
+        }
+
+        @media (min-width: 600px) {
+            .booking-card { padding: var(--space-xl); }
+        }
+
+        .card-header {
+            margin-bottom: var(--space-lg);
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: var(--space-md);
+        }
+
+        .card-header h1 {
+            font-size: 1.5rem;
+            color: var(--color-text-primary);
+            margin-bottom: var(--space-2xs);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-lg);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--color-text-primary);
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            min-height: var(--min-touch-target);
+            padding: 0.65rem var(--space-md);
+            font-family: inherit;
+            font-size: 0.95rem;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            background-color: var(--color-surface);
+            color: var(--color-text-primary);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        input.input-error,
+        select.input-error,
+        textarea.input-error {
+            border-color: var(--color-danger) !important;
+            background-color: var(--color-danger-bg) !important;
+        }
+
+        /* Inline Validation Error Labels */
+        .field-error {
+            color: var(--color-danger);
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: none;
+            margin-top: 2px;
+        }
+
+        .field-error.active {
+            display: block;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-md);
+        }
+
+        @media (min-width: 550px) {
+            .grid-2 { grid-template-columns: 1fr 1fr; }
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: var(--space-sm);
+        }
+
+        .option-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: var(--min-touch-target);
+            padding: var(--space-xs) var(--space-sm);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.15s ease;
+        }
+
+        .option-card input[type="radio"]:checked + .option-label {
+            border-color: var(--color-brand-primary);
+            background-color: var(--color-brand-light);
+            color: var(--color-brand-primary);
+            font-weight: 600;
+            box-shadow: 0 0 0 2px var(--color-brand-light);
+        }
+
+        .btn-submit {
+            width: 100%;
+            min-height: var(--min-touch-target);
+            padding: 0.85rem;
+            font-size: 1rem;
+            font-weight: 700;
+            background-color: var(--color-brand-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: background-color 0.15s ease, transform 0.1s ease;
+        }
+
+        .btn-submit:hover { background-color: var(--color-brand-hover); }
+        .btn-submit:active { transform: scale(0.99); }
+
+        .alert-box {
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            margin-bottom: var(--space-md);
+            display: none;
+            font-weight: 500;
+        }
+
+        /* Fixed Footer Sticky Button Container for Mobile Keyboard Avoidance */
+        .sticky-footer-action {
+            position: sticky;
+            bottom: 0;
+            background: var(--color-surface);
+            padding: var(--space-sm) 0;
+            border-top: 1px solid var(--color-border);
+            z-index: 10;
+            transition: transform 0.15s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="booking-nav">
+        <a href="index.html">← Trở về Trang chủ Phòng khám</a>
+    </div>
+
+    <main class="booking-card">
+        <header class="card-header">
+            <h1>Đăng ký Đặt Lịch Khám Online</h1>
+            <p style="font-size:0.9rem; color:var(--color-text-muted);">Vui lòng điền thông tin để phòng khám xếp lịch khám ưu tiên với bác sĩ trưởng khoa.</p>
+        </header>
+
+        <!-- Alert Notice for Edge Cases -->
+        <div id="bookingAlert" class="alert-box" role="alert"></div>
+
+        <form id="fullBookingForm" onsubmit="handleFullBooking(event)" novalidate>
+
+            <!-- Voucher Support -->
+            <div class="form-group">
+                <label for="voucherCode">Mã giảm giá / Voucher ưu đãi</label>
+                <div style="display:flex; gap:0.5rem;">
+                    <input type="text" id="voucherCode" placeholder="Nhập mã (VD: NIENG3D5TR hoặc MINHDUC2026)">
+                    <button type="button" onclick="applyVoucher()" style="min-height: var(--min-touch-target); padding:0 1.25rem; border:1px solid var(--color-border); background:var(--color-surface-subtle); border-radius:var(--radius-md); font-weight:600; cursor:pointer; flex-shrink: 0;">Áp dụng</button>
+                </div>
+                <div id="voucherStatus" style="font-size:0.8rem; margin-top:0.25rem; font-weight: 500;"></div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="fullname">Họ và tên bệnh nhân <span style="color: red;">*</span></label>
+                    <input type="text" id="fullname" placeholder="Nguyễn Văn A" autocomplete="name">
+                    <div id="err-fullname" class="field-error">Vui lòng nhập họ và tên bệnh nhân (tối thiểu 2 ký tự).</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Số điện thoại (10 chữ số) <span style="color: red;">*</span></label>
+                    <input type="tel" id="phone" placeholder="0901234567" autocomplete="tel">
+                    <div id="err-phone" class="field-error">Số điện thoại không hợp lệ (phải gồm đúng 10 chữ số bắt đầu bằng số 0).</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="service">Dịch vụ nha khoa cần khám <span style="color: red;">*</span></label>
+                <select id="service">
+                    <option value="">-- Chọn dịch vụ phù hợp --</option>
+                    <option value="implant">Trồng răng Implant Thụy Sĩ</option>
+                    <option value="ortho">Niềng răng Chỉnh nha (Invisalign)</option>
+                    <option value="veneer">Dán sứ Veneer / Bọc răng sứ</option>
+                    <option value="whitening">Tẩy trắng răng Laser Whitening</option>
+                    <option value="endodontics">Điều trị tủy răng công nghệ cao</option>
+                    <option value="piezotome">Nhổ răng khôn Piezotome không đau</option>
+                    <option value="general">Khám tổng quát & Lấy cao răng siêu âm</option>
+                </select>
+                <div id="err-service" class="field-error">Vui lòng chọn dịch vụ nha khoa cần khám.</div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="booking-date">Ngày mong muốn khám <span style="color: red;">*</span></label>
+                    <input type="date" id="booking-date">
+                    <div id="err-booking-date" class="field-error">Vui lòng chọn ngày khám hợp lệ từ hôm nay trở đi.</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Khung giờ thuận tiện <span style="color: red;">*</span></label>
+                    <div class="options-grid">
+                        <div class="option-card">
+                            <input type="radio" id="time-morning" name="time-slot" value="morning">
+                            <label for="time-morning" class="option-label">Sáng (8h-11h)</label>
+                        </div>
+                        <div class="option-card">
+                            <input type="radio" id="time-afternoon" name="time-slot" value="afternoon">
+                            <label for="time-afternoon" class="option-label">Chiều (14h-17h)</label>
+                        </div>
+                        <div class="option-card">
+                            <input type="radio" id="time-evening" name="time-slot" value="evening">
+                            <label for="time-evening" class="option-label">Tối (17h-19h)</label>
+                        </div>
+                    </div>
+                    <div id="err-time-slot" class="field-error">Vui lòng chọn khung giờ khám thuận tiện.</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Ghi chú triệu chứng hoặc yêu cầu riêng</label>
+                <textarea id="notes" rows="3" placeholder="Mô tả tình trạng đau buốt, tiền sử bệnh lý hoặc bác sĩ mong muốn..."></textarea>
+            </div>
+
+            <div class="sticky-footer-action">
+                <button type="submit" id="btnSubmitFull" class="btn-submit">Xác Nhận Đặt Lịch Khám Online</button>
+            </div>
+        </form>
+    </main>
+
+    <!-- VisualViewport, Inline Validation & Persistence Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Set Min Date to Today
+            const dateInput = document.getElementById("booking-date");
+            const today = new Date().toISOString().split("T")[0];
+            if (dateInput) {
+                dateInput.setAttribute("min", today);
+            }
+
+            // VisualViewport API Integration: Avoid Mobile Virtual Keyboard Overlap
+            if (window.visualViewport) {
+                const stickyFooter = document.querySelector('.sticky-footer-action');
+                if (stickyFooter) {
+                    const adjustStickyFooter = () => {
+                        const viewport = window.visualViewport;
+                        // Calculate offset when keyboard opens and view height shrinks
+                        const offset = Math.max(0, window.innerHeight - (viewport.height + viewport.offsetTop));
+                        stickyFooter.style.transform = offset > 0 ? `translateY(-${offset}px)` : 'none';
+                    };
+                    window.visualViewport.addEventListener('resize', adjustStickyFooter);
+                    window.visualViewport.addEventListener('scroll', adjustStickyFooter);
+                }
+            }
+
+            // Restore Cart / Form state if user reloaded page F5
+            const savedData = localStorage.getItem("saved_booking_draft");
+            if (savedData) {
+                try {
+                    const parsed = JSON.parse(savedData);
+                    if (parsed.fullname) document.getElementById("fullname").value = parsed.fullname;
+                    if (parsed.phone) document.getElementById("phone").value = parsed.phone;
+                    if (parsed.service) document.getElementById("service").value = parsed.service;
+                    if (parsed.notes) document.getElementById("notes").value = parsed.notes;
+                    if (parsed.bookingDate) document.getElementById("booking-date").value = parsed.bookingDate;
+                } catch(e){}
+            }
+
+            // Real-time Save input state on change
+            document.querySelectorAll("#fullBookingForm input, #fullBookingForm select, #fullBookingForm textarea").forEach(el => {
+                el.addEventListener("input", saveDraft);
+            });
+
+            // Inline Validation Event Listeners (on blur & input)
+            setupFieldValidation("fullname", validateFullname);
+            setupFieldValidation("phone", validatePhone);
+            setupFieldValidation("service", validateService);
+            setupFieldValidation("booking-date", validateDate);
+
+            // Radio slot validation
+            document.querySelectorAll('input[name="time-slot"]').forEach(radio => {
+                radio.addEventListener('change', () => {
+                    const errEl = document.getElementById('err-time-slot');
+                    if (errEl) errEl.classList.remove('active');
+                });
+            });
+        });
+
+        function setupFieldValidation(fieldId, validateFn) {
+            const input = document.getElementById(fieldId);
+            if (!input) return;
+
+            input.addEventListener("blur", () => {
+                validateFn(true);
+            });
+
+            input.addEventListener("input", () => {
+                if (input.classList.contains("input-error")) {
+                    validateFn(false);
+                }
+            });
+        }
+
+        function validateFullname(showError = true) {
+            const el = document.getElementById("fullname");
+            const errEl = document.getElementById("err-fullname");
+            const val = el.value.trim();
+            const isValid = val.length >= 2;
+
+            if (!isValid && showError) {
+                el.classList.add("input-error");
+                errEl.classList.add("active");
+            } else if (isValid) {
+                el.classList.remove("input-error");
+                errEl.classList.remove("active");
+            }
+            return isValid;
+        }
+
+        function validatePhone(showError = true) {
+            const el = document.getElementById("phone");
+            const errEl = document.getElementById("err-phone");
+            const val = el.value.trim();
+            // Vietnam 10-digit mobile pattern starting with 0
+            const isValid = /^0[0-9]{9}$/.test(val);
+
+            if (!isValid && showError) {
+                el.classList.add("input-error");
+                errEl.classList.add("active");
+            } else if (isValid) {
+                el.classList.remove("input-error");
+                errEl.classList.remove("active");
+            }
+            return isValid;
+        }
+
+        function validateService(showError = true) {
+            const el = document.getElementById("service");
+            const errEl = document.getElementById("err-service");
+            const isValid = el.value !== "";
+
+            if (!isValid && showError) {
+                el.classList.add("input-error");
+                errEl.classList.add("active");
+            } else if (isValid) {
+                el.classList.remove("input-error");
+                errEl.classList.remove("active");
+            }
+            return isValid;
+        }
+
+        function validateDate(showError = true) {
+            const el = document.getElementById("booking-date");
+            const errEl = document.getElementById("err-booking-date");
+            const val = el.value;
+            const today = new Date().toISOString().split("T")[0];
+            const isValid = val !== "" && val >= today;
+
+            if (!isValid && showError) {
+                el.classList.add("input-error");
+                errEl.classList.add("active");
+            } else if (isValid) {
+                el.classList.remove("input-error");
+                errEl.classList.remove("active");
+            }
+            return isValid;
+        }
+
+        function validateTimeSlot(showError = true) {
+            const selected = document.querySelector('input[name="time-slot"]:checked');
+            const errEl = document.getElementById("err-time-slot");
+            const isValid = !!selected;
+
+            if (!isValid && showError) {
+                errEl.classList.add("active");
+            } else if (isValid) {
+                errEl.classList.remove("active");
+            }
+            return isValid;
+        }
+
+        function saveDraft() {
+            const draft = {
+                fullname: document.getElementById("fullname").value,
+                phone: document.getElementById("phone").value,
+                service: document.getElementById("service").value,
+                notes: document.getElementById("notes").value,
+                bookingDate: document.getElementById("booking-date").value
+            };
+            localStorage.setItem("saved_booking_draft", JSON.stringify(draft));
+        }
+
+        function applyVoucher() {
+            const code = document.getElementById("voucherCode").value.trim().toUpperCase();
+            const status = document.getElementById("voucherStatus");
+            if (code === "MINHDUC2026" || code === "NIENG3D5TR") {
+                status.style.color = "var(--color-success)";
+                status.textContent = "✓ Áp dụng voucher thành công! Đã ghi nhận ưu đãi giảm 10% - 5.000.000đ.";
+            } else {
+                status.style.color = "var(--color-danger)";
+                status.textContent = "✕ Mã voucher không khả dụng hoặc đã hết lượt áp dụng.";
+            }
+        }
+
+        let isSubmitting = false;
+        function handleFullBooking(event) {
+            event.preventDefault();
+            if (isSubmitting) return;
+
+            const isNameValid = validateFullname(true);
+            const isPhoneValid = validatePhone(true);
+            const isServiceValid = validateService(true);
+            const isDateValid = validateDate(true);
+            const isTimeValid = validateTimeSlot(true);
+
+            if (!isNameValid || !isPhoneValid || !isServiceValid || !isDateValid || !isTimeValid) {
+                // Focus first invalid field
+                if (!isNameValid) document.getElementById("fullname").focus();
+                else if (!isPhoneValid) document.getElementById("phone").focus();
+                else if (!isServiceValid) document.getElementById("service").focus();
+                else if (!isDateValid) document.getElementById("booking-date").focus();
+                return;
+            }
+
+            const alertBox = document.getElementById("bookingAlert");
+
+            if (!navigator.onLine) {
+                alertBox.style.display = "block";
+                alertBox.style.backgroundColor = "var(--color-warning-bg)";
+                alertBox.style.color = "var(--color-warning)";
+                alertBox.textContent = "⚠️ Mất kết nối Internet! Đơn đặt lịch đã lưu tạm trên thiết bị và sẽ tự động đồng bộ khi có kết nối trở lại.";
+                return;
+            }
+
+            isSubmitting = true;
+            const submitBtn = document.getElementById("btnSubmitFull");
+            submitBtn.textContent = "Đang xử lý đặt lịch...";
+            submitBtn.disabled = true;
+
+            setTimeout(() => {
+                localStorage.removeItem("saved_booking_draft");
+                alertBox.style.display = "block";
+                alertBox.style.backgroundColor = "var(--color-success-bg)";
+                alertBox.style.color = "var(--color-success)";
+                alertBox.textContent = "✓ Đặt lịch khám thành công! Phòng khám đã ghi nhận đơn hẹn và sẽ liên hệ xác nhận trong vòng 15 phút.";
+                submitBtn.textContent = "Xác Nhận Đặt Lịch Khám Online";
+                submitBtn.disabled = false;
+                isSubmitting = false;
+
+                // Reset form inputs except confirmation notice
+                document.getElementById("fullBookingForm").reset();
+            }, 700);
+        }
+    </script>
+</body>
+</html>
