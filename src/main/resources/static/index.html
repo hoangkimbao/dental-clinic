@@ -3751,7 +3751,7 @@ footer { background: #0d3534 !important; }
     </div>
 
     <!-- FLOATING CONTACT WIDGET (SLEEK EXPANDABLE DOCK - ZERO CONTENT BLOCKING) -->
-    <div id="floating-contact-widget" class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 pointer-events-auto select-none transition-all duration-300">
+    <div id="floating-contact-widget" class="fixed bottom-16 sm:bottom-6 right-6 z-50 flex flex-col items-end gap-3 pointer-events-auto select-none transition-all duration-300">
         <!-- 1. Đặt Lịch Nhanh -->
         <a href="#booking-section" onclick="showLandingPage(); trackGaEvent('click_booking_float', { source: 'floating_widget' })" 
            title="Đặt Lịch Khám Online"
@@ -3787,6 +3787,16 @@ footer { background: #0d3534 !important; }
             <span class="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs group-hover:px-3 text-xs font-extrabold tracking-wide relative z-10 transition-all duration-300 ease-in-out">
                 0977 224 504
             </span>
+        </a>
+    </div>
+
+    <!-- MOBILE STICKY ACTION BAR (VISIBLE ON MOBILE/TABLET < 1024px) -->
+    <div class="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-slate-950/95 backdrop-blur-md p-2.5 flex gap-2 border-t border-slate-800/80 shadow-2xl">
+        <a href="tel:0977224504" onclick="trackGaEvent('click_hotline_mobile_bar', { source: 'mobile_sticky_bar' })" class="flex-1 py-3 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 border border-slate-700 active:scale-95 transition-all">
+            <i class="fa-solid fa-phone-volume text-teal-400 text-sm"></i> Gọi Hotline
+        </a>
+        <a href="#booking-section" onclick="showLandingPage(); trackGaEvent('click_booking_mobile_bar', { source: 'mobile_sticky_bar' })" class="flex-1 py-3 px-3 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all">
+            <i class="fa-solid fa-calendar-check text-amber-300 text-sm"></i> Đặt Lịch Khám
         </a>
     </div>
 
