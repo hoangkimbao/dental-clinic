@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="DentalCare E2E Test Suite" tests="250" failures="158" errors="0" time="1.420">
+  <testsuite name="DentalCare Web Portal UI/UX &amp; Brand Identity Overhaul" tests="250" failures="158" errors="0" time="1.420">
+    <properties>
+      <property name="environment" value="development-baseline"/>
+      <property name="version" value="3.0.0"/>
+      <property name="projectRoot" value="D:\java\dental-clinic"/>
+    </properties>
+    <!-- Tier 1 Failures Sample -->
+    <testcase classname="Tier1.F01" name="T1-F01-01 - Navbar brand container includes bespoke SVG logo" time="0.005">
+      <failure message="Navbar currently relies on generic FontAwesome fa-tooth glyph rather than bespoke SVG logo">Navbar currently relies on generic FontAwesome fa-tooth glyph rather than bespoke SVG logo</failure>
+    </testcase>
+    <testcase classname="Tier1.F01" name="T1-F01-02 - Footer brand lockup includes bespoke SVG logo" time="0.003">
+      <failure message="Footer branding uses generic fa-tooth FontAwesome icon">Footer branding uses generic fa-tooth FontAwesome icon</failure>
+    </testcase>
+    <testcase classname="Tier1.F01" name="T1-F01-03 - Logo lockup includes DentalCare typography" time="0.002"/>
+    <testcase classname="Tier1.F05" name="T1-F05-01 - Section #booking-section has valid closing tag" time="0.004">
+      <failure message="Section #booking-section is missing &lt;/section&gt; closing tag before #faq">Section #booking-section is missing &lt;/section&gt; closing tag before #faq</failure>
+    </testcase>
+    <testcase classname="Tier1.F06" name="T1-F06-01 - Dedicated customer testimonials section #testimonials exists" time="0.002">
+      <failure message="Missing dedicated section #testimonials in index.html">Missing dedicated section #testimonials in index.html</failure>
+    </testcase>
+    <testcase classname="Tier1.F12" name="T1-F12-01 - Emulated 360px viewport exhibits 0% horizontal overflow" time="0.005">
+      <failure message="360px viewport has +87px horizontal overflow">360px viewport has +87px horizontal overflow</failure>
+    </testcase>
+    <testcase classname="Tier1.F19" name="T1-F19-03 - AI response parser safely maps pathologyNameVi without throwing TypeError" time="0.003">
+      <failure message="CRITICAL CRASH: diag.pathologyName.replace throws TypeError: undefined.replace">CRITICAL CRASH: diag.pathologyName.replace throws TypeError: undefined.replace</failure>
+    </testcase>
+    <testcase classname="Tier4.T4" name="T4-01 - Mobile Patient Onboarding &amp; Booking Journey (375px)" time="0.010">
+      <failure message="Mobile booking journey failed: unclosed tags, overflow, or missing payment scroll">Mobile booking journey failed: unclosed tags, overflow, or missing payment scroll</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

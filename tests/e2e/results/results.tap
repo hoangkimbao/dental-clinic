@@ -1,0 +1,503 @@
+TAP version 13
+1..250
+# Tier 1: Feature Coverage (F01 - F23)
+not ok 1 - [T1][T1-F01-01] Navbar brand container includes bespoke SVG logo or DentalIcons hook with Diamond Smile motif
+  ---
+  message: "Navbar currently relies on generic FontAwesome fa-tooth glyph rather than bespoke SVG logo"
+  ...
+not ok 2 - [T1][T1-F01-02] Footer brand lockup includes bespoke SVG logo rather than generic fa-tooth
+  ---
+  message: "Footer branding uses generic fa-tooth FontAwesome icon"
+  ...
+ok 3 - [T1][T1-F01-03] Logo lockup includes DentalCare typography and Luxury brand identifier
+not ok 4 - [T1][T1-F01-04] Logo SVG defines standard scalable viewBox and vector-effect="non-scaling-stroke"
+  ---
+  message: "Logo SVG missing scalable viewBox or non-scaling-stroke definition"
+  ...
+not ok 5 - [T1][T1-F01-05] Logo styling incorporates emerald/teal and gold metallic gradient defs
+  ---
+  message: "Logo missing multi-stop emerald/teal and gold gradient defs"
+  ...
+not ok 6 - [T1][T1-F02-01] Orthodontics 3D Braces icon renders bespoke dental arch with brackets
+  ---
+  message: "Orthodontics relies on generic FontAwesome fa-teeth-open glyph"
+  ...
+not ok 7 - [T1][T1-F02-02] Swiss Implant icon renders anatomical crown with titanium screw thread
+  ---
+  message: "Swiss Implant relies on generic FontAwesome fa-tooth glyph"
+  ...
+not ok 8 - [T1][T1-F02-03] Porcelain Veneer icon renders ultra-thin ceramic facet
+  ---
+  message: "Porcelain Veneer uses fantasy magic wand fa-wand-magic-sparkles"
+  ...
+not ok 9 - [T1][T1-F02-04] Ultrasonic Piezotome icon renders molar with acoustic wave rings
+  ---
+  message: "Ultrasonic Piezotome uses inappropriate dog bone fa-bone glyph"
+  ...
+not ok 10 - [T1][T1-F02-05] Endodontics Root Canal icon renders coronal pulp chamber and twin root canals
+  ---
+  message: "Endodontics Root Canal missing bespoke SVG representation"
+  ...
+not ok 11 - [T1][T1-F02-06] Laser Whitening icon renders incisor with focused medical laser wavelength beam
+  ---
+  message: "Laser Whitening uses fa-sparkles which fails to render in FA Free"
+  ...
+not ok 12 - [T1][T1-F03-01] AI Diagnostic Doctor badge renders hexagonal microchip with neural traces and lens
+  ---
+  message: "AI Doctor badge fragmented across brain, microchip, and magic wand"
+  ...
+not ok 13 - [T1][T1-F03-02] Porcelain Warranty badge renders luxury medical shield with embedded 2D QR matrix
+  ---
+  message: "Warranty badge lacks cohesive Smart QR Shield"
+  ...
+not ok 14 - [T1][T1-F03-03] Loyalty program badge renders 5-point royal golden crown with metallic gradient
+  ---
+  message: "Loyalty program badge absent or relies on generic coin glyph"
+  ...
+not ok 15 - [T1][T1-F03-04] Branch Network badge renders medical teardrop GPS pin with sonar radar rings
+  ---
+  message: "Branch Network badge lacks cohesive emerald GPS Pin"
+  ...
+not ok 16 - [T1][T1-F03-05] All 4 feature badges standardize on viewBox="0 0 64 64" geometry
+  ---
+  message: "Feature badges missing viewBox 0 0 64 64 standardization"
+  ...
+ok 17 - [T1][T1-F04-01] CSS root defines authoritative emerald/teal, luxury navy, and gold palette
+not ok 18 - [T1][T1-F04-02] Navbar links and buttons utilize clinic emerald/teal instead of generic sky blue
+  ---
+  message: "Navbar retains generic sky-blue and brand-700 classes"
+  ...
+ok 19 - [T1][T1-F04-03] Booking CTA and action buttons enforce medical teal styling
+not ok 20 - [T1][T1-F04-04] Branch map pins eliminate clashing text-rose-500 in favor of emerald/teal
+  ---
+  message: "Branch pins use clashing text-rose-500"
+  ...
+ok 21 - [T1][T1-F04-05] Card image containers enforce explicit aspect-ratio declarations
+not ok 22 - [T1][T1-F05-01] Section #booking-section has valid closing tag </section> before #faq
+  ---
+  message: "Section #booking-section is missing </section> closing tag before #faq"
+  ...
+not ok 23 - [T1][T1-F05-02] Container div inside #booking-section is closed with </div> before #faq
+  ---
+  message: "Container div inside #booking-section is unclosed"
+  ...
+not ok 24 - [T1][T1-F05-03] Section #faq is a top-level sibling element rather than nested child of #booking-section
+  ---
+  message: "#faq is illegally nested inside unclosed #booking-section"
+  ...
+not ok 25 - [T1][T1-F05-04] Section #branches-section is not trapped inside #booking-section
+  ---
+  message: "#branches-section is trapped inside unclosed #booking-section"
+  ...
+not ok 26 - [T1][T1-F05-05] Element <footer> is not trapped inside #booking-section
+  ---
+  message: "<footer> is trapped inside unclosed #booking-section"
+  ...
+not ok 27 - [T1][T1-F06-01] Dedicated customer testimonials section #testimonials exists in index.html
+  ---
+  message: "Missing dedicated section #testimonials in index.html"
+  ...
+not ok 28 - [T1][T1-F06-02] Customer review cards display 5 gold star rating indicators
+  ---
+  message: "Missing star rating indicators in testimonials section"
+  ...
+not ok 29 - [T1][T1-F06-03] Review cards display patient names and verified treatment badges
+  ---
+  message: "Missing verified treatment badges in reviews section"
+  ...
+not ok 30 - [T1][T1-F06-04] Review cards display patient feedback quotes
+  ---
+  message: "Missing patient feedback quotes in reviews section"
+  ...
+not ok 31 - [T1][T1-F06-05] Client script hooks into REST API endpoint GET /api/reviews/latest
+  ---
+  message: "Client JS does not integrate with GET /api/reviews/latest"
+  ...
+not ok 32 - [T1][T1-F07-01] Desktop navigation eliminates 2-line wraps at 1024px viewport
+  ---
+  message: "Desktop nav links engage at lg: (1024px) causing 1,632px collision"
+  ...
+not ok 33 - [T1][T1-F07-02] Navigation menu items are cleanly streamlined
+  ---
+  message: "Navigation spacing exceeds container boundaries"
+  ...
+not ok 34 - [T1][T1-F07-03] Action buttons cluster fits within container width without collision
+  ---
+  message: "Right action buttons crowd tablet/desktop viewport"
+  ...
+not ok 35 - [T1][T1-F07-04] Header spacer element matches fixed header height
+  ---
+  message: "Header spacer height mismatches CSS !important height"
+  ...
+ok 36 - [T1][T1-F07-05] Secondary auth links adapt gracefully on tablet viewports
+not ok 37 - [T1][T1-F08-01] Dental services grid #services eliminates md:[&>*:last-child]:col-span-2 hack
+  ---
+  message: "#services grid contains md:[&>*:last-child]:col-span-2 hack"
+  ...
+not ok 38 - [T1][T1-F08-02] Doctor team grid #doctors eliminates md:[&>*:last-child]:col-span-2 hack
+  ---
+  message: "#doctors grid contains md:[&>*:last-child]:col-span-2 hack"
+  ...
+not ok 39 - [T1][T1-F08-03] Pricing packages grid #pricing eliminates md:[&>*:last-child]:col-span-2 hack
+  ---
+  message: "#pricing grid contains md:[&>*:last-child]:col-span-2 hack"
+  ...
+not ok 40 - [T1][T1-F08-04] Transformations grid #transformations eliminates md:[&>*:last-child]:col-span-2 hack
+  ---
+  message: "#transformations grid contains md:[&>*:last-child]:col-span-2 hack"
+  ...
+not ok 41 - [T1][T1-F08-05] Cards on tablet render with uniform widths and balanced alignment
+  ---
+  message: "Tablet grids contain centered 448px pyramid cards with blank voids"
+  ...
+not ok 42 - [T1][T1-F09-01] Flash sale grid uses responsive columns to prevent 228px squish
+  ---
+  message: "Flash sale grid forces 4 columns at 1024px (228px squish)"
+  ...
+not ok 43 - [T1][T1-F09-02] Voucher discount text Giảm 5.000.000đ does not wrap or clip inside card
+  ---
+  message: "Discount text wraps inside 196px inner card width"
+  ...
+not ok 44 - [T1][T1-F09-03] Coupon code and copy button fit side-by-side without collision
+  ---
+  message: "Coupon code and copy button collide at 1024px"
+  ...
+ok 45 - [T1][T1-F09-04] Coupon cards have adequate padding and touch targets
+ok 46 - [T1][T1-F09-05] Voucher tags and badges display cleanly with adequate margins
+not ok 47 - [T1][T1-F10-01] Section #branches-section includes visual interactive map container
+  ---
+  message: "#branches-section contains only text cards with no visual map"
+  ...
+not ok 48 - [T1][T1-F10-02] Branch cards provide interactive switching to focus branch on map
+  ---
+  message: "Branch cards lack interactive map switching logic"
+  ...
+ok 49 - [T1][T1-F10-03] Branch cards display facility equipment, addresses, and hotlines cleanly
+ok 50 - [T1][T1-F10-04] Chỉ Đường Google Maps link has valid URL and target="_blank"
+not ok 51 - [T1][T1-F10-05] Branch card CTA buttons align horizontally regardless of varying text lengths
+  ---
+  message: "Branch action buttons rest at uneven vertical levels"
+  ...
+not ok 52 - [T1][T1-F11-01] Hero <h1> eliminates hardcoded <br> breaking semantic wrap flow
+  ---
+  message: "Hero <h1> contains hardcoded <br> tag causing orphaned lines"
+  ...
+not ok 53 - [T1][T1-F11-02] Hero <h1> line-height is at least 1.25 to prevent diacritic clipping
+  ---
+  message: "Hero <h1> uses line-height: 1.18 or 1.06 clipping tone diacritics"
+  ...
+not ok 54 - [T1][T1-F11-03] Gradient text span includes vertical padding buffer (pb-1 / py-0.5)
+  ---
+  message: "Gradient text span lacks padding buffer, clipping descenders"
+  ...
+not ok 55 - [T1][T1-F11-04] Typography rules prevent mid-syllable word breaks on compound Vietnamese dental terms
+  ---
+  message: "Universal overflow-wrap: break-word breaks Vietnamese words mid-syllable"
+  ...
+not ok 56 - [T1][T1-F11-05] Luxury editorial headings utilize Playfair Display serif styling
+  ---
+  message: ".font-serif-luxury is defined in CSS but never utilized in index.html"
+  ...
+not ok 57 - [T1][T1-F12-01] Emulated 360px viewport exhibits 0% horizontal overflow
+  ---
+  message: "360px viewport has +87px horizontal overflow"
+  ...
+not ok 58 - [T1][T1-F12-02] Emulated 375px viewport exhibits 0% horizontal overflow
+  ---
+  message: "375px viewport has +72px horizontal overflow"
+  ...
+not ok 59 - [T1][T1-F12-03] Emulated 390px viewport exhibits 0% horizontal overflow
+  ---
+  message: "390px viewport has +57px horizontal overflow"
+  ...
+not ok 60 - [T1][T1-F12-04] Emulated 414px viewport exhibits 0% horizontal overflow
+  ---
+  message: "414px viewport has +33px horizontal overflow"
+  ...
+not ok 61 - [T1][T1-F12-05] Emulated 430px viewport exhibits 0% horizontal overflow
+  ---
+  message: "430px viewport has +17px horizontal overflow"
+  ...
+not ok 62 - [T1][T1-F13-01] Authenticated user badge collapses gracefully on mobile screens (< 640px)
+  ---
+  message: "Authenticated header overflows 360px by +185px"
+  ...
+ok 63 - [T1][T1-F13-02] Cart drawer icon button remains fully visible within viewport bounds
+ok 64 - [T1][T1-F13-03] Mobile menu hamburger button remains within right viewport boundary
+not ok 65 - [T1][T1-F13-04] Non-existent xs: prefix classes replaced with standard responsive utilities
+  ---
+  message: "Found invalid xs: classes in index.html (unsupported by standard Tailwind)"
+  ...
+ok 66 - [T1][T1-F13-05] Clinic brand logo text scales proportionally to prevent header squeezing
+not ok 67 - [T1][T1-F14-01] Mobile menu drawer opens with smooth CSS transition / slide physics
+  ---
+  message: "Mobile drawer pops abruptly using .hidden without transition"
+  ...
+not ok 68 - [T1][T1-F14-02] Backdrop overlay is assigned z-40 while navigation and drawer are assigned z-50
+  ---
+  message: "Z-index conflict: nav (z-40) not higher than backdrop (z-40)"
+  ...
+not ok 69 - [T1][T1-F14-03] Mobile menu drawer dynamically displays user profile and logout when authenticated
+  ---
+  message: "Mobile menu drawer permanently displays Log In / Register ignoring user session"
+  ...
+not ok 70 - [T1][T1-F14-04] Drawer navigation links provide touch target height >= 44px
+  ---
+  message: "Mobile drawer links have substandard touch heights"
+  ...
+ok 71 - [T1][T1-F14-05] Selecting navigation item closes drawer and restores body scrolling
+not ok 72 - [T1][T1-F15-01] Navbar logout button satisfies WCAG 2.1 touch target >= 44x44px
+  ---
+  message: "Navbar logout button is undersized at 32x32px (w-8 h-8)"
+  ...
+not ok 73 - [T1][T1-F15-02] Category filter tabs in Service Catalog and Product Shop have touch height >= 44px
+  ---
+  message: "Service catalog category tabs are 32px tall (< 44px)"
+  ...
+not ok 74 - [T1][T1-F15-03] Voucher Dùng Ngay buttons provide touch target >= 44x44px
+  ---
+  message: "Voucher Dùng Ngay buttons are 28px tall (< 44px)"
+  ...
+not ok 75 - [T1][T1-F15-04] Cart drawer item quantity (+/-) and remove buttons provide touch target >= 44x44px
+  ---
+  message: "Cart drawer quantity buttons are 36x36px (< 44px)"
+  ...
+not ok 76 - [T1][T1-F15-05] Modal close buttons provide touch target >= 44x44px
+  ---
+  message: "Modal close buttons are undersized (28x28px)"
+  ...
+not ok 77 - [T1][T1-F16-01] Hero trust metrics grid wraps or stacks cleanly on 360px mobile viewports
+  ---
+  message: "Hero trust metrics forces grid-cols-3 gap-6 on 360px budget screens"
+  ...
+ok 78 - [T1][T1-F16-02] Metric numbers maintain clear margins without touching cell boundaries
+not ok 79 - [T1][T1-F16-03] Metric labels avoid excessive vertical character stacking
+  ---
+  message: "Metric labels stack into 3-4 vertical words on 360px"
+  ...
+ok 80 - [T1][T1-F16-04] Metric divider borders adapt responsively to prevent visual clutter
+ok 81 - [T1][T1-F16-05] Metric values remain legible and high-contrast across viewports
+not ok 82 - [T1][T1-F17-01] FAQ item 3 content container possesses unique ID content-faq-3
+  ---
+  message: "Found duplicate id=\"content-faq-2\" (2 occurrences) and missing content-faq-3"
+  ...
+not ok 83 - [T1][T1-F17-02] Clicking FAQ 3 toggles answer visibility without console error or null pointer
+  ---
+  message: "toggleFaq(\"faq-3\") returns null because content-faq-3 does not exist"
+  ...
+not ok 84 - [T1][T1-F17-03] GSAP tooth animation is scoped specifically to #hero rather than global .fa-tooth
+  ---
+  message: "GSAP wobbles every .fa-tooth across entire page causing GPU drain"
+  ...
+not ok 85 - [T1][T1-F17-04] 3D tilt cards support touch events and reset perspective on mobile touch
+  ---
+  message: "3D tilt cards lack touch handlers, remaining stuck in tilt on mobile"
+  ...
+not ok 86 - [T1][T1-F17-05] Floating contact widget and toast notifications do not collide on mobile
+  ---
+  message: "Toasts and floating action buttons collide at bottom-6 right-6"
+  ...
+ok 87 - [T1][T1-F18-01] Booking form fields stack cleanly on mobile viewports
+not ok 88 - [T1][T1-F18-02] Quick time-slot selection pills satisfy touch target >= 44px
+  ---
+  message: "Booking time slot pills are undersized (32px)"
+  ...
+ok 89 - [T1][T1-F18-03] Xác Nhận Đặt Lịch Hẹn submit CTA remains fully visible and unoccluded
+not ok 90 - [T1][T1-F18-04] Submitting booking smoothly scrolls confirmation / VietQR box into view
+  ---
+  message: "Payment box opens below without scrolling into view on mobile"
+  ...
+ok 91 - [T1][T1-F18-05] Coupon application input inside booking form updates pricing with visual confirmation
+not ok 92 - [T1][T1-F19-01] AI diagnostic interface incorporates photo upload dropzone with file input
+  ---
+  message: "AI diagnostic interface missing photo upload dropzone and file input"
+  ...
+not ok 93 - [T1][T1-F19-02] Image preview container enforces explicit aspect ratio
+  ---
+  message: "AI photo preview lacks aspect-ratio container, risking image distortion"
+  ...
+not ok 94 - [T1][T1-F19-03] AI response parser safely maps pathologyNameVi without throwing TypeError
+  ---
+  message: "CRITICAL CRASH: diag.pathologyName.replace throws TypeError: undefined.replace"
+  ...
+ok 95 - [T1][T1-F19-04] AI result card displays pathology name, urgency badge, and clinical recommendation
+ok 96 - [T1][T1-F19-05] Đặt Lịch Khám Ngay CTA on result card prefills booking form service
+not ok 97 - [T1][T1-F20-01] Warranty card renders authentic vector Smart QR code SVG/graphic
+  ---
+  message: "Warranty card renders raw plaintext string 'QR Code: ...' rather than QR graphic"
+  ...
+not ok 98 - [T1][T1-F20-02] Warranty card header wraps serial number and status badge on mobile viewports
+  ---
+  message: "Warranty card header lacks flex-wrap, causing serial number collision on 360px"
+  ...
+ok 99 - [T1][T1-F20-03] Warranty details display patient name, tooth positions, material, and labo supplier
+ok 100 - [T1][T1-F20-04] Warranty status badge renders with emerald badge styling
+ok 101 - [T1][T1-F20-05] Sample warranty serial pill buttons populate search input and trigger lookup
+ok 102 - [T1][T1-F21-01] Cart drawer renders with full-width responsive mobile sizing (w-full max-w-md)
+not ok 103 - [T1][T1-F21-02] Checkout form fields are inside scrollable container to prevent mobile keyboard occlusion
+  ---
+  message: "Checkout inputs locked inside fixed 385px footer, occluded by keyboard"
+  ...
+ok 104 - [T1][T1-F21-03] Item quantity controls (+/-) dynamically update subtotal and header badge count
+ok 105 - [T1][T1-F21-04] Order summary and Xác Nhận Đặt Hàng CTA remain accessible at bottom
+ok 106 - [T1][T1-F21-05] Closing cart drawer via backdrop or close button restores body scroll
+ok 107 - [T1][T1-F22-01] Test runner executes autonomously without manual intervention
+ok 108 - [T1][T1-F22-02] Test runner generates standard JSON, TAP, and JUnit XML reports
+ok 109 - [T1][T1-F22-03] Test runner exits with code 0 on full pass, non-zero on failure
+ok 110 - [T1][T1-F22-04] Test runner reports breakdown of passed, failed, and total test counts
+ok 111 - [T1][T1-F22-05] Test runner validates all 23 features in the Feature Inventory
+not ok 112 - [T1][T1-F23-01] Full DOM parser confirms zero unclosed structural HTML tags across entire SPA
+  ---
+  message: "Unclosed section tags detected in DOM hierarchy"
+  ...
+not ok 113 - [T1][T1-F23-02] CSS parser confirms absence of invalid Tailwind classes (backdrop-blur-xs, shadow-xs)
+  ---
+  message: "Found 2 non-existent Tailwind classes (backdrop-blur-xs, shadow-xs)"
+  ...
+not ok 114 - [T1][T1-F23-03] JavaScript syntax and runtime analyzer verifies zero unhandled exception paths
+  ---
+  message: "Found unhandled TypeError in app.js: diag.pathologyName.replace"
+  ...
+ok 115 - [T1][T1-F23-04] Input sanitization verifies resistance to XSS in patient names and notes
+ok 116 - [T1][T1-F23-05] Media containers verify existence of fallback image handlers and alt accessibility text
+
+# Tier 2: Boundary & Corner Cases (114 tests)
+not ok 117 - [T2][T2-F01-01] Logo SVG scales down to 24px without path clipping
+ok 118 - [T2][T2-F01-02] Logo SVG text tags properly escape XML entities
+not ok 119 - [T2][T2-F01-03] Logo preserves aspect ratio under container stretching
+ok 120 - [T2][T2-F01-04] Logo text and badge satisfy WCAG AA contrast ratio
+not ok 121 - [T2][T2-F01-05] High-DPI Retina displays render crisp vector lines via non-scaling-stroke
+not ok 122 - [T2][T2-F02-01] Service SVG icons scale from 24px small badge up to 96px modal dialog
+ok 123 - [T2][T2-F02-02] Unknown or null dental service category falls back gracefully to GENERAL icon
+not ok 124 - [T2][T2-F02-03] Vector stroke widths maintain visual harmony (1.5-2.5px)
+not ok 125 - [T2][T2-F02-04] All 6 service SVGs maintain identical viewBox coordinate space (0 0 64 64)
+not ok 126 - [T2][T2-F02-05] Icons render distinct silhouettes legible in grayscale/monochrome mode
+not ok 127 - [T2][T2-F03-01] Feature badge SVGs render clearly at 16x16px notification badge size
+ok 128 - [T2][T2-F03-02] Feature badges maintain high contrast against dark mode backgrounds
+not ok 129 - [T2][T2-F03-03] Invalid badge key safely returns default clinic shield badge
+not ok 130 - [T2][T2-F03-04] Interactive container surrounding badge provides >= 44x44px touch area
+not ok 131 - [T2][T2-F03-05] Badge vector geometry avoids fractional subpixel coordinates
+ok 132 - [T2][T2-F04-01] CSS custom properties override safely without breaking fallback values
+ok 133 - [T2][T2-F04-02] High-contrast mode maintains legible element borders
+ok 134 - [T2][T2-F04-03] Color hex values conform strictly to 6-digit standard or valid rgba format
+ok 135 - [T2][T2-F04-04] Gold VIP accents have adequate contrast against dark emerald backgrounds
+ok 136 - [T2][T2-F04-05] Card aspect ratios prevent layout shift during high-latency image loading
+ok 137 - [T2][T2-F05-01] DOM nesting depth does not exceed 32 levels
+ok 138 - [T2][T2-F05-02] Void HTML elements do not contain illegal closing tags
+not ok 139 - [T2][T2-F05-03] All opening <section> tags have matching </section> closing tags
+not ok 140 - [T2][T2-F05-04] Element IDs in index.html are strictly unique
+ok 141 - [T2][T2-F05-05] Form elements are properly paired with labels or aria-labels
+not ok 142 - [T2][T2-F06-01] Empty reviews array ([]) renders graceful empty state message
+not ok 143 - [T2][T2-F06-02] Reviews with 1,000+ characters of text truncate with Xem Thêm toggle
+not ok 144 - [T2][T2-F06-03] Missing customer avatar image falls back to initials monogram
+not ok 145 - [T2][T2-F06-04] Star rating strictly bounds between 1 and 5 stars
+not ok 146 - [T2][T2-F06-05] API error on /api/reviews/latest displays fallback offline testimonials
+not ok 147 - [T2][T2-F07-01] At 1023px viewport, header renders tablet mode without horizontal scrollbar
+not ok 148 - [T2][T2-F07-02] At 1024px desktop minimum, header accommodates all items without 2-line wraps
+not ok 149 - [T2][T2-F07-03] At 1280px xl breakpoint, full desktop navigation menu displays smoothly
+ok 150 - [T2][T2-F07-04] Browser zoom at 150% does not break fixed header layout
+ok 151 - [T2][T2-F07-05] Sticky navbar background maintains backdrop-blur and border separation on scroll
+ok 152 - [T2][T2-F08-01] Tablet grid with 1 service item renders left-aligned or centered cleanly
+ok 153 - [T2][T2-F08-02] Tablet grid with 2 service items fills 2 columns equally
+not ok 154 - [T2][T2-F08-03] Tablet grid with 3 service items avoids centered 448px orphan card
+not ok 155 - [T2][T2-F08-04] Card height remains uniform when Card A has 2 bullet points and Card B has 5
+ok 156 - [T2][T2-F08-05] Tablet landscape (1024px) smoothly transitions from 2 to 3 columns
+not ok 157 - [T2][T2-F09-01] Coupon card with 8-digit discount fits without overflowing
+not ok 158 - [T2][T2-F09-02] Expired coupon card renders disabled button state with Hết Hạn badge
+not ok 159 - [T2][T2-F09-03] Clipboard copy failure falls back to prompt or alert dialog
+ok 160 - [T2][T2-F09-04] Coupon codes with underscores and dashes render without monospace font break
+not ok 161 - [T2][T2-F09-05] Minimum coupon card width at 1024px is >= 300px
+ok 162 - [T2][T2-F10-01] Branch with missing facility list handles empty bullets gracefully
+not ok 163 - [T2][T2-F10-02] Map canvas resizes gracefully on device orientation change
+not ok 164 - [T2][T2-F10-03] Geolocation permission denial does not freeze branch selector buttons
+not ok 165 - [T2][T2-F10-04] External Google Maps link specifies rel="noopener noreferrer"
+ok 166 - [T2][T2-F10-05] Branch hotlines use valid tel: URI scheme for 1-tap dialing
+ok 167 - [T2][T2-F11-01] Longest Vietnamese dental compound word renders without character clipping
+not ok 168 - [T2][T2-F11-02] Uppercase tone diacritics (Ẵ, Ẫ, Ứ, Ỹ) do not collide with preceding lines
+ok 169 - [T2][T2-F11-03] Google fonts declaration includes display=swap to avoid FOIT
+ok 170 - [T2][T2-F11-04] Body text font size is at least 14px to ensure mobile readability
+ok 171 - [T2][T2-F11-05] Zero Unicode replacement characters in Vietnamese strings
+not ok 172 - [T2][T2-F12-01] Compact screen (360x640) maintains zero horizontal overflow with modal open
+not ok 173 - [T2][T2-F12-02] iPhone SE (375x667) maintains zero horizontal overflow
+not ok 174 - [T2][T2-F12-03] iPhone 14 (390x844) maintains zero horizontal overflow
+not ok 175 - [T2][T2-F12-04] iPhone Plus (414x896) maintains zero horizontal overflow
+not ok 176 - [T2][T2-F12-05] iPhone Pro Max (430x932) maintains zero horizontal overflow
+ok 177 - [T2][T2-F13-01] Logged in user with long name (30+ chars) truncates with ellipsis
+ok 178 - [T2][T2-F13-02] Cart badge counter displaying 99+ does not distort circular badge shape
+not ok 179 - [T2][T2-F13-03] Zero button overlap between Cart, Hamburger, and Auth actions on 360px
+not ok 180 - [T2][T2-F13-04] Avatar image failure falls back to default user icon
+ok 181 - [T2][T2-F13-05] Touch targets on header action buttons provide >= 44x44px bounding area
+ok 182 - [T2][T2-F14-01] Rapid hamburger toggle clicks do not desynchronize drawer state
+ok 183 - [T2][T2-F14-02] Drawer opens correctly even when page is scrolled to bottom
+ok 184 - [T2][T2-F14-03] Tapping outside drawer on backdrop dismisses menu
+not ok 185 - [T2][T2-F14-04] Drawer content scrolls smoothly if menu items exceed screen height
+ok 186 - [T2][T2-F14-05] Body scroll is completely locked when mobile menu is active
+not ok 187 - [T2][T2-F15-01] Measured width and height of all audited buttons is >= 44.0px
+ok 188 - [T2][T2-F15-02] Minimum spacing between adjacent interactive touch targets is >= 8px
+ok 189 - [T2][T2-F15-03] Active tap visual feedback implemented on buttons
+not ok 190 - [T2][T2-F15-04] Quantity increment and decrement buttons have touch target >= 44x44px
+not ok 191 - [T2][T2-F15-05] Close buttons in all modals provide >= 44x44px clickable target
+not ok 192 - [T2][T2-F16-01] Large metrics fit without overflowing cell borders
+ok 193 - [T2][T2-F16-02] Metrics font size scales down from 3xl to 2xl on compact screens
+ok 194 - [T2][T2-F16-03] Zero percentage value (0%) or empty state handles gracefully
+ok 195 - [T2][T2-F16-04] Metric label characters maintain line-height 1.25 or higher
+ok 196 - [T2][T2-F16-05] Metrics divider border maintains 1px width across device pixel ratios
+ok 197 - [T2][T2-F17-01] Rapid accordion clicks do not freeze GSAP or CSS height transitions
+ok 198 - [T2][T2-F17-02] FAQ answer containing 1,000 words expands without clipping
+ok 199 - [T2][T2-F17-03] GSAP animations disconnect properly when section unmounts
+ok 200 - [T2][T2-F17-04] FAQ questions use valid semantic button elements with aria-expanded
+ok 201 - [T2][T2-F17-05] Floating contact widget remains docked at bottom-right during fast scrolls
+ok 202 - [T2][T2-F18-01] Submission with empty phone number triggers validation error
+ok 203 - [T2][T2-F18-02] Invalid phone number format (abc) rejected
+not ok 204 - [T2][T2-F18-03] Past appointment dates are disabled in datepicker
+not ok 205 - [T2][T2-F18-04] Booking notes exceeding 500 characters truncate or warn cleanly
+ok 206 - [T2][T2-F18-05] VietQR deposit timer countdown displays remaining time accurately
+not ok 207 - [T2][T2-F19-01] Photo upload rejects files exceeding 5MB (5,242,880 bytes)
+not ok 208 - [T2][T2-F19-02] Non-image file extensions (.exe, .pdf, .js) rejected by dropzone
+ok 209 - [T2][T2-F19-03] Empty symptom description and no photo triggers warning before API call
+ok 210 - [T2][T2-F19-04] AI API network timeout displays retry CTA without crashing interface
+ok 211 - [T2][T2-F19-05] Square and wide oral photos render without stretching via object-cover
+ok 212 - [T2][T2-F20-01] Non-existent serial (INVALID-999) displays Không tìm thấy thẻ bảo hành
+ok 213 - [T2][T2-F20-02] Expired warranty status formats with amber/rose badge styling
+not ok 214 - [T2][T2-F20-03] Warranty serial number with special characters encodes safely in URL
+not ok 215 - [T2][T2-F20-04] Serial number text truncates with max-width on 360px screens
+ok 216 - [T2][T2-F20-05] QR Code graphic maintains 1:1 square aspect ratio
+ok 217 - [T2][T2-F21-01] Decrementing quantity to 0 removes item from cart with confirmation
+ok 218 - [T2][T2-F21-02] Cart quantity capped at 99 units per line item
+ok 219 - [T2][T2-F21-03] Attempting checkout with empty cart displays warning notification
+ok 220 - [T2][T2-F21-04] At 320px viewport height, checkout inputs remain scrollable
+ok 221 - [T2][T2-F21-05] Currency prices formatted with Vietnamese đồng and thousand separators
+ok 222 - [T2][T2-F22-01] Test runner handles missing files gracefully with informative errors
+ok 223 - [T2][T2-F22-02] Test runner individual test timeout capped at 5000ms
+ok 224 - [T2][T2-F22-03] Non-zero exit code returned whenever any assertion fails
+ok 225 - [T2][T2-F22-04] TAP format complies with standard TAP version 13 specification
+ok 226 - [T2][T2-F22-05] JSON test report schema contains passed, failed, total, and tests array
+ok 227 - [T2][T2-F23-01] Search input containing SQL single quotes does not crash client state
+ok 228 - [T2][T2-F23-02] HTML tags in patient name escaped as text
+ok 229 - [T2][T2-F23-03] CSS injection attempt in style attribute rejected
+not ok 230 - [T2][T2-F23-04] All image elements specify decoding="async" for smooth scroll performance
+not ok 231 - [T2][T2-F23-05] No unhandled console errors or undefined variable references on initial boot
+
+# Tier 3: Cross-Feature Combinations (15 tests)
+ok 232 - [T3][T3-01] Booking + Voucher Application
+ok 233 - [T3][T3-02] Catalog Tabs + Detail Modal
+not ok 234 - [T3][T3-03] AI Diagnostic + Booking Prefill
+not ok 235 - [T3][T3-04] Warranty Lookup + Care Product Cart
+ok 236 - [T3][T3-05] Mobile Drawer + Auth Modal
+not ok 237 - [T3][T3-06] Branch Map Selection + Booking Prefill
+ok 238 - [T3][T3-07] Product Combo Packaging + Cart Subtotal
+not ok 239 - [T3][T3-08] Flash Sale Voucher + Cart Checkout
+not ok 240 - [T3][T3-09] Customer Testimonials + Doctor Booking
+not ok 241 - [T3][T3-10] Mobile Virtual Keyboard + Cart Drawer
+not ok 242 - [T3][T3-11] FAQ Accordion + Floating Contact Widget
+not ok 243 - [T3][T3-12] Bespoke Service SVG + Dynamic Catalog API
+not ok 244 - [T3][T3-13] Bespoke Feature Badge + Navigation Links
+not ok 245 - [T3][T3-14] Porcelain Smart QR Code + VietQR Deposit
+ok 246 - [T3][T3-15] Dark Mode Toggle + Brand Palette
+
+# Tier 4: Real-World Workload Scenarios (5 tests)
+not ok 247 - [T4][T4-01] Mobile Patient Onboarding & Booking Journey (375px iPhone SE)
+not ok 248 - [T4][T4-02] AI Dental Diagnostic to Clinical Consultation Journey
+not ok 249 - [T4][T4-03] Porcelain Crown Warranty Verification & Loyalty Care Journey
+not ok 250 - [T4][T4-04] Multi-Branch Exploration & Consultation Booking Journey (Tablet 768px)
+not ok 251 - [T4][T4-05] Customer Testimonial Verification & Doctor Selection Journey (Desktop 1280px)

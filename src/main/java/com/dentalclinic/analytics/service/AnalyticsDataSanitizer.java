@@ -24,26 +24,32 @@ public class AnalyticsDataSanitizer {
             "(?i)\\bBearer\\s+(?!\\[REDACTED)[^\\s\"',;}{]+"
     );
 
-    // 2. Passwords, Secrets, API Keys in JSON
+    // 5. JSON Password & Secrets: "password": "value" -> "password": "[REDACTED]"
     private static final Pattern JSON_SECRET_STRING_PATTERN = Pattern.compile(
-            "(?i)\"(password|passwd|pwd|pass|secret|client_secret|apiKey|api_key|token|authToken|auth_token|accessToken|access_token|refreshToken|refresh_token|idToken|id_token)\"\\s*:\\s*\"(?!\\[REDACTED)(?:\\\\\"|[^\"])*\""
+            "(?i)\"(password|passwd|pwd|pass|secret|client_secret|apiKey|api_key|token|authToken|auth_token|accessToken|access_token|refreshToken|refresh_token)\"\\s*:\\s*\"(?!\\[REDACTED)[^\"\\\\]*+(?:\\\\.[^\"\\\\]*+)*+\""
     );
+
+    // 6. JSON Password numeric/unquoted: "password": 123456 -> "password": "[REDACTED]"
     private static final Pattern JSON_SECRET_UNQUOTED_PATTERN = Pattern.compile(
             "(?i)\"(password|passwd|pwd|pass|secret|client_secret|apiKey|api_key|token|authToken|auth_token|accessToken|access_token|refreshToken|refresh_token)\"\\s*:\\s*(?!\\[REDACTED)[^,\\}\\]\\s\"]+"
     );
 
-    // 3. Query string / Form passwords
+    // 7. Form-urlencoded or URL query params: password=secret -> password=[REDACTED]
     private static final Pattern FORM_PASSWORD_PATTERN = Pattern.compile(
-            "(?i)\\b(password|passwd|pwd|secret|api_key|apikey|access_token|refresh_token|auth_token)=(?!\\[REDACTED)[^&\\s\"',;]+"
+            "(?i)\\b(key|password|passwd|pwd|secret|api_key|apikey|access_token|refresh_token|auth_token)=(?!\\[REDACTED)[^&\\s\"',;]+"
     );
+
+    // 8. Plain text password key-value: Password: xyz -> Password: [REDACTED]
     private static final Pattern TEXT_PASSWORD_PATTERN = Pattern.compile(
             "(?i)\\b(password|passwd|pwd|secret)\\s*[:=]\\s*(?!\\[REDACTED)[^\\s\"',;]+"
     );
 
-    // 4. Cookies & Session tokens
+    // 9. HTTP Cookie & Set-Cookie headers: Cookie: ... -> Cookie: [REDACTED]
     private static final Pattern COOKIE_PATTERN = Pattern.compile(
-            "(?i)\\b(Set-Cookie|Cookie)\\s*:\\s*(?!\\[REDACTED)[^\\r\\n;]+"
+            "(?i)\\b(Set-Cookie|Cookie)\\s*:\\s*(?!\\[REDACTED)[^\\s\\r\\n;]+"
     );
+
+    // 10. Specific session cookie key-value pairs: JSESSIONID=... -> JSESSIONID=[REDACTED]
     private static final Pattern SESSION_COOKIE_KEY_PATTERN = Pattern.compile(
             "(?i)\\b(JSESSIONID|remember-me|dental_token|sessionid|authToken)=(?!\\[REDACTED)[^;\\s\"',&]+"
     );
@@ -52,6 +58,7 @@ public class AnalyticsDataSanitizer {
     private static final Pattern CREDIT_CARD_PATTERN = Pattern.compile(
             "\\b(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\\d{3})\\d{11})\\b"
     );
+
     private static final Pattern GENERIC_CARD_CHUNKED_PATTERN = Pattern.compile(
             "\\b(?:\\d{4}[-\\s]){3}\\d{4}\\b"
     );
@@ -66,7 +73,7 @@ public class AnalyticsDataSanitizer {
 
     // 7. Clinical EMR Fields in JSON (diagnosis, prescription, treatmentDone, etc.)
     private static final Pattern JSON_MEDICAL_PATTERN = Pattern.compile(
-            "(?i)\"(diagnosis|prescription|treatmentDone|treatment_done|notes|medicalHistory|medical_history|symptoms|doctorNotes|doctor_notes|treatmentPlan|treatment_plan|emr|clinicalFindings|clinical_findings)\"\\s*:\\s*(?:\"(?!\\[REDACTED)(?:\\\\\"|[^\"])*\"|\\{[^}]*\\}|\\[[^\\]]*\\])"
+            "(?i)\"(diagnosis|prescription|treatmentDone|treatment_done|notes|medicalHistory|medical_history|symptoms|doctorNotes|doctor_notes|treatmentPlan|treatment_plan|emr|clinicalFindings|clinical_findings)\"\\s*:\\s*(?:\"(?!\\[REDACTED)[^\"\\\\]*+(?:\\\\.[^\"\\\\]*+)*+\"|\\{[^}]*\\}|\\[[^\\]]*\\])"
     );
 
     // 8. Plaintext Medical / EMR terms & Dental conditions

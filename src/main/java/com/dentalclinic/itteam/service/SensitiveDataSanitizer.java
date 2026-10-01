@@ -16,12 +16,12 @@ public class SensitiveDataSanitizer {
 
     // 1. Bearer JWT Header: Bearer eyJ... -> Bearer [REDACTED_JWT]
     private static final Pattern BEARER_JWT_PATTERN = Pattern.compile(
-            "(?i)\\bBearer\\s+ey[A-Za-z0-9_\\-]+\\.[A-Za-z0-9_\\-]+\\.[A-Za-z0-9_\\-+]+"
+            "(?i)\\bBearer\\s+ey[A-Za-z0-9_\\-]++\\.[A-Za-z0-9_\\-]++\\.[A-Za-z0-9_\\-+]++"
     );
 
     // 2. Standalone JWT token: eyJ... -> [REDACTED_JWT]
     private static final Pattern STANDALONE_JWT_PATTERN = Pattern.compile(
-            "\\beyJ[A-Za-z0-9_\\-]{10,}\\.[A-Za-z0-9_\\-]{10,}\\.[A-Za-z0-9_\\-+]{10,}\\b"
+            "\\beyJ[A-Za-z0-9_\\-]{10,}+\\.[A-Za-z0-9_\\-]{10,}+\\.[A-Za-z0-9_\\-+]{10,}+\\b"
     );
 
     // 3. Generic Bearer Header (non-JWT opaque tokens): Bearer abc... -> Bearer [REDACTED]
@@ -36,7 +36,7 @@ public class SensitiveDataSanitizer {
 
     // 5. JSON Password & Secrets (including OAuth snake_case tokens and escaped quotes in values): "password": "value" -> "password": "[REDACTED]"
     private static final Pattern JSON_SECRET_STRING_PATTERN = Pattern.compile(
-            "(?i)\"(password|passwd|pwd|pass|secret|client_secret|apiKey|api_key|token|authToken|auth_token|accessToken|access_token|refreshToken|refresh_token|idToken|id_token)\"\\s*:\\s*\"(?!\\[REDACTED)(?:\\\\\"|[^\"])*\""
+            "(?i)\"(password|passwd|pwd|pass|secret|client_secret|apiKey|api_key|token|authToken|auth_token|accessToken|access_token|refreshToken|refresh_token|idToken|id_token)\"\\s*:\\s*\"(?!\\[REDACTED)[^\"\\\\]*+(?:\\\\.[^\"\\\\]*+)*+\""
     );
 
     // 6. JSON Password numeric/unquoted: "password": 123456 -> "password": "[REDACTED]"
@@ -46,7 +46,7 @@ public class SensitiveDataSanitizer {
 
     // 7. Form-urlencoded or URL query params: password=secret -> password=[REDACTED]
     private static final Pattern FORM_PASSWORD_PATTERN = Pattern.compile(
-            "(?i)\\b(password|passwd|pwd|secret|api_key|apikey|access_token|refresh_token|auth_token)=(?!\\[REDACTED)[^&\\s\"',;]+"
+            "(?i)\\b(key|password|passwd|pwd|secret|api_key|apikey|access_token|refresh_token|auth_token)=(?!\\[REDACTED)[^&\\s\"',;]+"
     );
 
     // 8. Plain text password key-value: Password: xyz -> Password: [REDACTED]
@@ -55,13 +55,14 @@ public class SensitiveDataSanitizer {
     );
 
     // 9. HTTP Cookie & Set-Cookie headers: Cookie: ... -> Cookie: [REDACTED]
+    // Fix: Stop at space to avoid consuming subsequent log text like " and Bearer..."
     private static final Pattern COOKIE_HEADER_PATTERN = Pattern.compile(
-            "(?i)\\b(Set-Cookie|Cookie)\\s*:\\s*(?!\\[REDACTED)[^\\r\\n;]+"
+            "(?i)\\b(Set-Cookie|Cookie)\\s*:\\s*(?!\\[REDACTED)[^\\s\\r\\n;]+"
     );
 
     // 10. JSON Cookie properties: "Cookie": "..." -> "Cookie": "[REDACTED]"
     private static final Pattern JSON_COOKIE_PATTERN = Pattern.compile(
-            "(?i)\"(Cookie|Set-Cookie)\"\\s*:\\s*\"(?!\\[REDACTED)[^\"]*\""
+            "(?i)\"(Cookie|Set-Cookie)\"\\s*:\\s*\"(?!\\[REDACTED)[^\"\\\\]*+(?:\\\\.[^\"\\\\]*+)*+\""
     );
 
     // 11. Specific session cookie key-value pairs: JSESSIONID=... -> JSESSIONID=[REDACTED]
@@ -71,7 +72,7 @@ public class SensitiveDataSanitizer {
 
     // 12. Medical EMR JSON Fields: strings (with escaped quotes), nested objects { ... }, and arrays [ ... ] -> "diagnosis": "[REDACTED_MEDICAL]"
     private static final Pattern JSON_MEDICAL_PATTERN = Pattern.compile(
-            "(?i)\"(diagnosis|prescription|treatmentDone|treatment_done|notes|medicalHistory|medical_history|symptoms|doctorNotes|doctor_notes|treatmentPlan|treatment_plan)\"\\s*:\\s*(?:\"(?!\\[REDACTED)(?:\\\\\"|[^\"])*\"|\\{[^}]*\\}|\\[[^\\]]*\\])"
+            "(?i)\"(diagnosis|prescription|treatmentDone|treatment_done|notes|medicalHistory|medical_history|symptoms|doctorNotes|doctor_notes|treatmentPlan|treatment_plan)\"\\s*:\\s*(?:\"(?!\\[REDACTED)[^\"\\\\]*+(?:\\\\.[^\"\\\\]*+)*+\"|\\{[^}]*\\}|\\[[^\\]]*\\])"
     );
 
     // 13. Medical EMR Plain Text: Diagnosis: ... -> Diagnosis: [REDACTED_MEDICAL]

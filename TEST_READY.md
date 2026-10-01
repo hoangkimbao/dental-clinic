@@ -1,96 +1,182 @@
-# DentalCare Comprehensive Dental Ecosystem & Enterprise Security
 # Test Readiness Publication Report (TEST_READY.md)
+# DentalCare Clinic Web Portal UI/UX & Brand Identity Overhaul
 
-**Project:** DentalCare Comprehensive Dental Ecosystem & Enterprise Security  
-**Published By:** E2E Test Track Specialist (`test_writer_dental_e2e`)  
-**Parent Orchestrator:** `4110e379-52ae-4437-9f08-bb3a919ba41c`  
-**Working Directory:** `D:\java\dental-clinic`  
-**Timestamp:** 2026-09-23T00:31:00+07:00  
-**Status:** READY FOR VERIFICATION & IMPLEMENTATION MILESTONES (Track A Complete)  
+**Project:** DentalCare Clinic Web Portal UI/UX & Brand Identity Overhaul  
+**Target Root:** `D:\java\dental-clinic`  
+**Published By:** test_writer_1 (Specialist & QA)  
+**Parent Orchestrator:** `5686aaaa-5863-45eb-9c96-9a30096d3df0`  
+**Timestamp:** 2026-09-30T10:06:00Z  
+**Status:** READY FOR VERIFICATION & IMPLEMENTATION TRACK HANDOFF  
+**Test Suite Path:** `tests/e2e/`  
 
 ---
 
 ## 1. Executive Summary
 
-In accordance with the **Dual Track Testing Strategy** defined in `PROJECT.md` and `TEST_INFRA.md`, Track A (E2E Test Engineering) has established the full automated opaque-box End-to-End Test Suite for the DentalCare Clinic comprehensive omnichannel ecosystem.
+The **E2E Testing Track** for the DentalCare Clinic Web Portal UI/UX & Brand Identity Overhaul has established the complete, automated, opaque-box **4-Tier Test Suite** comprising **250 automated tests**.
 
-The test track provides exhaustive behavioral coverage across all 4 tiers of the project's quality standard (Category-Partition, Boundary Value Analysis, Pairwise Combinatorial, and Real-World Workload Scenarios), establishing rigorous validation criteria for Customer Features (F31-F37), Staff & B2B Operations (F38-F42), and the 20 Enterprise Medical Security Standards (F48-F52).
+The test harness evaluates the entire web portal against user requirements defined in `ORIGINAL_REQUEST.md` (R1-R5, Acceptance Criteria) and architectural contracts in `PROJECT.md`. The baseline execution run has concluded, identifying **158 specific defects and architectural variances** that establish the quality scorecard for Implementation Milestones M1 through M4.
 
----
-
-## 2. Test Artifacts Delivered
-
-1. **Test Infrastructure Specification:**
-   - Location: `D:\java\dental-clinic\TEST_INFRA.md`
-   - Purpose: Comprehensive testing architecture, 4-tier testing methodology, rate-limiting resilience design, authentication fixtures, and feature traceability matrix.
-
-2. **Customer Dental Ecosystem E2E Test Suite:**
-   - Location: `src/test/java/com/dentalclinic/e2e/DentalCustomerE2ETest.java`
-   - Scope: 55 tests covering Service Catalog & dynamic booking (F31), Oral care product catalog with box/combo packaging options and cart checkout (F32), Porcelain crown QR warranty verification with FDI tooth numbering (F33), Dental loyalty program with tiering and rewards (F34), AI dental diagnostic vision with pathology detection (F35), Community forum and clinic branches with GPS navigation (F36), and Mobile app patient API contracts (F37).
-
-3. **Staff & Operations E2E Test Suite:**
-   - Location: `src/test/java/com/dentalclinic/e2e/StaffAndOperationsE2ETest.java`
-   - Scope: 39 tests covering B2B Tier-2 satellite clinics and distributor management (F38), Dental material inventory and procurement order lifecycle (F39), Staff attendance timekeeping with GPS/IP verification (F40), Doctor consultation and revenue KPIs (F41), and Field patient intake for school screening events (F42).
-
-4. **Medical Enterprise Security E2E Test Suite:**
-   - Location: `src/test/java/com/dentalclinic/e2e/MedicalSecurityE2ETest.java`
-   - Scope: 31 tests covering IDOR protection on medical records and appointments (F48), strict RBAC on articles and EMR image uploads (F48), AES-256 GCM encryption of clinical fields (F49), MIME/magic byte file upload validation (F50), rate limiting brute-force defense (F51), security response headers, and error suppression (F52).
-
-5. **IT Team Command Center E2E Test Suite (Baseline):**
-   - Location: `src/test/java/com/dentalclinic/e2e/ITTeamE2ETestSuite.java`
-   - Scope: 73 tests covering profiles, memories, messaging, hashtag engine, activity audit, and safe API runner (F01-F30).
+All test suites and automated runners are self-contained in `tests/e2e/`, requiring **zero external dependencies** and supporting autonomous execution via either Node.js or Python 3.
 
 ---
 
-## 3. Test Coverage & Tier Breakdown
+## 2. Test Runner Commands
 
-| Tier | Focus Area | Test Count | Key Scenarios Covered |
-| :--- | :--- | :---: | :--- |
-| **Tier 1** | **Category-Partition (Feature Equivalence Classes)** | **105** | Service catalog & dynamic slots, packaging options (single box/combo), order checkout, QR warranty lookup, loyalty points & tiers, AI dental vision, community forum, GPS branches, mobile contracts, Tier-2 satellite clinics, dental materials & procurement orders, staff attendance, doctor KPIs, field screening intake, EMR IDOR protection, RBAC on content/uploads, AES-256 clinical fields, file upload whitelist, security headers. |
-| **Tier 2** | **Boundary Value Analysis** | **21** | Non-existent service/product codes (404), invalid phone numbers, negative quantities, empty cart checkouts, invalid QR tokens, excessive point redemption, empty AI image uploads, blank post titles, negative material stock adjustments, credit limit overflow, duplicate attendance check-in, 5MB file upload boundary, 60-req rate limit burst, tampered/expired JWT tokens. |
-| **Tier 3** | **Pairwise Combinatorial** | **13** | Catalog -> Slot Availability -> Booking -> Deposit; Product -> Packaging -> Cart -> Checkout -> Loyalty; AI Diagnostic -> Pathology -> Service Booking Referral; Crown QR -> Verification -> Loyalty Claim; Forum Post -> Doctor Reply -> Branch Navigation; Procurement Order -> Stock Decrement -> Agent Balance; School Screening -> Voucher -> Booking -> Consultation -> Doctor KPI; IDOR + Spoofed IP; Disguised PHP Shell in PNG; Privilege Escalation Defense. |
-| **Tier 4** | **Real-World Workload Scenarios** | **6** | • **New Patient Digital Onboarding Journey** (AI Smile Scan -> Coupon Validation -> Booking -> Deposit -> Branch Directions)<br>• **Post-Treatment Porcelain Crown & Home Care** (QR Scan -> Warranty Card Verification -> Loyalty Claim -> Oral-B Combo Order)<br>• **Full Operational Shift & Inventory Lifecycle** (Morning Attendance -> Inventory Audit -> Satellite Replenishment Approval -> Evening Checkout -> KPI Reconciliation)<br>• **Field School Screening Conversion Pipeline** (School Screening -> Lead Intake -> Auto-Voucher -> Booking -> Appointment Confirmation)<br>• **Multi-Vector Penetration Attack Simulation** (Reconnaissance -> Directory Fuzzing -> Brute Force -> Malicious Shell Upload Block)<br>• **Compromised Account Insider Threat Simulation** (Stolen Patient Credentials -> Attempted IDOR Harvest -> Attempted Article Tampering -> Rogue Agent Registration Block) |
-| **IT Team**| **Command Center Baseline** | **73** | Profiles, persistent memory, messaging, hashtag parser, mention audit, browser tabs, safe API runner, sensitive data sanitizer, 9Router fallback. |
-| **Total** | | **198 Tests** | **100% Comprehensive Coverage of DentalCare Ecosystem** |
+### 2.1 Standard Execution (Node.js)
+```bash
+node tests/e2e/runner.js
+```
+*(Windows PowerShell: `node tests\e2e\runner.js`)*
+
+### 2.2 Standard Execution (Python 3)
+```bash
+python tests/e2e/runner.py
+```
+*(Windows PowerShell: `python tests\e2e\runner.py`)*
+
+### 2.3 Command Line Options
+- **Filter by Tier:**
+  ```bash
+  node tests/e2e/runner.js --tier=1
+  node tests/e2e/runner.js --tier=2
+  node tests/e2e/runner.js --tier=3
+  node tests/e2e/runner.js --tier=4
+  ```
+- **Filter by Feature:**
+  ```bash
+  node tests/e2e/runner.js --feature=F01
+  node tests/e2e/runner.js --feature=F05
+  node tests/e2e/runner.js --feature=F19
+  ```
+- **Halt on First Failure (Fail-Fast):**
+  ```bash
+  node tests/e2e/runner.js --bail
+  ```
+- **Output Artifacts Generated:**
+  - Machine-readable JSON: `tests/e2e/results/report.json`
+  - Test Anything Protocol: `tests/e2e/results/results.tap`
+  - CI JUnit XML: `tests/e2e/results/junit.xml`
 
 ---
 
-## 4. How to Run the Tests
+## 3. Test Coverage Summary Table (Tiers 1 - 4)
 
-### 4.1 Test Compilation Verification
-```bash
-./mvnw test-compile
-```
-*(Windows PowerShell: `.\mvnw.cmd test-compile`)*
-
-### 4.2 Execute Customer Dental E2E Suite
-```bash
-./mvnw test -Dtest=DentalCustomerE2ETest
-```
-
-### 4.3 Execute Staff & Operations E2E Suite
-```bash
-./mvnw test -Dtest=StaffAndOperationsE2ETest
-```
-
-### 4.4 Execute Medical Security E2E Suite
-```bash
-./mvnw test -Dtest=MedicalSecurityE2ETest
-```
-
-### 4.5 Execute All Ecosystem E2E Suites
-```bash
-./mvnw test -Dtest=DentalCustomerE2ETest,StaffAndOperationsE2ETest,MedicalSecurityE2ETest,ITTeamE2ETestSuite
-```
+| Test Tier | Focus & Scope | Total Tests | Baseline Passed | Baseline Failed | Pass Rate |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| **Tier 1** | **Feature Coverage (Nominal Behavior)**<br>Exhaustive verification of visual and functional elements across all 23 features in the Feature Inventory. | **116** | 39 | 77 | 33.62% |
+| **Tier 2** | **Boundary & Corner Cases**<br>Viewport extremes (360px-430px), 0% horizontal overflow, long Vietnamese strings, 5MB upload limits, and WCAG touch targets. | **114** | 48 | 66 | 42.11% |
+| **Tier 3** | **Cross-Feature Combinations**<br>Pairwise system interactions (Booking + Voucher, AI Diagnosis + Prefill, Warranty + Cart, Drawer + Auth). | **15** | 5 | 10 | 33.33% |
+| **Tier 4** | **Real-World Workload Scenarios**<br>Complete end-to-end patient journeys from discovery to clinical consultation, warranty claim, and checkout. | **5** | 0 | 5 | 0.00% |
+| **Total** | **Comprehensive E2E Test Suite** | **250** | **92** | **158** | **36.80%** |
 
 ---
 
-## 5. Implementation Track Handoff & Milestone Status
+## 4. Feature Checklist & Traceability Table (23 Features)
 
-- **Track A Status:** COMPLETE. All test specifications, infrastructure docs, and test classes are committed.
-- **Track B Milestones:**
-  - Milestone M1 (Customer Ecosystem) ➔ Validated by `DentalCustomerE2ETest.java`
-  - Milestone M2 (Staff & B2B Operations) ➔ Validated by `StaffAndOperationsE2ETest.java`
-  - Milestone M5 (20 Security Standards) ➔ Validated by `MedicalSecurityE2ETest.java`
-  - Milestone M6 (Final E2E Pass) ➔ Validated by running all suites in unison.
-- **Defect Escalation Protocol:** If any test fails during milestone implementation, the failure indicates an implementation defect or contract variance and should be escalated directly to the implementing agent.
+| Feature ID | Feature Name | Milestone | Tier 1 | Tier 2 | Total | Baseline Status | Primary Implementation Objective |
+| :---: | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
+| **F01** | Bespoke DentalCare Clinic Logo SVG | M1 | 5 | 5 | 10 | 3 / 10 | Replace generic `fa-tooth` with Diamond Smile SVG motif + luxury typography lockup |
+| **F02** | 6 Unique Dental Service SVG Icons | M1 | 6 | 5 | 11 | 1 / 11 | Replace generic font glyphs (`fa-teeth-open`, `fa-wand-magic-sparkles`, `fa-bone`) with bespoke SVGs |
+| **F03** | 4 Unique Feature Badges | M1 | 5 | 5 | 10 | 1 / 10 | Unify AI Neural Chip, Smart QR Shield, Golden Crown, and GPS Pin (viewBox `0 0 64 64`) |
+| **F04** | Brand Color & Design System Harmonization | M1 | 5 | 5 | 10 | 8 / 10 | Unify Emerald/Teal, Luxury Navy, and Gold accents; eliminate sky-blue and rose clashing |
+| **F05** | DOM Structure & Unclosed Tag Remediation | M2 | 5 | 5 | 10 | 3 / 10 | Close `<section id="booking-section">` in `index.html:1540`; decouple `#faq` and `<footer>` |
+| **F06** | Customer Testimonials & Reviews Section | M2 | 5 | 5 | 10 | 0 / 10 | Construct missing `#testimonials` section consuming REST API `GET /api/reviews/latest` |
+| **F07** | Desktop Navbar Layout Reconfiguration | M2 | 5 | 5 | 10 | 3 / 10 | Reconfigure desktop breakpoint from `lg:` to `xl:` to eliminate 1,632px nav text wrapping |
+| **F08** | Asymmetric Tablet Grid De-Hacking | M2 | 5 | 5 | 10 | 3 / 10 | Remove `md:[&>*:last-child]:col-span-2` pyramid hack across Services, Doctors, and Pricing |
+| **F09** | Flash Sale 4-Column Grid Adjustment | M2 | 5 | 5 | 10 | 3 / 10 | Use `lg:grid-cols-2 xl:grid-cols-4` to prevent 228px card squishing and voucher text wraps |
+| **F10** | Interactive Branch Network Map | M2 | 5 | 5 | 10 | 4 / 10 | Integrate visual interactive map canvas / Google Maps embed into `#branches-section` |
+| **F11** | Vietnamese Typography & Heading Polish | M2 | 5 | 5 | 10 | 4 / 10 | Remove hardcoded `<br>` in `<h1>`; raise line-height >= 1.25 to prevent diacritic clipping |
+| **F12** | Mobile Horizontal Overflow Elimination | M3 | 5 | 5 | 10 | 0 / 10 | Eliminate horizontal overflow (`overflow-x: 0`) across 360px-430px viewports |
+| **F13** | Mobile Navbar & Header Compactness | M3 | 5 | 5 | 10 | 5 / 10 | Collapse user badge on mobile; fix ghost `xs:` breakpoint; prevent button crowding |
+| **F14** | Mobile Navigation Drawer & Hamburger | M3 | 5 | 5 | 10 | 4 / 10 | Add smooth slide-in transition; fix z-index conflict (`nav: z-50`, `backdrop: z-40`); sync user auth |
+| **F15** | Touch Target Guideline Remediation | M3 | 5 | 5 | 10 | 2 / 10 | Upgrade all 20 substandard controls to satisfy WCAG 2.1 >= 44x44px |
+| **F16** | Hero Trust Metrics Responsiveness | M3 | 5 | 5 | 10 | 6 / 10 | Prevent column squishing and text stacking on 360px budget mobile screens |
+| **F17** | FAQ Accordion & Animation Optimization | M3 | 5 | 5 | 10 | 4 / 10 | Fix duplicate `content-faq-2` ID; scope GSAP tooth wobble animation to `#hero` |
+| **F18** | Appointment Booking Modal & Drawer | M4 | 5 | 5 | 10 | 5 / 10 | Add smooth scroll to VietQR deposit box upon submission; upgrade time slot touch pills |
+| **F19** | AI Diagnostic Doctor Interface | M4 | 5 | 5 | 10 | 4 / 10 | Add photo upload dropzone + preview; fix critical `diag.pathologyName.replace` JS crash |
+| **F20** | Porcelain Warranty Card & QR Code | M4 | 5 | 5 | 10 | 4 / 10 | Render genuine vector Smart QR code SVG; add flex-wrap to prevent 360px serial wrap |
+| **F21** | Shopping Cart Drawer & Checkout Form | M4 | 5 | 5 | 10 | 7 / 10 | Move checkout inputs into scrollable container to prevent mobile keyboard occlusion |
+| **F22** | E2E Test Suite Validation | M5 | 5 | 5 | 10 | 10 / 10 | Autonomous test runner, multi-format reporting, deterministic exit codes |
+| **F23** | Adversarial Coverage Hardening | M5 | 5 | 5 | 10 | 5 / 10 | DOM syntax validation, invalid Tailwind class cleanup, input escaping, async image load |
+| **T3** | Cross-Feature Pairwise Combinations | All | - | - | 15 | 5 / 15 | Pairwise multi-module workflow integration |
+| **T4** | Real-World Workload Scenarios | All | - | - | 5 | 0 / 5 | Full end-to-end patient onboarding and clinical workflows |
+| **Total** | **Full Portal Suite** | | **116** | **114** | **250** | **92 / 250** | **Baseline Established (36.80% Pass Rate)** |
+
+---
+
+## 5. Primary Baseline Defects Discovered & Escalated
+
+The baseline test run confirmed and categorized 9 primary architectural defects:
+
+1. **[CRITICAL] DEFECT-01 (F05 / M2): DOM Structure & Unclosed Tag Disaster**
+   - *Location:* `src/main/resources/static/index.html:1540` and line 1692.
+   - *Issue:* `<section id="booking-section">` and its `<div class="max-w-7xl mx-auto px-4 ...">` container lack closing tags. Sections `#faq`, `#branches-section`, `#community-forum-section`, and `<footer>` are absorbed as nested children.
+2. **[CRITICAL] DEFECT-02 (F19 / M4): AI Diagnostic Fatal JavaScript TypeError Crash**
+   - *Location:* `src/main/resources/static/js/app.js:2614`.
+   - *Issue:* Script executes `diag.pathologyName.replace(/'/g, "\\'")`. The backend DTO returns `pathologyNameVi`, so `diag.pathologyName` is `undefined`, throwing `TypeError: Cannot read properties of undefined (reading 'replace')` and halting execution.
+3. **[HIGH] DEFECT-03 (F06 / M2): Missing Customer Testimonials UI Section**
+   - *Location:* `src/main/resources/static/index.html`.
+   - *Issue:* Section `#testimonials` is completely absent from the web portal, despite active backend endpoint `GET /api/reviews/latest` and 5 seeded reviews in `DataInitializer.java`.
+4. **[HIGH] DEFECT-04 (F01, F02, F03 / M1): Total Absence of Bespoke SVG Iconography**
+   - *Location:* `src/main/resources/static/index.html` and `app.js:1928-1935`.
+   - *Issue:* Portal relies 100% on FontAwesome glyphs with mismatched iconography (`fa-wand-magic-sparkles` for Veneer, `fa-bone` for Wisdom Teeth, broken `fa-sparkles` for Whitening, missing Endodontics).
+5. **[HIGH] DEFECT-05 (F12, F13 / M3): Severe Mobile Navbar Horizontal Overflow**
+   - *Location:* `src/main/resources/static/index.html:358-435`.
+   - *Issue:* Header requires 513px width on mobile, overflowing 360px viewports by +185px (logged in) and +87px (logged out). Ghost `xs:` Tailwind class fails to compile.
+6. **[MEDIUM] DEFECT-06 (F17 / M3): Duplicate DOM ID & Unscoped GSAP Animation**
+   - *Location:* `src/main/resources/static/index.html:1750` and `app.js:1852`.
+   - *Issue:* Line 1750 defines duplicate `id="content-faq-2"`, causing FAQ 3 to never expand. GSAP targets `.fa-tooth` globally across the entire document.
+7. **[MEDIUM] DEFECT-07 (F15 / M3): Substandard Touch Targets (< 44x44px)**
+   - *Location:* 20 primary interactive buttons (navbar logout: 32x32px, cart close: 28x28px, cart quantity: 36x36px, catalog filter tabs: 32px height).
+8. **[MEDIUM] DEFECT-08 (F20 / M4): Porcelain Warranty Card Plaintext QR String**
+   - *Location:* `src/main/resources/static/js/app.js:2491`.
+   - *Issue:* Displays raw plaintext string `"QR Code: QR-CERCON-77123"` instead of rendering an authentic Smart QR vector graphic.
+9. **[MEDIUM] DEFECT-09 (F21 / M4): Cart Drawer Mobile Keyboard Occlusion**
+   - *Location:* `src/main/resources/static/index.html:3276-3336`.
+   - *Issue:* Checkout customer input fields and CTA button are locked inside a fixed 385px footer outside the scrollable area, becoming occluded by mobile virtual keyboards.
+
+---
+
+## 6. Implementation Milestone Verification Roadmap
+
+During implementation milestones, agents can verify progress using specific test filters:
+
+- **Milestone M1 (Iconography & Brand Assets):**
+  ```bash
+  node tests/e2e/runner.js --feature=F01
+  node tests/e2e/runner.js --feature=F02
+  node tests/e2e/runner.js --feature=F03
+  node tests/e2e/runner.js --feature=F04
+  ```
+- **Milestone M2 (Desktop/Tablet Layout, Reviews, Branches & Typography):**
+  ```bash
+  node tests/e2e/runner.js --feature=F05
+  node tests/e2e/runner.js --feature=F06
+  node tests/e2e/runner.js --feature=F07
+  node tests/e2e/runner.js --feature=F08
+  node tests/e2e/runner.js --feature=F09
+  node tests/e2e/runner.js --feature=F10
+  node tests/e2e/runner.js --feature=F11
+  ```
+- **Milestone M3 (Mobile Responsive, Navigation & Touch Ergonomics):**
+  ```bash
+  node tests/e2e/runner.js --feature=F12
+  node tests/e2e/runner.js --feature=F13
+  node tests/e2e/runner.js --feature=F14
+  node tests/e2e/runner.js --feature=F15
+  node tests/e2e/runner.js --feature=F16
+  node tests/e2e/runner.js --feature=F17
+  ```
+- **Milestone M4 (Modals, Drawers & Interactive Components):**
+  ```bash
+  node tests/e2e/runner.js --feature=F18
+  node tests/e2e/runner.js --feature=F19
+  node tests/e2e/runner.js --feature=F20
+  node tests/e2e/runner.js --feature=F21
+  ```
+- **Milestone M5 (Final E2E Verification & Hardening):**
+  ```bash
+  node tests/e2e/runner.js
+  ```
+  *Target: 250 / 250 passed (100% pass rate).*

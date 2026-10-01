@@ -25,6 +25,9 @@ public class WarrantyLookupResponseDto {
     public String getWarrantyCode() { return warrantyCode; }
     public void setWarrantyCode(String warrantyCode) { this.warrantyCode = warrantyCode; }
 
+    public String getSerialCode() { return warrantyCode; }
+    public void setSerialCode(String serialCode) { this.warrantyCode = serialCode; }
+
     public String getPatientName() { return patientName; }
     public void setPatientName(String patientName) { this.patientName = patientName; }
 
@@ -63,4 +66,11 @@ public class WarrantyLookupResponseDto {
 
     public long getRemainingDays() { return remainingDays; }
     public void setRemainingDays(long remainingDays) { this.remainingDays = remainingDays; }
+
+    // Alias getters for test compatibility
+    public String getLaboSupplier() { return laboOrigin; }
+    public LocalDate getExpirationDate() { return endDate; }
+    public String getPorcelainBrand() { return crownTypeName; }
+    public String getWarrantyCardNumber() { return warrantyCode; }
 }
+

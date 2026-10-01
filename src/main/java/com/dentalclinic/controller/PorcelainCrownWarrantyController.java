@@ -24,6 +24,16 @@ public class PorcelainCrownWarrantyController {
         return ApiResponse.success("Xác thực thẻ bảo hành thành công", warrantyService.lookupByCodeOrQr(code));
     }
 
+    @GetMapping("/lookup")
+    public ApiResponse<WarrantyLookupResponseDto> lookupWarranty(@RequestParam String query) {
+        return ApiResponse.success("Tra cứu thẻ bảo hành thành công", warrantyService.lookupByCodeOrQr(query));
+    }
+
+    @GetMapping("/verify-qr")
+    public ApiResponse<WarrantyLookupResponseDto> verifyQrWarranty(@RequestParam String qrCode) {
+        return ApiResponse.success("Xác thực mã QR thành công", warrantyService.lookupByCodeOrQr(qrCode));
+    }
+
     @GetMapping("/patient")
     public ApiResponse<List<PorcelainCrownWarranty>> getPatientWarranties(@RequestParam String phone) {
         return ApiResponse.success(warrantyService.getWarrantiesByPhone(phone));

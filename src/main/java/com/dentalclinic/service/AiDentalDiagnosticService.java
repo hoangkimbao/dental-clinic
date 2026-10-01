@@ -85,7 +85,7 @@ public class AiDentalDiagnosticService {
                 severityLevel = "MODERATE";
                 confidenceScore = 0.95;
                 clinicalRecommendation = "Phát hiện tổn thương men ngà sâu răng. Đề xuất nạo sạch mô hoại tử và hàn trám thẩm mỹ Laser Composite sớm để tránh viêm tủy.";
-                recommendedServiceCode = "TRAM_RANG";
+                recommendedServiceCode = "TRAM_RANG_COMPOSITE";
             } else if (symptoms.contains("chảy máu") || symptoms.contains("sưng") || symptoms.contains("nướu") || symptoms.contains("lợi") || imageUrl.contains("gingivitis")) {
                 detectedPathology = DentalPathology.GINGIVITIS;
                 severityLevel = "MILD";

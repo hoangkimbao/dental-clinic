@@ -1,19 +1,44 @@
 /* DentalCare UI refresh — visual layer only; application structure and JS hooks stay intact. */
 :root {
+    /* Brand Authority: Medical Emerald/Teal & Luxury Navy (R4, R5) */
     --clinic-ink: #102f31;
     --clinic-deep: #0b4241;
     --clinic-teal: #087a72;
-    --clinic-mint: #dff3ed;
+    --clinic-teal-light: #0d9488;
+    --clinic-teal-accent: #14b8a6;
+    --clinic-navy: #0b1f33;
+    --clinic-navy-dark: #0f172a;
+    --clinic-navy-slate: #1e293b;
+    --clinic-mint: #f0fdfa;
+    --clinic-mint-subtle: #dff3ed;
     --clinic-sand: #f8f5ef;
     --clinic-line: #dbe8e3;
+    --clinic-gold: #d97706;
+    --clinic-gold-light: #f59e0b;
+    --clinic-gold-amber: #fbbf24;
     --clinic-coral: #f07c63;
 }
 
-html { scroll-padding-top: 6.25rem; }
+/* Root Viewport Overflow Guard & Responsive Physics */
+html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+    position: relative;
+}
+
+html { scroll-padding-top: 5.5rem; }
 body { background: #fbfdfc !important; color: var(--clinic-ink); }
 body::selection { background: var(--clinic-teal); color: #fff; }
 body::-webkit-scrollbar { width: 10px; }
 body::-webkit-scrollbar-thumb { background: #a9ccc4; border: 3px solid #fbfdfc; border-radius: 999px; }
+
+/* Vietnamese Typography & Wrap Guardians */
+h1, h2, h3, h4, h5, h6, .text-balance {
+    text-wrap: balance;
+}
+body, p, span, h1, h2, h3, h4, h5, h6, a, div {
+    overflow-wrap: break-word;
+}
 
 .font-serif-luxury { font-family: 'Playfair Display', Georgia, serif; }
 .glass-nav {
@@ -21,7 +46,10 @@ body::-webkit-scrollbar-thumb { background: #a9ccc4; border: 3px solid #fbfdfc; 
     border-bottom: 1px solid rgba(219, 232, 227, .9) !important;
     box-shadow: 0 10px 35px rgba(12, 57, 54, .05);
 }
-.glass-nav > div { height: 5.25rem !important; }
+.glass-nav > div { height: 4.5rem !important; }
+@media (min-width: 1024px) {
+    .glass-nav > div { height: 5rem !important; }
+}
 .glass-nav .bg-gradient-to-tr { background: linear-gradient(135deg, #0a877d, #b5dfd0) !important; box-shadow: 0 8px 18px rgba(8, 122, 114, .22); }
 
 .hero-glow {
@@ -63,15 +91,16 @@ body::-webkit-scrollbar-thumb { background: #a9ccc4; border: 3px solid #fbfdfc; 
 }
 #transformations img { filter: saturate(.84) contrast(1.03); transition: transform .45s ease, filter .45s ease; }
 #transformations .grid > div:hover img { transform: scale(1.06); filter: saturate(1.04); }
-#services .grid > div { background: rgba(255,255,255,.88) !important; }
-#services .grid > div:nth-child(3n+2) .rounded-2xl { background: #356b9d !important; }
-#services .grid > div:nth-child(3n) .rounded-2xl { background: var(--clinic-coral) !important; }
-#services .grid > div .bg-brand-600 { background: var(--clinic-teal) !important; }
+#services .grid > div { background: rgba(255,255,255,.94) !important; }
+#services .grid > div .dental-icon-box {
+    background: linear-gradient(135deg, rgba(240, 253, 250, 0.95), rgba(204, 251, 241, 0.8)) !important;
+    border: 1px solid rgba(13, 148, 136, 0.2);
+}
 #services a.text-brand-600, #transformations .text-brand-600 { color: var(--clinic-teal) !important; }
 
 /* Doctors — warmer editorial panel instead of a black block */
 #doctors { background: linear-gradient(115deg, #0d3d3c, #0b5550) !important; overflow: hidden; }
-#doctors::before { content: ''; position: absolute; width: 32rem; height: 32rem; border: 1px solid rgba(231, 247, 239, .13); border-radius: 50%; left: -18rem; top: -12rem; }
+#doctors::before { content: ''; position: absolute; width: 32rem; height: 32rem; border: 1px solid rgba(231, 247, 239, .13); border-radius: 50%; left: -18rem; top: -12rem; pointer-events: none; }
 #doctors .bg-slate-900 { background: rgba(255,255,255,.07) !important; border-color: rgba(222, 244, 235, .19) !important; backdrop-filter: blur(12px); }
 #doctors .bg-slate-900:hover { background: rgba(255,255,255,.12) !important; transform: translateY(-5px); }
 #doctors img { filter: saturate(.75); }
@@ -101,7 +130,6 @@ body::-webkit-scrollbar-thumb { background: #a9ccc4; border: 3px solid #fbfdfc; 
 footer { background: #0d3534 !important; }
 
 @media (max-width: 1023px) {
-    .glass-nav > div { height: 4.5rem !important; }
     #home::before { width: 17rem; height: 17rem; right: -9rem; top: 19rem; }
 }
 @media (max-width: 640px) {
@@ -110,3 +138,89 @@ footer { background: #0d3534 !important; }
     #public-landing-page section:not(#home) { padding-top: 4.5rem !important; padding-bottom: 4.5rem !important; }
     #booking-section { padding-top: 4.5rem !important; padding-bottom: 4.5rem !important; }
 }
+
+/* =========================================================================
+   MILESTONE 1: DENTALCARE BESPOKE ICONOGRAPHY & BRAND SYSTEM (R4, R5)
+   ========================================================================= */
+
+/* Vector Sharpness & Aspect Ratio Guardian */
+.dental-icon-svg {
+    display: inline-block;
+    aspect-ratio: 1 / 1;
+    max-width: 100%;
+    height: auto;
+    vertical-align: middle;
+    shape-rendering: geometricPrecision;
+    text-rendering: geometricPrecision;
+    image-rendering: -webkit-optimize-contrast;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), filter 0.35s ease;
+}
+
+.dental-icon-svg path,
+.dental-icon-svg line,
+.dental-icon-svg circle,
+.dental-icon-svg rect,
+.dental-icon-svg polygon {
+    vector-effect: non-scaling-stroke;
+}
+
+/* Service Card Icon Container & Interactive Micro-Physics */
+.dental-icon-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1.25rem;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, background-color 0.3s ease;
+    flex-shrink: 0;
+}
+
+.group:hover .dental-icon-box .dental-icon-svg {
+    transform: scale(1.1) rotate(1.5deg);
+    filter: drop-shadow(0 6px 14px rgba(8, 122, 114, 0.28));
+}
+
+/* Badge Icon Inline Wrapper */
+.dental-badge-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.dental-badge-icon svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    aspect-ratio: 1 / 1;
+    display: block;
+}
+
+/* Media Containers Aspect Ratio Regularization (Eliminating Cumulative Layout Shift) */
+.aspect-4-3 {
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+}
+.aspect-16-9 {
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+}
+.aspect-square {
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+}
+
+/* Brand Nav Icon Alignment */
+.brand-nav-badge-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.2rem;
+    height: 1.2rem;
+    flex-shrink: 0;
+}
+
+.brand-nav-badge-icon svg {
+    width: 100%;
+    height: 100%;
+}
+

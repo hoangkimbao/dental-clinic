@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="dcGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="45%" stop-color="#0369a1"/>
+      <stop offset="100%" stop-color="#087a72"/>
+    </linearGradient>
+    <filter id="dcShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#0284c7" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <!-- Background Squircle -->
+  <rect width="512" height="512" rx="112" fill="url(#dcGrad)"/>
+  <!-- Glowing subtle inner ring -->
+  <rect x="16" y="16" width="480" height="480" rx="98" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="4"/>
+  <!-- Stylized Tooth Emblem -->
+  <g filter="url(#dcShadow)">
+    <path fill="#ffffff" d="M180 84c-52 0-96 42-96 94 0 32.4 16 61 40.5 78.8 14.8 10.8 24.6 27.7 24.6 46.5 0 22.7-7 70-14.5 115.8-3.8 23.5 14.1 44.5 37.8 44.5 17.5 0 32.7-12 36.6-29.1l16-69.4c4.9-21.2 23.8-35.3 45.2-35.3 1.2 0 2.4.1 3.6.2 1.2-.1 2.4-.2 3.6-.2 21.4 0 40.3 14.1 45.2 35.3l16 69.4c3.9 17.1 19.1 29.1 36.6 29.1 23.7 0 41.6-21 37.8-44.5-7.4-45.8-14.5-93.1-14.5-115.8 0-18.8 9.8-35.7 24.6-46.5 24.5-17.8 40.5-46.4 40.5-78.8 0-52-44-94-96-94-40 0-74.4 25-88.1 60.4-5.5 14.3-19.3 23.6-35 23.6s-29.5-9.3-35-23.6C254.4 109 220 84 180 84z"/>
+    <!-- Medical Cross Accent in Cyan -->
+    <rect x="305" y="148" width="66" height="22" rx="7" fill="#38bdf8"/>
+    <rect x="327" y="126" width="22" height="66" rx="7" fill="#38bdf8"/>
+  </g>
+</svg>

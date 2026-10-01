@@ -1,0 +1,59 @@
+{
+  "name": "DentalCare Clinic - Nha Khoa Kỹ Thuật Số",
+  "short_name": "DentalCare",
+  "description": "Hệ thống nha khoa kỹ thuật số DentalCare - Đặt lịch khám, bảo hành răng sứ, bác sĩ AI và quản lý bệnh án thông minh.",
+  "id": "/?source=pwa",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0b4241",
+  "theme_color": "#0284c7",
+  "lang": "vi",
+  "dir": "ltr",
+  "categories": ["medical", "health", "lifestyle"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Đặt Lịch Khám Online",
+      "short_name": "Đặt Lịch",
+      "description": "Đặt lịch hẹn khám và điều trị răng miệng trực tuyến",
+      "url": "/#booking-section",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Tra Cứu Bảo Hành Răng Sứ",
+      "short_name": "Bảo Hành",
+      "description": "Kiểm tra mã QR thẻ bảo hành răng sứ chính hãng",
+      "url": "/#warranty-section",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Bác Sĩ AI Chẩn Đoán",
+      "short_name": "Bác Sĩ AI",
+      "description": "Chẩn đoán bệnh lý răng miệng qua ảnh chụp AI",
+      "url": "/#ai-diagnostic-section",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

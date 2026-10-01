@@ -297,6 +297,23 @@ public class DataInitializer implements CommandLineRunner {
             ));
         }
 
+        if (!serviceCatalogRepository.existsByCode("NIENG_RANG_DAMON")) {
+            serviceCatalogRepository.save(new DentalServiceCatalog(
+                    "NIENG_RANG_DAMON", "Niềng Răng Mắc Cài Damon Q2 Ormco",
+                    DentalServiceCategory.ORTHODONTICS,
+                    "Hệ thống mắc cài tự buộc thế hệ mới, lực nhẹ sinh học, rút ngắn thời gian điều trị 30% so với mắc cài thông thường.",
+                    18000000.0, 60, true
+            ));
+        }
+        if (!serviceCatalogRepository.existsByCode("TRAM_RANG_COMPOSITE")) {
+            serviceCatalogRepository.save(new DentalServiceCatalog(
+                    "TRAM_RANG_COMPOSITE", "Trám Răng Composite Thẩm Mỹ",
+                    DentalServiceCategory.GENERAL,
+                    "Trám răng sâu, mẻ, nứt bằng vật liệu Composite cao cấp trùng màu với răng tự nhiên.",
+                    350000.0, 30, false
+            ));
+        }
+
         // 11. Tạo Sản Phẩm Chăm Sóc Răng Miệng & Quy Cách Đóng Gói (DentalProduct & Packaging)
         if (productRepository.count() == 0) {
             DentalProduct p1 = new DentalProduct(
@@ -361,26 +378,31 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         // 12. Tạo Thẻ Bảo Hành Răng Sứ Mẫu (PorcelainCrownWarranty)
-        if (warrantyRepository.count() == 0) {
+        if (!warrantyRepository.existsByWarrantyCode("DC-WR-2026-88992")) {
             warrantyRepository.save(new PorcelainCrownWarranty(
                     "DC-WR-2026-88992", "Vũ Hoàng Nam", "0988776655",
                     CrownType.LAVA_PLUS, "11, 21, 12, 22", "Detec Dental Lab (Chính Hãng 3M)",
                     15, LocalDate.now().minusMonths(6), LocalDate.now().plusYears(15).minusMonths(6),
-                    "DENTALCARE-LAVA-88992", WarrantyStatus.ACTIVE
+                    "DC-QR-LAVA-88992", WarrantyStatus.ACTIVE
             ));
+        }
+        if (!warrantyRepository.existsByWarrantyCode("DC-WR-2026-77123")) {
             warrantyRepository.save(new PorcelainCrownWarranty(
                     "DC-WR-2026-77123", "Đặng Thị Mai", "0977112233",
                     CrownType.CERCON_HT, "16, 26, 36, 46", "Dentsply Sirona Lab",
                     10, LocalDate.now().minusMonths(3), LocalDate.now().plusYears(10).minusMonths(3),
                     "DENTALCARE-CERCON-77123", WarrantyStatus.ACTIVE
             ));
+        }
+        if (!warrantyRepository.existsByWarrantyCode("DC-WR-2026-66554")) {
             warrantyRepository.save(new PorcelainCrownWarranty(
                     "DC-WR-2026-66554", "Trần Bảo Ngọc", "0912345678",
                     CrownType.EMAX, "13, 23", "Ivoclar Vivadent Lab",
                     10, LocalDate.now().minusMonths(1), LocalDate.now().plusYears(10).minusMonths(1),
-                    "DENTALCARE-EMAX-66554", WarrantyStatus.ACTIVE
+                    "DC-QR-EMAX-66554", WarrantyStatus.ACTIVE
             ));
         }
+
 
         // 13. Tạo Danh Mục Chi Nhánh Đa Cơ Sở (ClinicBranch)
         if (branchRepository.count() == 0) {

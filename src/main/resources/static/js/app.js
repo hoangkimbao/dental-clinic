@@ -1386,23 +1386,47 @@ async function deleteCoupon(id, code) {
 // ================= MOBILE NAVIGATION MENU TOGGLE =================
 function toggleMobileMenu() {
     const drawer = document.getElementById('mobile-menu-drawer');
+    const backdrop = document.getElementById('mobile-menu-backdrop');
+    const btn = document.getElementById('mobile-menu-btn');
     const icon = document.getElementById('mobile-menu-icon');
     if (!drawer) return;
 
-    const isHidden = drawer.classList.contains('hidden');
-    drawer.classList.toggle('hidden', !isHidden);
-    if (icon) {
-        icon.className = isHidden ? 'fa-solid fa-xmark text-lg text-rose-500' : 'fa-solid fa-bars text-lg';
+    const isOpen = !drawer.classList.contains('hidden');
+    if (isOpen) {
+        closeMobileMenu();
+    } else {
+        drawer.classList.remove('hidden');
+        if (backdrop) {
+            backdrop.classList.remove('hidden');
+            requestAnimationFrame(() => backdrop.classList.add('opacity-100'));
+        }
+        if (btn) btn.setAttribute('aria-expanded', 'true');
+        if (icon) icon.className = 'fa-solid fa-xmark text-lg text-rose-500';
+        document.body.classList.add('overflow-hidden');
     }
 }
 
 function closeMobileMenu() {
-    showLandingPage();
     const drawer = document.getElementById('mobile-menu-drawer');
+    const backdrop = document.getElementById('mobile-menu-backdrop');
+    const btn = document.getElementById('mobile-menu-btn');
     const icon = document.getElementById('mobile-menu-icon');
     if (drawer) drawer.classList.add('hidden');
+    if (backdrop) {
+        backdrop.classList.remove('opacity-100');
+        backdrop.classList.add('hidden');
+    }
+    if (btn) btn.setAttribute('aria-expanded', 'false');
     if (icon) icon.className = 'fa-solid fa-bars text-lg';
+    document.body.classList.remove('overflow-hidden');
 }
+
+// Global Escape Key Listener for Mobile Drawer Dismissal
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeMobileMenu();
+    }
+});
 
 // ================= BOOKINGCARE-STYLE TIME SLOTS SELECTOR =================
 function selectTimeSlot(timeStr, btnElement) {
@@ -1671,7 +1695,7 @@ async function submitAiArticle(publishImmediately) {
 }
 
 async function loadDynamicArticles() {
-    const grid = document.getElementById('handbook-articles-grid');
+    const grid = document.querySelector('#handbook #handbook-articles-grid') || document.getElementById('handbook-articles-grid');
     if (!grid) return;
 
     try {
@@ -1901,23 +1925,23 @@ function renderDentalServices(services) {
         return;
     }
 
-    const categoryIcons = {
-        'ORTHODONTICS': 'fa-teeth-open',
-        'IMPLANT': 'fa-tooth',
-        'PORCELAIN_CROWNS': 'fa-wand-magic-sparkles',
-        'WHITENING': 'fa-sparkles',
-        'WISDOM_TEETH': 'fa-bone',
-        'GENERAL': 'fa-shield-halved'
-    };
-
     grid.innerHTML = services.map(svc => {
-        const icon = categoryIcons[svc.category] || 'fa-tooth';
+        let svgMarkup = '';
+        if (window.DentalIcons && typeof window.DentalIcons.getServiceSvg === 'function') {
+            svgMarkup = window.DentalIcons.getServiceSvg(svc.category, { className: 'w-full h-full' });
+        } else {
+            // Clean fallback to DentalIcons.getServiceSvg('GENERAL') or generic clinic shield SVG
+            svgMarkup = (window.DentalIcons && typeof window.DentalIcons.getServiceSvg === 'function')
+                ? window.DentalIcons.getServiceSvg('GENERAL', { className: 'w-full h-full' })
+                : '<svg class="dental-icon-svg w-full h-full" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M32 6 L52 14 V30 C52 44 32 58 32 58 C32 58 12 44 12 30 V14 Z" stroke="#087a72" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>';
+        }
+
         return `
-            <div class="card-3d-tilt bg-white p-6 rounded-3xl border border-slate-200/90 hover:border-brand-500 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+            <div class="card-3d-tilt bg-white p-6 rounded-3xl border border-slate-200/90 hover:border-teal-500 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
                 <div>
                     <div class="flex items-center justify-between mb-4">
-                        <div class="w-12 h-12 rounded-2xl bg-brand-50 text-brand-700 flex items-center justify-center text-xl group-hover:scale-110 group-hover:bg-brand-600 group-hover:text-white transition-all shadow-sm">
-                            <i class="fa-solid ${icon}"></i>
+                        <div class="dental-icon-box w-14 h-14 rounded-2xl p-2 bg-gradient-to-tr from-teal-50 to-emerald-50 border border-teal-100/80 group-hover:scale-110 transition-all shadow-xs">
+                            ${svgMarkup}
                         </div>
                         ${svc.isFeatured ? `
                             <span class="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider bg-rose-50 text-rose-600 border border-rose-200 px-2.5 py-0.5 rounded-full">
@@ -1925,7 +1949,7 @@ function renderDentalServices(services) {
                             </span>` : ''}
                     </div>
                     <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-600 font-mono">${svc.code || ''}</span>
-                    <h3 class="text-base font-extrabold text-slate-900 group-hover:text-brand-700 transition line-clamp-1 mb-2">
+                    <h3 class="text-base font-extrabold text-slate-900 group-hover:text-brand-700 transition line-clamp-2 min-h-[3rem] mb-2 leading-snug">
                         ${svc.name}
                     </h3>
                     <p class="text-xs text-slate-500 leading-relaxed line-clamp-3 mb-4">
@@ -2297,13 +2321,13 @@ function renderCart() {
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <div class="flex items-center border border-slate-200 rounded-lg">
-                    <button type="button" onclick="updateCartItemQty(${idx}, -1)" class="w-6 h-6 text-xs text-slate-600 hover:bg-slate-100 rounded-l font-bold">-</button>
-                    <span class="w-6 text-center text-xs font-bold text-slate-900">${item.quantity}</span>
-                    <button type="button" onclick="updateCartItemQty(${idx}, 1)" class="w-6 h-6 text-xs text-slate-600 hover:bg-slate-100 rounded-r font-bold">+</button>
+                <div class="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
+                    <button type="button" onclick="updateCartItemQty(${idx}, -1)" aria-label="Giảm số lượng" class="w-9 h-9 text-sm text-slate-700 hover:bg-slate-200 flex items-center justify-center font-bold active:bg-slate-300 transition-colors">-</button>
+                    <span class="w-8 text-center text-xs font-black text-slate-900">${item.quantity}</span>
+                    <button type="button" onclick="updateCartItemQty(${idx}, 1)" aria-label="Tăng số lượng" class="w-9 h-9 text-sm text-slate-700 hover:bg-slate-200 flex items-center justify-center font-bold active:bg-slate-300 transition-colors">+</button>
                 </div>
-                <button type="button" onclick="removeCartItem(${idx})" class="text-slate-400 hover:text-rose-600 p-1 transition" title="Xóa khỏi giỏ">
-                    <i class="fa-solid fa-trash-can text-xs"></i>
+                <button type="button" onclick="removeCartItem(${idx})" aria-label="Xóa sản phẩm" class="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl p-1 transition cursor-pointer" title="Xóa khỏi giỏ">
+                    <i class="fa-solid fa-trash-can text-sm"></i>
                 </button>
             </div>
         </div>
@@ -2424,7 +2448,9 @@ async function searchWarranty() {
                 <div class="p-6 rounded-2xl bg-slate-800/90 border border-sky-500/40 shadow-xl space-y-4">
                     <div class="flex items-center justify-between border-b border-slate-700/80 pb-3">
                         <div class="flex items-center gap-2.5">
-                            <i class="fa-solid fa-certificate text-sky-400 text-xl"></i>
+                            <div class="w-10 h-10 rounded-xl bg-slate-900 border border-sky-500/50 p-1 flex items-center justify-center shrink-0">
+                                ${window.DentalIcons ? window.DentalIcons.getBadgeSvg('WARRANTY', { className: 'w-full h-full' }) : '<i class="fa-solid fa-shield-halved text-sky-400 text-lg"></i>'}
+                            </div>
                             <div>
                                 <span class="text-[10px] text-sky-300 font-extrabold uppercase tracking-widest">Thẻ Bảo Hành Điện Tử</span>
                                 <h4 class="text-sm font-black text-white font-mono">${wr.serialCode}</h4>
@@ -2549,11 +2575,11 @@ async function runAiDiagnostic() {
                 <div class="space-y-4">
                     <div class="flex items-center justify-between border-b border-slate-200 pb-3">
                         <div class="flex items-center gap-2.5">
-                            <div class="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold">
-                                <i class="fa-solid fa-stethoscope"></i>
+                            <div class="w-11 h-11 rounded-xl bg-purple-950 p-1 border border-purple-500/40 flex items-center justify-center shrink-0">
+                                ${window.DentalIcons ? window.DentalIcons.getBadgeSvg('AI_DOCTOR', { className: 'w-full h-full' }) : '<i class="fa-solid fa-brain text-purple-400"></i>'}
                             </div>
                             <div>
-                                <span class="text-[10px] text-purple-700 font-black uppercase">Kết Quả Chẩn Đoán AI</span>
+                                <span class="text-[10px] text-purple-700 font-black uppercase tracking-wider">Kết Quả Chẩn Đoán AI</span>
                                 <h3 class="text-sm font-black text-slate-900">${diag.pathologyName}</h3>
                             </div>
                         </div>
@@ -2648,8 +2674,8 @@ function renderBranches(branches, nearestId = null, distanceKm = null) {
                     </div>
 
                     <h3 class="text-sm font-black text-white mb-2 leading-snug">${b.branchName}</h3>
-                    <p class="text-xs text-slate-300 mb-3 flex items-start gap-1.5">
-                        <i class="fa-solid fa-location-dot text-teal-400 shrink-0 mt-0.5"></i>
+                    <p class="text-xs text-slate-300 mb-3 flex items-start gap-2">
+                        <span class="w-4 h-4 shrink-0 mt-0.5 inline-block">${window.DentalIcons ? window.DentalIcons.getBadgeSvg('BRANCH_MAP', { className: 'w-full h-full' }) : '<i class="fa-solid fa-location-dot text-teal-400"></i>'}</span>
                         <span>${b.address}</span>
                     </p>
 

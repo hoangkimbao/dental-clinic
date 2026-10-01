@@ -1,33 +1,47 @@
 version: '3.8'
 
 services:
+  # ----------------------------------------------------------------------------
+  # Service 1: Spring Boot Application (DentalCare Web Portal & APIs)
+  # ----------------------------------------------------------------------------
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: dental-clinic-app
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/dentaldb
-      - SPRING_DATASOURCE_USERNAME=dentaluser
-      - SPRING_DATASOURCE_PASSWORD=dentalpass
+      - SERVER_PORT=8080
+      - SPRING_DATASOURCE_URL=jdbc:h2:file:/app/data/dentaldb;AUTO_SERVER=TRUE
+      - APP_UPLOAD_DIR=/app/uploads/dental-images/
       - APP_JWT_SECRET=dentalcareluxurysecuresecretkey2026superstrongforproductiontokengeneration32bytes
-    depends_on:
-      - postgres
+      - JAVA_OPTS=-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom
+    volumes:
+      - dental_data:/app/data
+      - dental_uploads:/app/uploads
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 25s
     restart: unless-stopped
 
-  postgres:
-    image: postgres:16-alpine
-    container_name: dental-clinic-db
-    environment:
-      POSTGRES_DB: dentaldb
-      POSTGRES_USER: dentaluser
-      POSTGRES_PASSWORD: dentalpass
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+  # ----------------------------------------------------------------------------
+  # Service 2: Cloudflare Tunnel (Secure Public Ingress)
+  # ----------------------------------------------------------------------------
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: dental-clinic-tunnel
+    command: tunnel --no-autoupdate --url http://app:8080
+    depends_on:
+      app:
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:
-  postgres_data:
+  dental_data:
+    name: dental-clinic-data
+  dental_uploads:
+    name: dental-clinic-uploads

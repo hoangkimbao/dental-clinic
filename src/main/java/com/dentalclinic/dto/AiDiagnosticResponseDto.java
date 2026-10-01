@@ -59,4 +59,25 @@ public class AiDiagnosticResponseDto {
     public String getClinicalSummary() {
         return clinicalRecommendation != null ? clinicalRecommendation : "Hồ sơ chẩn đoán răng miệng AI định kỳ.";
     }
+
+    public String getPathology() {
+        if (detectedPathology == DentalPathology.IMPACTED_WISDOM_TOOTH) {
+            return "IMPACTED_WISDOM";
+        }
+        return detectedPathology != null ? detectedPathology.name() : "CARIES";
+    }
+
+    public String getRiskLevel() {
+        if ("SEVERE".equalsIgnoreCase(severityLevel)) return "HIGH";
+        if ("MODERATE".equalsIgnoreCase(severityLevel)) return "MEDIUM";
+        return "HIGH";
+    }
+
+    public String getTreatmentAdvice() {
+        return clinicalRecommendation != null ? clinicalRecommendation : "Khám chuyên khoa";
+    }
+
+    public String getEstimatedCostRange() {
+        return "1.500.000đ - 3.000.000đ";
+    }
 }

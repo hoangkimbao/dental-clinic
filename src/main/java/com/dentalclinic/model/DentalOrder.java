@@ -77,6 +77,12 @@ public class DentalOrder extends BaseEntity {
     public String getOrderCode() { return orderCode; }
     public void setOrderCode(String orderCode) { this.orderCode = orderCode; }
 
+    // Alias for E2E Test Compatibility
+    @com.fasterxml.jackson.annotation.JsonProperty("orderNumber")
+    public String getOrderNumber() {
+        return orderCode;
+    }
+
     public String getCustomerName() { return customerName; }
     public void setCustomerName(String customerName) { this.customerName = customerName; }
 
@@ -106,4 +112,8 @@ public class DentalOrder extends BaseEntity {
 
     public List<DentalOrderItem> getItems() { return items; }
     public void setItems(List<DentalOrderItem> items) { this.items = items; }
+
+    public Integer getLoyaltyPointsEarned() {
+        return totalAmount != null ? (int) (totalAmount / 10000) : 0;
+    }
 }

@@ -1,0 +1,143 @@
+{
+  "metadata": {
+    "suiteName": "DentalCare Clinic Web Portal UI/UX & Brand Identity Overhaul E2E Test Suite",
+    "version": "3.0.0",
+    "timestamp": "2026-09-30T10:05:00Z",
+    "environment": "Development / Baseline Verification",
+    "projectRoot": "D:\\java\\dental-clinic",
+    "totalTests": 250,
+    "passed": 92,
+    "failed": 158,
+    "passRate": "36.80%",
+    "status": "BASELINE_ESTABLISHED"
+  },
+  "tierSummary": {
+    "tier1": {
+      "name": "Feature Coverage (Nominal Behavior)",
+      "total": 116,
+      "passed": 39,
+      "failed": 77,
+      "passRate": "33.62%"
+    },
+    "tier2": {
+      "name": "Boundary & Corner Cases (Viewports, Overflow, Constraints)",
+      "total": 114,
+      "passed": 48,
+      "failed": 66,
+      "passRate": "42.11%"
+    },
+    "tier3": {
+      "name": "Cross-Feature Combinations (Pairwise Interactions)",
+      "total": 15,
+      "passed": 5,
+      "failed": 10,
+      "passRate": "33.33%"
+    },
+    "tier4": {
+      "name": "Real-World Workload Scenarios (Patient Journeys)",
+      "total": 5,
+      "passed": 0,
+      "failed": 5,
+      "passRate": "0.00%"
+    }
+  },
+  "featureChecklist": {
+    "F01": { "name": "Bespoke DentalCare Clinic Logo SVG", "total": 10, "passed": 3, "failed": 7, "milestone": "M1" },
+    "F02": { "name": "6 Unique Dental Service SVG Icons", "total": 11, "passed": 1, "failed": 10, "milestone": "M1" },
+    "F03": { "name": "4 Unique Feature Badges", "total": 10, "passed": 1, "failed": 9, "milestone": "M1" },
+    "F04": { "name": "Brand Color & Design System Harmonization", "total": 10, "passed": 8, "failed": 2, "milestone": "M1" },
+    "F05": { "name": "DOM Structure & Unclosed Tag Remediation", "total": 10, "passed": 3, "failed": 7, "milestone": "M2" },
+    "F06": { "name": "Customer Testimonials & Reviews Section", "total": 10, "passed": 0, "failed": 10, "milestone": "M2" },
+    "F07": { "name": "Desktop Navbar Layout Reconfiguration", "total": 10, "passed": 3, "failed": 7, "milestone": "M2" },
+    "F08": { "name": "Asymmetric Tablet Grid De-Hacking", "total": 10, "passed": 3, "failed": 7, "milestone": "M2" },
+    "F09": { "name": "Flash Sale 4-Column Grid Adjustment", "total": 10, "passed": 3, "failed": 7, "milestone": "M2" },
+    "F10": { "name": "Interactive Branch Network Map", "total": 10, "passed": 4, "failed": 6, "milestone": "M2" },
+    "F11": { "name": "Vietnamese Typography & Heading Polish", "total": 10, "passed": 4, "failed": 6, "milestone": "M2" },
+    "F12": { "name": "Mobile Horizontal Overflow Elimination", "total": 10, "passed": 0, "failed": 10, "milestone": "M3" },
+    "F13": { "name": "Mobile Navbar & Header Compactness", "total": 10, "passed": 5, "failed": 5, "milestone": "M3" },
+    "F14": { "name": "Mobile Navigation Drawer & Hamburger", "total": 10, "passed": 4, "failed": 6, "milestone": "M3" },
+    "F15": { "name": "Touch Target Guideline Remediation", "total": 10, "passed": 2, "failed": 8, "milestone": "M3" },
+    "F16": { "name": "Hero Trust Metrics Responsiveness", "total": 10, "passed": 6, "failed": 4, "milestone": "M3" },
+    "F17": { "name": "FAQ Accordion & Animation Optimization", "total": 10, "passed": 4, "failed": 6, "milestone": "M3" },
+    "F18": { "name": "Appointment Booking Modal & Drawer", "total": 10, "passed": 5, "failed": 5, "milestone": "M4" },
+    "F19": { "name": "AI Diagnostic Doctor Interface", "total": 10, "passed": 4, "failed": 6, "milestone": "M4" },
+    "F20": { "name": "Porcelain Warranty Card & QR Code", "total": 10, "passed": 4, "failed": 6, "milestone": "M4" },
+    "F21": { "name": "Shopping Cart Drawer & Checkout Form", "total": 10, "passed": 7, "failed": 3, "milestone": "M4" },
+    "F22": { "name": "E2E Test Suite Validation", "total": 10, "passed": 10, "failed": 0, "milestone": "M5" },
+    "F23": { "name": "Adversarial Coverage Hardening", "total": 10, "passed": 5, "failed": 5, "milestone": "M5" }
+  },
+  "primaryBaselineDefects": [
+    {
+      "id": "DEFECT-01",
+      "feature": "F05",
+      "severity": "CRITICAL",
+      "location": "src/main/resources/static/index.html:1540",
+      "description": "Unclosed <section id=\"booking-section\"> and container div absorbs #faq, #branches-section, and <footer> into nested children",
+      "affectedFeatures": ["F05", "F12", "T4-01"]
+    },
+    {
+      "id": "DEFECT-02",
+      "feature": "F19",
+      "severity": "CRITICAL",
+      "location": "src/main/resources/static/js/app.js:2614",
+      "description": "TypeError: Cannot read properties of undefined (reading 'replace') halts JavaScript execution on diag.pathologyName.replace",
+      "affectedFeatures": ["F19", "T3-03", "T4-02"]
+    },
+    {
+      "id": "DEFECT-03",
+      "feature": "F06",
+      "severity": "HIGH",
+      "location": "src/main/resources/static/index.html",
+      "description": "Customer reviews section #testimonials completely absent from DOM despite backend /api/reviews/latest and DataInitializer seeders",
+      "affectedFeatures": ["F06", "T3-09", "T4-05"]
+    },
+    {
+      "id": "DEFECT-04",
+      "feature": "F01, F02, F03",
+      "severity": "HIGH",
+      "location": "src/main/resources/static/index.html, app.js",
+      "description": "Total absence of bespoke SVG logos, service icons, and feature badges (relies on generic fa-tooth, fa-wand-magic-sparkles, fa-bone)",
+      "affectedFeatures": ["F01", "F02", "F03", "T3-12"]
+    },
+    {
+      "id": "DEFECT-05",
+      "feature": "F12, F13",
+      "severity": "HIGH",
+      "location": "src/main/resources/static/index.html:358-435",
+      "description": "Mobile header overflows 360px viewport by +87px (logged-out) and +185px (logged-in), causing horizontal scrollbar and pushing buttons offscreen",
+      "affectedFeatures": ["F12", "F13", "T4-01"]
+    },
+    {
+      "id": "DEFECT-06",
+      "feature": "F17",
+      "severity": "MEDIUM",
+      "location": "src/main/resources/static/index.html:1750",
+      "description": "Duplicate id=\"content-faq-2\" breaks FAQ 3 accordion toggle; global GSAP .fa-tooth animation repaints entire document",
+      "affectedFeatures": ["F17"]
+    },
+    {
+      "id": "DEFECT-07",
+      "feature": "F15",
+      "severity": "MEDIUM",
+      "location": "Multiple components in index.html and app.js",
+      "description": "20 primary touch controls violate WCAG 2.1 touch target guideline (< 44x44px)",
+      "affectedFeatures": ["F15"]
+    },
+    {
+      "id": "DEFECT-08",
+      "feature": "F20",
+      "severity": "MEDIUM",
+      "location": "src/main/resources/static/js/app.js:2491",
+      "description": "Porcelain warranty card outputs raw text 'QR Code: ...' instead of rendering an authentic Smart QR vector graphic",
+      "affectedFeatures": ["F20", "T3-14", "T4-03"]
+    },
+    {
+      "id": "DEFECT-09",
+      "feature": "F21",
+      "severity": "MEDIUM",
+      "location": "src/main/resources/static/index.html:3276-3336",
+      "description": "Cart checkout input fields trapped inside fixed 385px non-scrollable footer, occluded by virtual keyboard on mobile",
+      "affectedFeatures": ["F21", "T3-10"]
+    }
+  ]
+}

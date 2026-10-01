@@ -21,19 +21,27 @@ public class DentalServiceController {
 
     @GetMapping
     public ApiResponse<List<DentalServiceCatalog>> getServices(
-            @RequestParam(required = false) DentalServiceCategory category,
+            @RequestParam(required = false) String category,
             @RequestParam(required = false, defaultValue = "false") boolean featured) {
         if (featured) {
             return ApiResponse.success(serviceCatalogService.getFeaturedServices());
         }
         if (category != null) {
-            return ApiResponse.success(serviceCatalogService.getServicesByCategory(category));
+            return ApiResponse.success(serviceCatalogService.getServicesByCategory(DentalServiceCategory.fromValue(category)));
         }
         return ApiResponse.success(serviceCatalogService.getAllServices());
     }
 
+    @GetMapping("/featured")
+    public ApiResponse<List<DentalServiceCatalog>> getFeaturedServicesEndpoint() {
+        return ApiResponse.success(serviceCatalogService.getFeaturedServices());
+    }
+
     @GetMapping("/{code}")
     public ApiResponse<DentalServiceCatalog> getServiceByCode(@PathVariable String code) {
+        if ("featured".equalsIgnoreCase(code)) {
+            return ApiResponse.success(null);
+        }
         return ApiResponse.success(serviceCatalogService.getServiceByCode(code));
     }
 

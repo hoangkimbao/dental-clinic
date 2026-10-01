@@ -76,8 +76,8 @@ public class SecurityConfig {
                 )
             )
             .authorizeHttpRequests(auth -> auth
-                // Public Static Assets & Landing Page
-                .requestMatchers("/", "/index.html", "/css/**", "/js/**", "/favicon.ico", "/sitemap.xml", "/robots.txt", "/uploads/**").permitAll()
+                // Public Static Assets & Landing Page (including PWA manifest, service worker, and icons)
+                .requestMatchers("/", "/index.html", "/manifest.json", "/sw.js", "/icons/**", "/css/**", "/js/**", "/favicon.ico", "/sitemap.xml", "/robots.txt", "/uploads/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
@@ -117,11 +117,21 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/dental-orders").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/dental-orders/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/warranties/**").permitAll()
+                .requestMatchers("/api/warranty/**").permitAll()
                 .requestMatchers("/api/loyalty/**").permitAll()
                 .requestMatchers("/api/dental-ai/**").permitAll()
                 .requestMatchers("/api/ai-diagnostic/**").permitAll()
                 .requestMatchers("/api/forum/**").permitAll()
+                .requestMatchers("/api/community/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/branches/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/appointments/available-slots").permitAll()
+
+                // Patient Mobile App & Dashboards (Secured)
+                .requestMatchers("/api/mobile/**").authenticated()
+                .requestMatchers("/api/patients/me").authenticated()
+                .requestMatchers("/api/notifications").authenticated()
+                .requestMatchers("/api/cart/**").authenticated()
+                .requestMatchers("/api/orders/**").authenticated()
 
                 // Milestone 3: PC Desktop App CMS & Multi-Table Excel Export
                 .requestMatchers("/api/cms/**").permitAll()
@@ -137,5 +147,66 @@ public class SecurityConfig {
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @jakarta.annotation.PostConstruct
+    public void initPwaIcons() {
+        try {
+            generatePwaIconIfMissing("src/main/resources/static/icons", 192);
+            generatePwaIconIfMissing("src/main/resources/static/icons", 512);
+            generatePwaIconIfMissing("target/classes/static/icons", 192);
+            generatePwaIconIfMissing("target/classes/static/icons", 512);
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void generatePwaIconIfMissing(String dirPath, int size) {
+        java.io.File dir = new java.io.File(dirPath);
+        if (!dir.exists() && dirPath.startsWith("src")) {
+            dir.mkdirs();
+        }
+        if (!dir.exists()) return;
+        java.io.File iconFile = new java.io.File(dir, "icon-" + size + ".png");
+        if (iconFile.exists()) return;
+
+        java.awt.image.BufferedImage img = new java.awt.image.BufferedImage(size, size, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+        java.awt.Graphics2D g = img.createGraphics();
+        g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(java.awt.RenderingHints.KEY_RENDERING, java.awt.RenderingHints.VALUE_RENDER_QUALITY);
+
+        // Background rounded squircle with Teal/Cyan gradient
+        java.awt.Paint gradient = new java.awt.GradientPaint(0, 0, new java.awt.Color(2, 132, 199), size, size, new java.awt.Color(8, 122, 114));
+        g.setPaint(gradient);
+        int arc = size / 4;
+        g.fillRoundRect(0, 0, size, size, arc, arc);
+
+        // Subtle inner glow border
+        g.setColor(new java.awt.Color(255, 255, 255, 45));
+        g.setStroke(new java.awt.BasicStroke((float) Math.max(2, size / 64)));
+        g.drawRoundRect(size / 32, size / 32, size - size / 16, size - size / 16, arc - 4, arc - 4);
+
+        // Draw Stylized Tooth (White)
+        g.setColor(java.awt.Color.WHITE);
+        int tw = (int) (size * 0.52);
+        int th = (int) (size * 0.58);
+        int tx = (size - tw) / 2;
+        int ty = (int) (size * 0.22);
+        g.fillRoundRect(tx, ty, tw, (int)(th * 0.7), arc, arc);
+        g.fillRoundRect(tx + (int)(tw * 0.08), ty + (int)(th * 0.4), (int)(tw * 0.35), (int)(th * 0.6), arc / 2, arc / 2);
+        g.fillRoundRect(tx + (int)(tw * 0.57), ty + (int)(th * 0.4), (int)(tw * 0.35), (int)(th * 0.6), arc / 2, arc / 2);
+
+        // Draw Medical Cross Accent (Cyan)
+        g.setColor(new java.awt.Color(56, 189, 248));
+        int cw = (int) (size * 0.12);
+        int ch = (int) (size * 0.36);
+        int cx = (int) (size * 0.62);
+        int cy = (int) (size * 0.30);
+        g.fillRoundRect(cx, cy, cw, ch, cw / 2, cw / 2);
+        g.fillRoundRect(cx - (ch - cw) / 2, cy + (ch - cw) / 2, ch, cw, cw / 2, cw / 2);
+
+        g.dispose();
+        try {
+            javax.imageio.ImageIO.write(img, "PNG", iconFile);
+        } catch (java.io.IOException ignored) {}
     }
 }

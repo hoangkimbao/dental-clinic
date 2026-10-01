@@ -3,13 +3,21 @@ package com.dentalclinic.dto;
 import java.util.List;
 
 public class OrderRequestDto {
+    @com.fasterxml.jackson.annotation.JsonAlias({"customerName", "receiverName"})
     private String customerName;
+
+    @com.fasterxml.jackson.annotation.JsonAlias({"customerPhone", "receiverPhone"})
     private String customerPhone;
+
     private String customerEmail;
     private String shippingAddress;
+    
     private String paymentMethod = "COD";
     private String packagingType = "BOX";
+    
+    @com.fasterxml.jackson.annotation.JsonAlias({"notes", "shippingNotes"})
     private String notes;
+    
     private List<OrderItemRequestDto> items;
 
     public OrderRequestDto() {}

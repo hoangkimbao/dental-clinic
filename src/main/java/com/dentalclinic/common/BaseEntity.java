@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public abstract class BaseEntity {
 
     @CreatedDate

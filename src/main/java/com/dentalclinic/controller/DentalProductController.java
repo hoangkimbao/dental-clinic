@@ -20,9 +20,9 @@ public class DentalProductController {
     }
 
     @GetMapping
-    public ApiResponse<List<DentalProduct>> getProducts(@RequestParam(required = false) DentalProductCategory category) {
+    public ApiResponse<List<DentalProduct>> getProducts(@RequestParam(required = false) String category) {
         if (category != null) {
-            return ApiResponse.success(productService.getProductsByCategory(category));
+            return ApiResponse.success(productService.getProductsByCategory(DentalProductCategory.fromValue(category)));
         }
         return ApiResponse.success(productService.getAllProducts());
     }

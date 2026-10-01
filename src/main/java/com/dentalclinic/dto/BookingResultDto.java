@@ -29,4 +29,8 @@ public class BookingResultDto {
     public void setGeneratedPassword(String generatedPassword) { this.generatedPassword = generatedPassword; }
     public AuthResponse getAuthInfo() { return authInfo; }
     public void setAuthInfo(AuthResponse authInfo) { this.authInfo = authInfo; }
+
+    public Long getId() {
+        return appointment != null ? appointment.getId() : null;
+    }
 }

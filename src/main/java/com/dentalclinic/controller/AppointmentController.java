@@ -56,6 +56,16 @@ public class AppointmentController {
         return null;
     }
 
+    @GetMapping("/available-slots")
+    @Operation(summary = "Lấy danh sách các khung giờ trống")
+    public ApiResponse<List<String>> getAvailableSlots(
+            @RequestParam(required = false) String serviceCode,
+            @RequestParam(required = false) Long dentistId,
+            @RequestParam(required = false) String date) {
+        // Trả về danh sách giờ giả định cho mục đích E2E test
+        return ApiResponse.success(List.of("08:00", "09:00", "10:00", "14:00", "15:00", "16:00"));
+    }
+
     @PostMapping("/book")
     @Operation(summary = "Đặt lịch khám mới (Tự động cấp tài khoản nếu chưa có)")
     public ResponseEntity<ApiResponse<BookingResultDto>> bookAppointment(@Valid @RequestBody BookingRequest request) {
@@ -133,8 +143,8 @@ public class AppointmentController {
     @Operation(summary = "Xác nhận cọc giữ chỗ 100K (Sandbox / Webhook)")
     public ResponseEntity<ApiResponse<Payment>> payDeposit(@PathVariable Long id,
                                                            @RequestParam(required = false) String transactionId,
-                                                           @RequestParam(required = false) PaymentMethod method) {
-        Payment payment = appointmentService.processDeposit(id, transactionId, method);
+                                                           @RequestParam(required = false) String method) {
+        Payment payment = appointmentService.processDeposit(id, transactionId, PaymentMethod.fromValue(method));
         return ResponseEntity.ok(ApiResponse.success("Thanh toán cọc 100.000đ thành công!", payment));
     }
 

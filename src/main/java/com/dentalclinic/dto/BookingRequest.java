@@ -25,8 +25,11 @@ public class BookingRequest {
     public void setPatientName(String patientName) { this.patientName = patientName; }
     public String getPatientPhone() { return patientPhone; }
     public void setPatientPhone(String patientPhone) { this.patientPhone = patientPhone; }
+    public void setPhone(String phone) { this.patientPhone = phone; }
+
     public String getPatientEmail() { return patientEmail; }
     public void setPatientEmail(String patientEmail) { this.patientEmail = patientEmail; }
+    public void setEmail(String email) { this.patientEmail = email; }
     public String getServiceName() { return serviceName; }
     public void setServiceName(String serviceName) { this.serviceName = serviceName; }
     public String getAppointmentTime() { return appointmentTime; }

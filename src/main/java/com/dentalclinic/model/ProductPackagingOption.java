@@ -63,4 +63,14 @@ public class ProductPackagingOption extends BaseEntity {
 
     public Double getPrice() { return price; }
     public void setPrice(Double price) { this.price = price; }
+
+    // Test compatibility aliases
+    public String getSkuCode() {
+        // Generate a SKU-like code from product id + packaging type
+        return (product != null ? product.getCode() : "PROD") + "-" + (packagingType != null ? packagingType.name() : "BOX");
+    }
+
+    public String getPackageType() {
+        return packagingType != null ? packagingType.name() : null;
+    }
 }
