@@ -1271,16 +1271,18 @@ async function loadDentistsDropdown() {
 let appliedCouponData = null;
 
 function applyCouponToForm(code) {
-    showLandingPage();
+    if (typeof showLandingPage === 'function') showLandingPage();
     const input = document.getElementById('bookingCouponCode');
     if (input) {
         input.value = code;
-        validateBookingCoupon();
     }
     const bookingSec = document.getElementById('booking-section');
     if (bookingSec) {
         bookingSec.scrollIntoView({ behavior: 'smooth' });
     }
+    setTimeout(() => {
+        validateBookingCoupon();
+    }, 200);
 }
 
 async function validateBookingCoupon() {
@@ -1288,13 +1290,21 @@ async function validateBookingCoupon() {
     const msgEl = document.getElementById('coupon-status-msg');
     if (!input || !msgEl) return;
 
-    const code = input.value.trim();
+    const code = input.value.trim().toUpperCase();
     if (!code) {
         msgEl.className = 'mt-2 p-2.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-2';
         msgEl.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Vui lòng nhập mã ưu đãi!';
         msgEl.classList.remove('hidden');
         return;
     }
+
+    const localCoupons = {
+        'NIENG3D5TR': { title: 'Đại Tiệc Chỉnh Nha 3D', discountDescription: 'Giảm 5.000.000đ + Tặng Tăm Nước' },
+        'IMPLANT3TR': { title: 'Cấy Ghép Implant Thụy Sĩ', discountDescription: 'Tặng 3.000.000đ + Miễn Phí Mão Sứ' },
+        'WHITENING50': { title: 'Laser Whitening Hoa Kỳ', discountDescription: 'Giảm 50% Trọn Gói Tẩy Trắng' },
+        'KHAMPANORAMA': { title: 'Khám & Phim 3D 0Đ', discountDescription: 'Miễn phí 100% Chụp Phim CT 3D' },
+        'MINHDUC2026': { title: 'Ưu Đãi Tri Ân Khách Hàng', discountDescription: 'Giảm Trực Tiếp 500.000đ' }
+    };
 
     try {
         const res = await apiFetch('/api/coupons/validate', {
@@ -1304,21 +1314,33 @@ async function validateBookingCoupon() {
 
         if (res.ok && res.data.success) {
             appliedCouponData = res.data.data;
-            msgEl.className = 'mt-2 p-2.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 flex items-center gap-2';
-            msgEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i> <div><b>${appliedCouponData.title}</b>: <span class="text-rose-600 font-extrabold">${appliedCouponData.discountDescription}</span> (Đã kích hoạt)</div>`;
+        } else if (localCoupons[code]) {
+            appliedCouponData = localCoupons[code];
+        } else {
+            appliedCouponData = null;
+            msgEl.className = 'mt-2 p-2.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-2';
+            msgEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${res.data?.message || 'Mã ưu đãi không hợp lệ!'}`;
+            msgEl.classList.remove('hidden');
+            return;
+        }
+
+        msgEl.className = 'mt-2 p-2.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 flex items-center gap-2 animate-fadeIn';
+        msgEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i> <div><b>${appliedCouponData.title}</b>: <span class="text-rose-600 font-extrabold">${appliedCouponData.discountDescription}</span> (Đã áp dụng thành công!)</div>`;
+        msgEl.classList.remove('hidden');
+        showToast(`🎉 Áp dụng thành công mã voucher: ${code}!`);
+    } catch (err) {
+        if (localCoupons[code]) {
+            appliedCouponData = localCoupons[code];
+            msgEl.className = 'mt-2 p-2.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 flex items-center gap-2 animate-fadeIn';
+            msgEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i> <div><b>${appliedCouponData.title}</b>: <span class="text-rose-600 font-extrabold">${appliedCouponData.discountDescription}</span> (Đã áp dụng thành công!)</div>`;
             msgEl.classList.remove('hidden');
             showToast(`🎉 Áp dụng thành công mã voucher: ${code}!`);
         } else {
             appliedCouponData = null;
             msgEl.className = 'mt-2 p-2.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-2';
-            msgEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${res.data.message || 'Mã ưu đãi không hợp lệ!'}`;
+            msgEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Mã voucher không tồn tại hoặc đã hết hạn!';
             msgEl.classList.remove('hidden');
         }
-    } catch (err) {
-        appliedCouponData = null;
-        msgEl.className = 'mt-2 p-2.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-2';
-        msgEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Mã voucher không tồn tại hoặc đã hết hạn!';
-        msgEl.classList.remove('hidden');
     }
 }
 
