@@ -128,10 +128,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Connect WebSocket
     // WebSocket is now loaded on-demand for staff only
-    startFlashSaleCountdown();
     loadDentistsDropdown();
     initCart();
     loadDentalServices();
+    loadPublicCoupons();
     loadAvailableSlots();
     loadDentalProducts();
     loadBranches();
@@ -171,14 +171,6 @@ function toggleAuthMode(mode) {
     document.getElementById('auth-modal-sub').innerText = isLogin 
         ? 'Dành cho Khách Hàng & Nhân Viên Phòng Khám' 
         : 'Theo dõi tiến trình khám & lộ trình niềng răng';
-}
-
-// HAM ĐIỀN NHANH TÀI KHOẢN MẪU (LỄ TÂN / ADMIN)
-function fillQuickLogin(username, password) {
-    const uField = document.getElementById('loginUsername');
-    const pField = document.getElementById('loginPassword');
-    if (uField) uField.value = username;
-    if (pField) pField.value = password;
 }
 
 // 1 Ô ĐĂNG NHẬP DUY NHẤT -> TỰ ĐỘNG NHẬN DIỆN ROLE & NHẬN CHUẨN JWT TOKEN
@@ -1269,25 +1261,145 @@ function formatDate(dtStr) {
 async function loadDentistsDropdown() {
     try {
         const res = await apiFetch('/api/dentists');
-        if (res.ok && res.data.success) {
-            const selectEl = document.getElementById('dentistId');
-            if (!selectEl) return;
-            const dentists = res.data.data || [];
+        if (!res.ok || !res.data?.success) {
+            renderPublicDentists([], 'error');
+            return;
+        }
+        const selectEl = document.getElementById('dentistId');
+        const dentists = res.data.data || [];
+        if (selectEl) {
             selectEl.replaceChildren(new Option('Phòng khám sắp xếp bác sĩ phù hợp', ''));
-            if (dentists.length === 0) {
-                return;
-            }
             dentists.forEach(dentist => {
                 selectEl.add(new Option(dentist.fullName || 'Bác sĩ DentalCare', String(dentist.id)));
             });
         }
+        renderPublicDentists(dentists);
     } catch (e) {
         console.error('Error loading dentists:', e);
+        renderPublicDentists([], 'error');
     }
+}
+
+function renderPublicDentists(dentists, state = 'ready') {
+    const grid = document.getElementById('doctor-directory-grid');
+    if (!grid) return;
+
+    grid.replaceChildren();
+    const usableDentists = Array.isArray(dentists)
+        ? dentists.filter(dentist => dentist && (dentist.fullName || dentist.id))
+        : [];
+
+    if (!usableDentists.length) {
+        const heroName = document.getElementById('hero-doctor-name');
+        if (heroName) heroName.textContent = 'Bác sĩ DentalCare';
+        const message = document.createElement('p');
+        message.className = 'doctor-directory-empty';
+        message.textContent = state === 'error'
+            ? 'Chưa tải được danh sách bác sĩ. Bạn vẫn có thể gửi yêu cầu đặt lịch để phòng khám sắp xếp.'
+            : 'Danh sách bác sĩ hiện chưa có dữ liệu. Bạn vẫn có thể gửi yêu cầu đặt lịch.';
+        grid.appendChild(message);
+        return;
+    }
+
+    const heroName = document.getElementById('hero-doctor-name');
+    if (heroName) heroName.textContent = usableDentists[0].fullName || 'Bác sĩ DentalCare';
+
+    const fragment = document.createDocumentFragment();
+    usableDentists.forEach(dentist => {
+        const name = String(dentist.fullName || 'Bác sĩ DentalCare');
+        const initials = name.trim().split(/\s+/).slice(-2).map(part => part[0] || '').join('').toLocaleUpperCase('vi-VN');
+        const card = document.createElement('article');
+        card.className = 'doctor-directory-card';
+        card.innerHTML = `
+            <div class="doctor-directory-mark" aria-hidden="true">${escapeHtml(initials || 'DC')}</div>
+            <div class="doctor-directory-copy">
+                <span class="doctor-directory-eyebrow">ĐỘI NGŨ DENTALCARE</span>
+                <h3>${escapeHtml(name)}</h3>
+                <p>Thông tin bác sĩ theo hồ sơ hiện có của phòng khám.</p>
+            </div>
+        `;
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'doctor-directory-action';
+        button.textContent = 'Gửi yêu cầu với bác sĩ này';
+        button.addEventListener('click', () => preselectDoctor(name));
+        card.appendChild(button);
+        fragment.appendChild(card);
+    });
+    grid.appendChild(fragment);
 }
 
 // ================= PROMOTIONS & COUPON MANAGEMENT =================
 let appliedCouponData = null;
+
+async function loadPublicCoupons() {
+    const grid = document.getElementById('flash-sale-coupons-grid');
+    if (!grid) return;
+
+    const showMessage = message => {
+        grid.classList.add('coupons-loaded');
+        const empty = document.createElement('p');
+        empty.className = 'coupon-api-state';
+        empty.textContent = message;
+        grid.replaceChildren(empty);
+    };
+
+    try {
+        const response = await apiFetch('/api/coupons/active');
+        if (!response.ok || !response.data?.success) throw new Error('Coupon list unavailable');
+
+        const today = new Date();
+        const todayText = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        const coupons = (Array.isArray(response.data.data) ? response.data.data : []).filter(coupon =>
+            coupon && coupon.active !== false && (!coupon.validUntil || String(coupon.validUntil).slice(0, 10) >= todayText)
+        );
+
+        if (!coupons.length) {
+            showMessage('Hiện chưa có mã ưu đãi nào đang áp dụng.');
+            return;
+        }
+
+        const fragment = document.createDocumentFragment();
+        coupons.forEach(coupon => {
+            const code = String(coupon.code || '').trim().toUpperCase();
+            if (!code) return;
+            const amount = Number(coupon.discountValue);
+            const discount = coupon.discountType === 'FIXED_AMOUNT'
+                ? `Giảm ${Number.isFinite(amount) ? amount.toLocaleString('vi-VN') : '—'} đ`
+                : `Giảm ${Number.isFinite(amount) ? amount : '—'}%`;
+            const rawScope = String(coupon.applicableService || 'ALL');
+            const scope = rawScope === 'ALL' ? 'Theo điều kiện của mã' : rawScope.replace(/[_-]+/g, ' ').toLocaleLowerCase('vi-VN');
+            const expiry = coupon.validUntil ? `Đến ${String(coupon.validUntil).slice(0, 10)}` : 'Xem điều kiện áp dụng';
+            const card = document.createElement('article');
+            card.className = 'coupon-api-card';
+            card.innerHTML = `
+                <span class="coupon-api-kicker">ƯU ĐÃI ĐANG ÁP DỤNG</span>
+                <div class="coupon-api-discount">${escapeHtml(discount)}</div>
+                <h3>${escapeHtml(coupon.title || 'Ưu đãi DentalCare')}</h3>
+                <p>${escapeHtml(coupon.description || 'Kiểm tra điều kiện áp dụng trước khi sử dụng mã.')}</p>
+                <div class="coupon-api-code"><span>MÃ ƯU ĐÃI</span><strong>${escapeHtml(code)}</strong></div>
+                <div class="coupon-api-meta">${escapeHtml(scope)} · ${escapeHtml(expiry)}</div>
+            `;
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'coupon-api-action';
+            button.textContent = 'Áp dụng mã';
+            button.addEventListener('click', () => applyCouponToForm(code));
+            card.appendChild(button);
+            fragment.appendChild(card);
+        });
+
+        grid.classList.add('coupons-loaded');
+        if (!fragment.childNodes.length) {
+            showMessage('Hiện chưa có mã ưu đãi nào đang áp dụng.');
+            return;
+        }
+        grid.replaceChildren(fragment);
+    } catch (error) {
+        console.error('Error loading public coupons:', error);
+        showMessage('Chưa tải được ưu đãi. Bạn có thể gửi yêu cầu đặt lịch để được phòng khám tư vấn.');
+    }
+}
 
 function applyCouponToForm(code) {
     if (typeof showLandingPage === 'function') showLandingPage();
@@ -1361,29 +1473,6 @@ async function validateBookingCoupon() {
             msgEl.classList.remove('hidden');
         }
     }
-}
-
-// Flash Sale Countdown Timer
-function startFlashSaleCountdown() {
-    let totalSeconds = 3 * 24 * 3600 + 14 * 3600 + 28 * 60 + 45; // 3 days, 14 hours...
-    setInterval(() => {
-        if (totalSeconds <= 0) totalSeconds = 4 * 24 * 3600;
-        totalSeconds--;
-        const days = Math.floor(totalSeconds / (3600 * 24));
-        const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-
-        const dEl = document.getElementById('timer-days');
-        const hEl = document.getElementById('timer-hours');
-        const mEl = document.getElementById('timer-minutes');
-        const sEl = document.getElementById('timer-seconds');
-
-        if (dEl) dEl.innerText = String(days).padStart(2, '0');
-        if (hEl) hEl.innerText = String(hours).padStart(2, '0');
-        if (mEl) mEl.innerText = String(minutes).padStart(2, '0');
-        if (sEl) sEl.innerText = String(seconds).padStart(2, '0');
-    }, 1000);
 }
 
 // ================= FORGOT PASSWORD DIALOG =================
@@ -2049,13 +2138,63 @@ async function loadDentalServices(category = 'ALL') {
         const res = await apiFetch(url);
         if (res.ok && res.data.success) {
             cachedServices = res.data.data || [];
-            if (category === 'ALL') syncBookingServiceOptions(cachedServices);
+            if (category === 'ALL') {
+                syncBookingServiceOptions(cachedServices);
+                renderPublicPricing(cachedServices);
+            }
             renderDentalServices(cachedServices);
             loadAvailableSlots();
+        } else if (category === 'ALL') {
+            renderPublicPricing([], 'error');
         }
     } catch (err) {
         console.error('Error loading dental services:', err);
+        if (category === 'ALL') renderPublicPricing([], 'error');
     }
+}
+
+function renderPublicPricing(services, state = 'ready') {
+    const grid = document.getElementById('api-pricing-grid');
+    if (!grid) return;
+
+    const pricedServices = Array.isArray(services)
+        ? services.filter(service => service && service.price !== null && service.price !== undefined && Number.isFinite(Number(service.price)))
+        : [];
+    grid.replaceChildren();
+
+    if (!pricedServices.length) {
+        const message = document.createElement('p');
+        message.className = 'public-price-state';
+        message.textContent = state === 'error'
+            ? 'Chưa tải được bảng giá. Vui lòng thử lại sau hoặc gửi yêu cầu để được tư vấn.'
+            : 'Danh mục hiện chưa có mức phí để hiển thị. Vui lòng gửi yêu cầu để được tư vấn.';
+        grid.appendChild(message);
+        return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    pricedServices.forEach(service => {
+        const name = String(service.name || 'Dịch vụ nha khoa');
+        const price = Number(service.price);
+        const description = String(service.description || 'Trao đổi với bác sĩ để được tư vấn chi tiết.');
+        const card = document.createElement('article');
+        card.className = 'public-price-card';
+        card.innerHTML = `
+            <div class="public-price-topline"><span>MỨC PHÍ THAM KHẢO</span><span>${service.featured ? 'NỔI BẬT' : 'DỊCH VỤ'}</span></div>
+            <h3>${escapeHtml(name)}</h3>
+            <p class="public-price-description">${escapeHtml(description)}</p>
+            <div class="public-price-value">${escapeHtml(formatVND(price))}</div>
+            <div class="public-price-meta">${service.durationMinutes ? `Thời lượng tham khảo · ${Number(service.durationMinutes)} phút` : 'Thời lượng sẽ được tư vấn sau khi thăm khám'}</div>
+        `;
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'public-price-action';
+        button.textContent = 'Tìm hiểu dịch vụ';
+        button.addEventListener('click', () => selectServiceForBooking(name));
+        card.appendChild(button);
+        fragment.appendChild(card);
+    });
+    grid.appendChild(fragment);
 }
 
 function syncBookingServiceOptions(services) {
@@ -3034,8 +3173,8 @@ function renderReviews(reviews) {
         const starsHtml = Array.from({ length: 5 }, (_, i) => 
             `<i class="fa-solid fa-star ${i < stars ? 'text-amber-400' : 'text-slate-600'}"></i>`
         ).join('');
-        const doctorName = String(rev.doctorName || 'BS.CKII Trần Văn Thắng');
-        const treatment = rev.treatmentType || rev.treatment || 'Đã cấy Implant';
+        const doctorName = String(rev.doctorName || 'Bác sĩ DentalCare');
+        const treatment = rev.treatmentType || rev.treatment || 'Dịch vụ nha khoa';
 
         return `
             <div class="review-card bg-slate-800/90 rounded-2xl p-6 border border-slate-700/80 hover:border-amber-400/50 transition duration-300 flex flex-col justify-between shadow-xl">
