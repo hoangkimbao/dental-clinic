@@ -1,0 +1,222 @@
+/* DentalCare customer and staff interface: local-first, responsive, API-backed UI. */
+:root {
+    --dc-ink: #183431;
+    --dc-deep: #103e39;
+    --dc-brand: #087f74;
+    --dc-brand-strong: #066b62;
+    --dc-mint: #eaf6f1;
+    --dc-paper: #fbfaf7;
+    --dc-line: #dce9e3;
+    --dc-muted: #61736e;
+    --dc-gold: #c49243;
+    --dc-radius: 1.25rem;
+}
+
+html { scroll-padding-top: 6rem; }
+body {
+    color: var(--dc-ink) !important;
+    background: var(--dc-paper) !important;
+    font-family: "Plus Jakarta Sans", Inter, system-ui, -apple-system, "Segoe UI", sans-serif !important;
+    text-rendering: optimizeLegibility;
+}
+::selection { background: #b8e5d7; color: #123b35; }
+:focus-visible { outline: 3px solid #77cbbb; outline-offset: 3px; }
+
+.ui-icon { display: inline-block; flex: 0 0 auto; vertical-align: -0.14em; overflow: visible; }
+.ui-icon-spin { animation: dc-spin 1s linear infinite; }
+@keyframes dc-spin { to { transform: rotate(360deg); } }
+
+/* Utility line and primary navigation */
+body > div.bg-slate-950 { background: #123a38 !important; border: 0 !important; }
+body > div.bg-slate-950 a:hover { color: #b3e4d5 !important; }
+.glass-nav {
+    background: rgba(251, 250, 247, .94) !important;
+    border-color: rgba(220, 233, 227, .9) !important;
+    box-shadow: 0 8px 24px rgba(23, 61, 54, .055) !important;
+    backdrop-filter: blur(18px);
+}
+.glass-nav > div { max-width: 80rem; }
+.glass-nav a, .glass-nav button { transition: color .18s ease, background-color .18s ease, transform .18s ease; }
+.glass-nav a[href="#booking-section"] { border-radius: 999px !important; }
+#mobile-menu-drawer { background: rgba(251,250,247,.98) !important; border-color: var(--dc-line) !important; }
+
+/* Hero: simple message, real actions, fewer unsupported promotional claims. */
+#home {
+    min-height: 38rem;
+    padding-top: clamp(3.25rem, 7vw, 6.2rem) !important;
+    padding-bottom: clamp(3.5rem, 7vw, 6.25rem) !important;
+    background:
+        radial-gradient(ellipse at 86% 12%, rgba(187, 226, 210, .55), transparent 33%),
+        radial-gradient(ellipse at 0% 92%, rgba(231, 216, 190, .32), transparent 28%),
+        linear-gradient(130deg, #fcfbf8 0%, #f0f7f2 64%, #e9f4ef 100%) !important;
+}
+#home .max-w-7xl { max-width: 79rem; }
+#home h1 {
+    max-width: 13ch;
+    margin-inline: auto;
+    color: #183c36 !important;
+    font-size: clamp(2.65rem, 5vw, 4.8rem) !important;
+    font-weight: 750 !important;
+    letter-spacing: -.055em !important;
+    line-height: 1.06 !important;
+}
+#home h1 span {
+    background-image: linear-gradient(115deg, #087f74, #4a9c79) !important;
+    font-family: inherit !important;
+    font-style: normal !important;
+}
+#home .lg\:text-left h1 { margin-inline: 0; }
+#home .inline-flex.bg-brand-50,
+#home .inline-flex.bg-white\/80 {
+    border-color: #cfe3d9 !important;
+    border-radius: 999px !important;
+    color: #176b5f !important;
+    box-shadow: 0 5px 16px rgba(27, 87, 68, .05) !important;
+}
+#home .card-3d-tilt.bg-white\/90 {
+    border-color: rgba(207, 225, 216, .95) !important;
+    border-radius: 1rem !important;
+    box-shadow: 0 8px 22px rgba(22, 65, 54, .045) !important;
+}
+#home .card-3d-tilt.bg-white\/90:hover { transform: translateY(-2px); }
+#home .card-3d-tilt.glass-card-luxury {
+    padding: clamp(1rem, 2vw, 1.5rem) !important;
+    border: 1px solid rgba(255,255,255,.8) !important;
+    border-radius: 1.75rem !important;
+    background: rgba(255,255,255,.82) !important;
+    box-shadow: 0 28px 80px rgba(24, 74, 59, .15) !important;
+    backdrop-filter: blur(16px);
+}
+#home .card-3d-tilt.glass-card-luxury img { border-radius: 1.25rem !important; }
+#home .card-3d-tilt.glass-card-luxury .bg-slate-900 { background: linear-gradient(0deg, rgba(15,42,39,.93), rgba(15,42,39,0)) !important; }
+#home .card-3d-tilt.glass-card-luxury > .bg-white\/80 { background: rgba(255,255,255,.9) !important; border-color: var(--dc-line) !important; }
+#home .card-3d-tilt.glass-card-luxury > a { border-radius: .95rem !important; }
+#home .card-3d-tilt.glass-card-luxury > .bg-white\/80 span:last-child { color: #236558 !important; }
+#home .shadow-2xl { box-shadow: 0 25px 65px rgba(24, 74, 59, .13) !important; }
+
+/* Section rhythm and type */
+#public-landing-page > section { scroll-margin-top: 5.5rem; }
+#public-landing-page > section:not(#home) { padding-block: clamp(3.75rem, 7vw, 6rem) !important; }
+#public-landing-page h2 {
+    color: #183c36 !important;
+    font-size: clamp(1.9rem, 3.5vw, 3.15rem) !important;
+    font-weight: 720 !important;
+    letter-spacing: -.045em !important;
+    line-height: 1.13 !important;
+}
+#public-landing-page h2 + p { color: var(--dc-muted) !important; font-size: .98rem !important; line-height: 1.75 !important; }
+#transformations, #pricing, #faq, #testimonials, #branches-section, #community-forum-section { background: var(--dc-paper) !important; }
+#services, #dynamic-catalog, #handbook { background: #f1f7f3 !important; }
+#doctors { background: linear-gradient(135deg, #e8f2ec, #d9ebe2) !important; color: var(--dc-ink) !important; }
+#doctors::before { border-color: rgba(29,99,77,.1) !important; }
+#doctors h2, #doctors h3, #doctors .text-white { color: #173f38 !important; }
+#doctors p, #doctors .text-slate-300, #doctors .text-slate-400 { color: #566d65 !important; }
+#doctors .bg-slate-900 { background: rgba(255,255,255,.8) !important; border-color: #d0e2d7 !important; box-shadow: 0 12px 32px rgba(23,70,52,.07); }
+#doctors .bg-slate-900:hover { background: white !important; }
+#testimonials .bg-slate-800, #branches-section .bg-slate-800 { background: white !important; border-color: var(--dc-line) !important; box-shadow: 0 12px 30px rgba(21,66,53,.055) !important; }
+#testimonials .text-white, #branches-section .text-white { color: #193e37 !important; }
+#testimonials .text-slate-300, #branches-section .text-slate-300 { color: #536c64 !important; }
+#testimonials .text-slate-400, #branches-section .text-slate-400 { color: #74847d !important; }
+#testimonials .text-slate-700, #branches-section .text-slate-700 { color: #3c5b51 !important; }
+#branches-section .text-teal-300 { color: #147565 !important; }
+
+/* Cards and catalog */
+#transformations .grid > div, #services .grid > div, #dynamic-catalog .grid > div,
+#handbook .grid > article, #pricing .grid > div, #branches-grid > div, .review-card {
+    overflow: hidden;
+    border: 1px solid var(--dc-line) !important;
+    border-radius: var(--dc-radius) !important;
+    box-shadow: 0 9px 26px rgba(23, 68, 55, .055) !important;
+    transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease !important;
+}
+#transformations .grid > div:hover, #services .grid > div:hover, #dynamic-catalog .grid > div:hover,
+#handbook .grid > article:hover, #pricing .grid > div:hover, #branches-grid > div:hover, .review-card:hover {
+    transform: translateY(-4px);
+    border-color: #9bc9b8 !important;
+    box-shadow: 0 18px 38px rgba(23, 68, 55, .11) !important;
+}
+#dynamic-catalog .dental-icon-box, #services .dental-icon-box {
+    border-radius: 1rem !important;
+    background: linear-gradient(145deg, #eff8f3, #dcefe5) !important;
+    border-color: #c9e2d4 !important;
+}
+#dynamic-catalog .text-brand-700, #dynamic-catalog .text-brand-600,
+#services a.text-brand-600, #transformations .text-brand-600 { color: var(--dc-brand) !important; }
+#dynamic-catalog button.bg-brand-600 { background: var(--dc-brand) !important; border-radius: 999px !important; }
+#promotions { background: linear-gradient(145deg, #f7f1e7, #eef6f1) !important; }
+#promotions .grid > div { border-radius: 1.35rem !important; box-shadow: 0 12px 30px rgba(38,68,54,.08) !important; }
+#pricing .bg-slate-900 { background: #173f39 !important; }
+
+/* Forms and booking */
+#booking-section {
+    background: linear-gradient(130deg, #153f3a 0%, #176b60 100%) !important;
+    padding-block: clamp(3.75rem, 7vw, 6rem) !important;
+}
+#booking-section::before { opacity: .1 !important; background-size: 28px 28px !important; }
+#booking-section > div { position: relative; z-index: 1; }
+#booking-section h2 { color: white !important; }
+#booking-section .bg-white { border: 1px solid rgba(255,255,255,.65) !important; border-radius: 1.5rem !important; box-shadow: 0 24px 55px rgba(0,0,0,.17) !important; }
+#booking-section input, #booking-section select, #booking-section textarea,
+#auth-modal input, #cart-modal input, #cart-modal select, #cart-modal textarea {
+    min-height: 2.9rem;
+    border-radius: .75rem !important;
+    border-color: #d4e1db !important;
+    background-color: #fff !important;
+    color: #183c36 !important;
+}
+#booking-section textarea { min-height: 5rem; }
+#booking-section input:focus, #booking-section select:focus, #booking-section textarea:focus {
+    border-color: #168b7b !important;
+    box-shadow: 0 0 0 3px rgba(22,139,123,.15) !important;
+}
+#booking-section .time-slot-btn { min-height: 44px; border-radius: .75rem !important; }
+#booking-section button[type="submit"] { min-height: 3.25rem; background: linear-gradient(110deg, #087f74, #159886) !important; border-radius: .9rem !important; }
+#booking-section .bg-slate-800 { border: 1px solid rgba(255,255,255,.16) !important; border-radius: 1.4rem !important; }
+#payment-box { overflow-wrap: anywhere; }
+#qr-active > div:first-child { background: #edf5f1 !important; color: #173f39 !important; border: 1px dashed #9bbcaf; }
+#qr-active > div:first-child .ui-icon { width: 3rem !important; height: 3rem !important; color: #237666 !important; }
+#faq [id^="content-faq-"] { line-height: 1.75; }
+
+/* Staff portal, overlays and floating controls */
+#management-portal { background: #f1f6f3 !important; color: #193c35 !important; }
+#management-portal h1, #management-portal h2, #management-portal h3, #management-portal h4 { color: #183c36 !important; }
+#management-portal .bg-slate-800, #management-portal .bg-slate-900 { background: white !important; color: #23463e !important; border-color: var(--dc-line) !important; box-shadow: 0 10px 28px rgba(23,68,55,.055); }
+#management-portal .text-white { color: #23463e !important; }
+#management-portal .text-slate-300, #management-portal .text-slate-400 { color: #61736e !important; }
+#management-portal input, #management-portal select, #management-portal textarea { border-radius: .7rem !important; }
+#management-portal button { min-height: 40px; }
+#auth-modal > div, #staff-create-modal > div, #coupon-create-modal > div, #cart-modal > div, #packaging-modal > div {
+    border-radius: 1.4rem !important;
+    box-shadow: 0 25px 75px rgba(8,31,28,.25) !important;
+}
+footer { background: #123a38 !important; }
+footer a:hover { color: #a8dfd0 !important; }
+.fixed.bottom-4.right-4 a { box-shadow: 0 12px 26px rgba(8,70,66,.2) !important; }
+
+@media (max-width: 767px) {
+    .glass-nav > div { height: 4.25rem !important; }
+    #home { min-height: 0; }
+    #home .grid { gap: 2.5rem !important; }
+    #home h1 { max-width: 12ch; font-size: clamp(2.45rem, 10vw, 3.6rem) !important; }
+    #home .lg\:text-left h1 { margin-inline: auto; }
+    #home .card-3d-tilt.glass-card-luxury { max-width: 30rem; }
+    #home .absolute.-left-8, #home .absolute.-right-6 { display: none !important; }
+    #public-landing-page > section:not(#home) { padding-block: 3.5rem !important; }
+    #booking-section { padding-block: 3.5rem !important; }
+    #testimonials .grid, #pricing .grid { gap: 1rem !important; }
+    #booking-section .grid { gap: 1.25rem !important; }
+}
+@media (max-width: 480px) {
+    body > div.bg-slate-950 { font-size: 10px !important; }
+    #home .grid.grid-cols-3 { gap: .6rem !important; }
+    #home .grid.grid-cols-3 > div { min-width: 0; }
+    #home .grid.grid-cols-3 > div > div:first-child { font-size: .95rem !important; }
+    #home .grid.grid-cols-1.sm\:grid-cols-3 { grid-template-columns: 1fr !important; }
+    #booking-section .grid.grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+    #booking-section .flex.gap-2 { flex-wrap: wrap; }
+    #booking-section .flex.gap-2 input { min-width: 0; }
+    #mobile-menu-drawer { padding-inline: 1rem !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

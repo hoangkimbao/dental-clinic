@@ -84,6 +84,11 @@ async function apiFetch(url, options = {}) {
     }
 }
 
+function toLocalDateTimeValue(date) {
+    const pad = value => String(value).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Check session: Ưu tiên sessionStorage (phiên làm việc), fallback sang localStorage (nếu có Ghi nhớ)
     let saved = sessionStorage.getItem('DENTAL_USER');
@@ -104,14 +109,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Set default datetime to tomorrow 9:00 AM
+    // Keep the appointment datetime in the clinic's local time (the backend expects LocalDateTime).
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(9, 0, 0, 0);
     const timeInput = document.getElementById('appointmentTime');
     if (timeInput) {
-        timeInput.value = tomorrow.toISOString().slice(0, 16);
+        const localDateTime = toLocalDateTimeValue(tomorrow);
+        timeInput.value = localDateTime;
+        timeInput.min = toLocalDateTimeValue(new Date());
+        timeInput.addEventListener('change', loadAvailableSlots);
     }
+
+    ['serviceName', 'dentistId'].forEach(id => {
+        const field = document.getElementById(id);
+        if (field) field.addEventListener('change', loadAvailableSlots);
+    });
 
     // Connect WebSocket
     // WebSocket is now loaded on-demand for staff only
@@ -119,6 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDentistsDropdown();
     initCart();
     loadDentalServices();
+    loadAvailableSlots();
     loadDentalProducts();
     loadBranches();
     loadForumPosts();
@@ -157,8 +171,6 @@ function toggleAuthMode(mode) {
     document.getElementById('auth-modal-sub').innerText = isLogin 
         ? 'Dành cho Khách Hàng & Nhân Viên Phòng Khám' 
         : 'Theo dõi tiến trình khám & lộ trình niềng răng';
-}
-
 }
 
 // HAM ĐIỀN NHANH TÀI KHOẢN MẪU (LỄ TÂN / ADMIN)
@@ -764,7 +776,9 @@ async function handleBookingSubmit(e) {
         patientPhone: document.getElementById('patientPhone').value,
         patientEmail: document.getElementById('patientEmail').value,
         serviceName: document.getElementById('serviceName').value,
-        dentistId: document.getElementById('dentistId').value,
+        dentistId: Number.isFinite(Number(document.getElementById('dentistId').value)) && document.getElementById('dentistId').value
+            ? Number(document.getElementById('dentistId').value)
+            : null,
         appointmentTime: document.getElementById('appointmentTime').value,
         notes: document.getElementById('notes').value,
         couponCode: document.getElementById('bookingCouponCode') ? document.getElementById('bookingCouponCode').value.trim() : ''
@@ -780,6 +794,11 @@ async function handleBookingSubmit(e) {
             const bookingResult = res.data.data;
             const appt = bookingResult.appointment || bookingResult;
             lastCreatedAppointmentId = appt.id;
+            const depositAmount = Number(appt.depositAmount);
+            const depositAmountEl = document.getElementById('booking-deposit-amount');
+            if (depositAmountEl && Number.isFinite(depositAmount) && depositAmount >= 0) {
+                depositAmountEl.textContent = formatVND(depositAmount);
+            }
 
             document.getElementById('qr-placeholder').classList.add('hidden');
             document.getElementById('qr-active').classList.remove('hidden');
@@ -792,21 +811,21 @@ async function handleBookingSubmit(e) {
                 appointment_id: appt.id
             });
 
-            // NẾU TỰ ĐỘNG TẠO TÀI KHOẢN MỚI -> TỰ ĐỘNG ĐĂNG NHẬP CHO KHÁCH HÀNG!
+            // Keep automatically created patient sessions scoped to this browser tab.
             if (bookingResult.newAccountCreated && bookingResult.authInfo) {
                 currentUser = bookingResult.authInfo;
-                localStorage.setItem('DENTAL_USER', JSON.stringify(currentUser));
+                sessionStorage.setItem('DENTAL_USER', JSON.stringify(currentUser));
                 updateAuthUI();
-                
-                alert(`🎉 ĐẶT LỊCH KHÁM THÀNH CÔNG!\\n\\n✨ DentalCare đã TỰ ĐỘNG KÍCH HOẠT TÀI KHOẢN cho bạn:\\n👤 Tên đăng nhập: ${bookingResult.generatedUsername} (Số điện thoại của bạn)\\n🔑 Mật khẩu ban đầu: ${bookingResult.generatedPassword}\\n\\nBạn đã được tự động đăng nhập và có thể quét mã QR bên cạnh để cọc 100K giữ chỗ!`);
+
+                showToast(`Đã gửi yêu cầu đặt lịch #${appt.id}. Tài khoản khách hàng đã được mở cho phiên này.`);
             } else {
-                showToast(`✅ Đã đặt lịch #${appt.id}! Quét mã cọc 100k giữ slot ngay.`);
+                showToast(`Đã gửi yêu cầu đặt lịch #${appt.id}. Phòng khám sẽ liên hệ xác nhận.`);
             }
         } else {
             alert(res.data.message || 'Lỗi đặt lịch!');
         }
     } catch (err) {
-        // Caught
+        showToast('Không gửi được yêu cầu đặt lịch. Vui lòng thử lại hoặc gọi hotline.');
     }
 }
 
@@ -823,22 +842,22 @@ async function simulateDepositPayment() {
 
         if (res.ok && res.data.success) {
             const data = res.data.data;
-            showToast(`🎉 Cọc giữ chỗ thành công! Mã GD: ${data.transactionCode}`);
+            showToast(`Sandbox đã ghi nhận giao dịch mô phỏng. Mã: ${data.transactionCode}`);
             
-            // Ghi nhận sự kiện thanh toán cọc thành công vào Google Analytics
-            trackGaEvent('purchase', {
+            // Keep test transactions out of real purchase analytics.
+            trackGaEvent('sandbox_deposit_simulation', {
                 transaction_id: data.transactionCode,
-                value: 100000,
+                value: Number(data.amount || 0),
                 currency: 'VND',
-                items: [{ item_name: 'Cọc Giữ Chỗ Nha Khoa', price: 100000, quantity: 1 }]
+                items: [{ item_name: 'Cọc Giữ Chỗ Nha Khoa (Sandbox)', price: Number(data.amount || 0), quantity: 1 }]
             });
 
             document.getElementById('qr-active').innerHTML = `
                 <div class="p-4 bg-emerald-50 text-emerald-800 rounded-xl font-bold text-xs space-y-1">
                     <i class="fa-solid fa-circle-check text-emerald-600 text-2xl mb-1"></i>
-                    <div>ĐÃ CỌC THÀNH CÔNG 100.000đ</div>
-                    <div class="text-[10px] text-emerald-600 font-mono">Mã GD: ${data.transactionCode}</div>
-                    <div class="text-[10px] text-slate-500">Đã gửi thông báo tức thì tới Bác Sĩ & Lễ Tân!</div>
+                    <div>ĐÃ GHI NHẬN GIAO DỊCH MÔ PHỎNG</div>
+                    <div class="text-[10px] text-emerald-600 font-mono">Mã thử nghiệm: ${escapeHtml(data.transactionCode)}</div>
+                    <div class="text-[10px] text-slate-500">Không phải xác nhận thanh toán thật.</div>
                 </div>
             `;
         }
@@ -1253,14 +1272,14 @@ async function loadDentistsDropdown() {
         if (res.ok && res.data.success) {
             const selectEl = document.getElementById('dentistId');
             if (!selectEl) return;
-            const dentists = res.data.data;
+            const dentists = res.data.data || [];
+            selectEl.replaceChildren(new Option('Phòng khám sắp xếp bác sĩ phù hợp', ''));
             if (dentists.length === 0) {
-                selectEl.innerHTML = '<option value="">Phòng khám phân công bác sĩ phù hợp</option>';
                 return;
             }
-            selectEl.innerHTML = dentists.map(d => `
-                <option value="${d.id}">${d.fullName}</option>
-            `).join('');
+            dentists.forEach(dentist => {
+                selectEl.add(new Option(dentist.fullName || 'Bác sĩ DentalCare', String(dentist.id)));
+            });
         }
     } catch (e) {
         console.error('Error loading dentists:', e);
@@ -1511,7 +1530,10 @@ function toggleMobileMenu() {
             requestAnimationFrame(() => backdrop.classList.add('opacity-100'));
         }
         if (btn) btn.setAttribute('aria-expanded', 'true');
-        if (icon) icon.className = 'fa-solid fa-xmark text-lg text-rose-500';
+        if (icon) {
+            icon.classList.add('text-rose-500');
+            window.DentalCareUiIcons?.setIcon(icon, 'close');
+        }
         document.body.classList.add('overflow-hidden');
     }
 }
@@ -1527,7 +1549,10 @@ function closeMobileMenu() {
         backdrop.classList.add('hidden');
     }
     if (btn) btn.setAttribute('aria-expanded', 'false');
-    if (icon) icon.className = 'fa-solid fa-bars text-lg';
+    if (icon) {
+        icon.classList.remove('text-rose-500');
+        window.DentalCareUiIcons?.setIcon(icon, 'menu');
+    }
     document.body.classList.remove('overflow-hidden');
 }
 
@@ -1958,9 +1983,10 @@ function init3DAnimations() {
 
     // 2. Parallax Floating Animations for Hero 3D Badges & Elements via GSAP
     if (window.gsap) {
-        // Subtle floating pulse for 3D tooth icon badge if present
-        if (document.querySelector('.fa-tooth')) {
-            gsap.to(".fa-tooth", {
+        // Subtle floating pulse for the locally-rendered tooth icon.
+        const toothIcon = document.querySelector('.ui-icon[data-svg-icon="tooth"]');
+        if (toothIcon) {
+            gsap.to(toothIcon, {
                 rotation: 8,
                 yoyo: true,
                 repeat: -1,
@@ -2002,6 +2028,12 @@ function formatVND(amount) {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 }
 
+function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, character => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[character]);
+}
+
 // -------------------------------------------------------------------------
 // 1. DYNAMIC DENTAL SERVICE CATALOG
 // -------------------------------------------------------------------------
@@ -2017,10 +2049,85 @@ async function loadDentalServices(category = 'ALL') {
         const res = await apiFetch(url);
         if (res.ok && res.data.success) {
             cachedServices = res.data.data || [];
+            if (category === 'ALL') syncBookingServiceOptions(cachedServices);
             renderDentalServices(cachedServices);
+            loadAvailableSlots();
         }
     } catch (err) {
         console.error('Error loading dental services:', err);
+    }
+}
+
+function syncBookingServiceOptions(services) {
+    const select = document.getElementById('serviceName');
+    if (!select || !Array.isArray(services)) return;
+    const previousValue = select.value;
+    select.replaceChildren(new Option(services.length ? 'Chọn dịch vụ cần tư vấn' : 'Chưa có dịch vụ trong danh mục', ''));
+    services.forEach(service => {
+        const option = new Option(service.name || 'Dịch vụ nha khoa', service.name || '');
+        option.dataset.serviceCode = service.code || service.serviceCode || '';
+        select.add(option);
+    });
+    if (previousValue && services.some(service => service.name === previousValue)) {
+        select.value = previousValue;
+    }
+}
+
+let availableSlotRequest = 0;
+async function loadAvailableSlots() {
+    const container = document.getElementById('time-slot-container');
+    const dateTime = document.getElementById('appointmentTime')?.value || '';
+    if (!container) return;
+
+    const requestId = ++availableSlotRequest;
+    const date = dateTime.split('T')[0];
+    if (!date) {
+        container.replaceChildren(Object.assign(document.createElement('span'), {
+            className: 'col-span-full text-xs text-slate-500',
+            textContent: 'Chọn ngày khám để xem các khung giờ.'
+        }));
+        return;
+    }
+
+    const params = new URLSearchParams({ date });
+    const serviceSelect = document.getElementById('serviceName');
+    const selectedServiceCode = serviceSelect?.selectedOptions?.[0]?.dataset?.serviceCode;
+    const dentistId = document.getElementById('dentistId')?.value;
+    if (selectedServiceCode) params.set('serviceCode', selectedServiceCode);
+    if (dentistId) params.set('dentistId', dentistId);
+    container.replaceChildren(Object.assign(document.createElement('span'), {
+        className: 'col-span-full text-xs text-slate-500',
+        textContent: 'Đang tải giờ khám…'
+    }));
+
+    try {
+        const response = await apiFetch(`/api/appointments/available-slots?${params.toString()}`);
+        if (requestId !== availableSlotRequest) return;
+        const slots = response.ok && response.data?.success ? response.data.data : [];
+        const validSlots = Array.isArray(slots) ? slots.filter(slot => /^([01]\d|2[0-3]):[0-5]\d$/.test(slot)) : [];
+        if (!validSlots.length) {
+            container.replaceChildren(Object.assign(document.createElement('span'), {
+                className: 'col-span-full text-xs text-slate-500',
+                textContent: 'Chưa có khung giờ được trả về. Bạn vẫn có thể nhập thời gian ở ô ngày giờ.'
+            }));
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        validSlots.forEach(slot => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'time-slot-btn py-2 px-1 text-xs font-bold rounded-xl border border-slate-200 bg-white hover:border-brand-500 hover:text-brand-600 transition text-center cursor-pointer';
+            button.textContent = slot;
+            button.addEventListener('click', () => selectTimeSlot(slot, button));
+            fragment.appendChild(button);
+        });
+        container.replaceChildren(fragment);
+    } catch (error) {
+        if (requestId !== availableSlotRequest) return;
+        container.replaceChildren(Object.assign(document.createElement('span'), {
+            className: 'col-span-full text-xs text-amber-700',
+            textContent: 'Không thể tải khung giờ lúc này. Nhập ngày giờ trực tiếp hoặc thử lại sau.'
+        }));
     }
 }
 
@@ -2887,6 +2994,7 @@ window.prefillBookingService = prefillBookingService;
 async function loadApprovedReviews() {
     const container = document.getElementById('approved-reviews-list');
     if (!container) return;
+    container.innerHTML = '<div class="col-span-full py-10 text-center text-sm text-slate-500">Đang tải phản hồi…</div>';
 
     try {
         const res = await fetch('/api/reviews/latest', {
@@ -2901,23 +3009,32 @@ async function loadApprovedReviews() {
             const reviews = json.data || json;
             if (Array.isArray(reviews) && reviews.length > 0) {
                 renderReviews(reviews);
+            } else {
+                renderReviews([]);
             }
+        } else {
+            renderReviews([]);
         }
     } catch (e) {
         console.warn('Error loading reviews:', e);
+        renderReviews([]);
     }
 }
 
 function renderReviews(reviews) {
     const container = document.getElementById('approved-reviews-list');
-    if (!container || !Array.isArray(reviews) || reviews.length === 0) return;
+    if (!container || !Array.isArray(reviews)) return;
+    if (reviews.length === 0) {
+        container.innerHTML = '<div class="col-span-full rounded-2xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-600">Chưa có phản hồi nào được tải từ hệ thống.</div>';
+        return;
+    }
 
     container.innerHTML = reviews.map(rev => {
         const stars = Math.min(5, Math.max(1, rev.rating || 5));
         const starsHtml = Array.from({ length: 5 }, (_, i) => 
             `<i class="fa-solid fa-star ${i < stars ? 'text-amber-400' : 'text-slate-600'}"></i>`
         ).join('');
-        const doctorName = rev.doctorName || 'BS.CKII Trần Văn Thắng';
+        const doctorName = String(rev.doctorName || 'BS.CKII Trần Văn Thắng');
         const treatment = rev.treatmentType || rev.treatment || 'Đã cấy Implant';
 
         return `
@@ -2928,27 +3045,30 @@ function renderReviews(reviews) {
                             ${starsHtml}
                         </div>
                         <span class="verified-badge inline-flex items-center gap-1 text-[11px] font-bold text-teal-400 bg-teal-950/80 border border-teal-800 px-2.5 py-0.5 rounded-full">
-                            <i class="fa-solid fa-circle-check"></i> ${treatment}
+                            <i class="fa-solid fa-circle-check"></i> ${escapeHtml(treatment)}
                         </span>
                     </div>
                     <blockquote class="text-slate-300 text-sm leading-relaxed italic quote">
-                        "${rev.comment || rev.content || 'Dịch vụ tại DentalCare rất chuyên nghiệp, bác sĩ tay nghề cao và tận tâm.'}"
+                        "${escapeHtml(rev.comment || rev.content || 'Khách hàng chưa thêm nội dung phản hồi.')}"
                     </blockquote>
                 </div>
                 <div class="mt-6 pt-4 border-t border-slate-700/60 flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-teal-500 to-emerald-400 flex items-center justify-center font-bold text-white text-sm">
-                            ${(rev.patientName || 'KH').substring(0, 2).toUpperCase()}
+                            ${escapeHtml((rev.patientName || 'KH').substring(0, 2).toUpperCase())}
                         </div>
                         <div>
-                            <div class="font-bold text-sm text-white">${rev.patientName || 'Khách Hàng'}</div>
-                            <div class="text-xs text-slate-400">${rev.patientCity || 'Bệnh nhân'}</div>
+                            <div class="font-bold text-sm text-white">${escapeHtml(rev.patientName || 'Khách Hàng')}</div>
+                            <div class="text-xs text-slate-400">${escapeHtml(rev.patientCity || 'Bệnh nhân')}</div>
                         </div>
                     </div>
-                    <button onclick="preselectDoctor('${doctorName.replace(/'/g, "\\'")}')" class="text-xs text-amber-400 hover:text-amber-300 font-semibold underline cursor-pointer">Khám ${doctorName}</button>
+                    <button data-review-doctor="${escapeHtml(doctorName)}" class="text-xs text-amber-400 hover:text-amber-300 font-semibold underline cursor-pointer">Khám ${escapeHtml(doctorName)}</button>
                 </div>
             </div>`;
     }).join('');
+    container.querySelectorAll('[data-review-doctor]').forEach(button => {
+        button.addEventListener('click', () => preselectDoctor(button.dataset.reviewDoctor));
+    });
 }
 
 function preselectDoctor(doctorName) {
@@ -2963,13 +3083,7 @@ function preselectDoctor(doctorName) {
                 break;
             }
         }
-        if (!found && doctorSelect.options.length > 0) {
-            const opt = document.createElement('option');
-            opt.value = doctorName;
-            opt.text = doctorName;
-            opt.selected = true;
-            doctorSelect.appendChild(opt);
-        }
+        if (!found) doctorSelect.value = '';
     }
     const notes = document.getElementById('notes');
     if (notes && !notes.value.includes(doctorName)) {
@@ -2979,7 +3093,9 @@ function preselectDoctor(doctorName) {
     if (bookingSection) {
         bookingSection.scrollIntoView({ behavior: 'smooth' });
     }
-    showToast(`✓ Đã chọn bác sĩ: ${doctorName}!`);
+    showToast(found
+        ? `Đã chọn bác sĩ: ${doctorName}.`
+        : `Đã ghi nhận yêu cầu với ${doctorName}; phòng khám sẽ xác nhận lại bác sĩ.`);
 }
 window.preselectDoctor = preselectDoctor;
 
