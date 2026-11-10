@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DentalCare Luxury Clinic — PC Command Center & Notification Hub</title>
-    <!-- FontAwesome 6 Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Local Vector Icons (100% Offline LAN Readiness, Zero External CDN Dependency) -->
+    <script src="js/vendor/ui-icons.js"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -18,6 +18,10 @@
         </div>
 
         <div class="titlebar-status">
+            <div id="serverConfigIndicator" class="server-config-indicator" onclick="openServerConfigModal()" title="Cấu hình địa chỉ máy chủ API & WebSocket (Click để thay đổi)">
+                <i class="fa-solid fa-server"></i>
+                <span id="currentServerLabel">http://localhost:8080</span>
+            </div>
             <div id="connectionBadge" class="connection-badge disconnected">
                 <span class="status-dot"></span>
                 <span id="connectionText">STOMP: MẤT KẾT NỐI</span>
@@ -634,12 +638,43 @@
         </div>
     </div>
 
+    <!-- Modal: Server & API Configuration -->
+    <div id="serverConfigModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 520px;">
+            <div class="modal-header">
+                <h3 class="panel-title"><i class="fa-solid fa-server text-sky-400"></i> Cấu Hình Máy Chủ Phòng Khám (API & WebSocket)</h3>
+                <button class="window-btn" onclick="closeModal('serverConfigModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Địa Chỉ Máy Chủ Backend (API Base URL)</label>
+                    <input type="text" id="cfgApiBaseUrlInput" class="form-control" placeholder="http://localhost:8080" oninput="updateWsEndpointPreview()">
+                    <small style="color: #94a3b8; font-size: 11px; margin-top: 4px; display: block;">
+                        Hỗ trợ máy chủ cục bộ (LAN), IP phòng khám hoặc Cloudflare VPS Domain.
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label>STOMP WebSocket Endpoint</label>
+                    <input type="text" id="cfgWsEndpointPreview" class="form-control" readonly style="opacity: 0.85; font-family: monospace; font-size: 12px; background: rgba(0,0,0,0.25); color: #38bdf8;">
+                </div>
+                <div style="display: flex; gap: 8px; margin-top: 8px;">
+                    <button type="button" class="btn btn-outline" style="font-size: 11px; padding: 4px 10px;" onclick="applyPresetServerUrl('http://localhost:8080')">Mặc Định (localhost:8080)</button>
+                    <button type="button" class="btn btn-outline" style="font-size: 11px; padding: 4px 10px;" onclick="applyPresetServerUrl('https://nhakhoadentalcare.id.vn')">Cloudflare VPS Domain</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('serverConfigModal')">Hủy</button>
+                <button class="btn btn-primary" onclick="saveServerConfig()"><i class="fa-solid fa-check"></i> Lưu & Kết Nối Lại</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification Container -->
     <div id="toast-container"></div>
 
-    <!-- External SockJS & StompJS for WebSocket connectivity -->
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <!-- Local Vendorized SockJS & StompJS for 100% Offline LAN Operation -->
+    <script src="js/vendor/sockjs.min.js"></script>
+    <script src="js/vendor/stomp.min.js"></script>
 
     <!-- Main Desktop Renderer Script -->
     <script src="js/desktop-renderer.js"></script>

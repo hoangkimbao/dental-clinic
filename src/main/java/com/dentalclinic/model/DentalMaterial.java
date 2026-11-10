@@ -130,6 +130,42 @@ public class DentalMaterial extends BaseEntity {
     public String getSpecification() { return specification; }
     public void setSpecification(String specification) { this.specification = specification; }
 
+    public DentalMaterial(String name, String unit, Integer stockQuantity,
+                          Integer minThreshold, LocalDate expiryDate, Double unitPrice) {
+        this.materialCode = "MAT-" + System.currentTimeMillis();
+        this.name = name;
+        this.category = MaterialCategory.CONSUMABLE;
+        this.unit = unit;
+        this.stockQuantity = stockQuantity != null ? stockQuantity : 0;
+        this.minStockAlert = minThreshold != null ? minThreshold : 10;
+        this.minSafetyStock = this.minStockAlert;
+        this.expiryDate = expiryDate;
+        this.unitPrice = unitPrice != null ? unitPrice : 0.0;
+        this.active = true;
+    }
+
+    public Integer getMinThreshold() { return getMinStockAlert(); }
+    public void setMinThreshold(Integer minThreshold) { setMinStockAlert(minThreshold); }
+
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
+
+    @PrePersist
+    protected void ensureDefaults() {
+        if (this.materialCode == null || this.materialCode.isBlank()) {
+            this.materialCode = "MAT-" + System.currentTimeMillis();
+        }
+        if (this.category == null) {
+            this.category = MaterialCategory.CONSUMABLE;
+        }
+        if (this.stockQuantity == null) {
+            this.stockQuantity = 0;
+        }
+        if (this.minStockAlert == null) {
+            this.minStockAlert = 10;
+        }
+        if (this.unitPrice == null) {
+            this.unitPrice = 0.0;
+        }
+    }
 }

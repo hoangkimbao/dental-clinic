@@ -1,0 +1,22 @@
+# VCS & Agent Metadata
+.git
+.gitignore
+.agents
+.idea
+.mvn/wrapper/*.jar
+
+# Build Outputs & Local Caches
+target/
+.m2/
+*.log
+
+# Mobile and Desktop Apps
+mobile-app/node_modules/
+mobile-app/.expo/
+desktop-app/node_modules/
+desktop-app/dist/
+
+# Local binaries and documents
+cloudflared.exe
+*.docx
+*.pptx

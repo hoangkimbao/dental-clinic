@@ -1,104 +1,84 @@
-# Project: DentalCare Clinic — Comprehensive Dental Ecosystem & Enterprise Security
+# Project: DentalCare Clinic Luxury Healthcare Multi-Platform & DevOps Ecosystem
 
 ## Architecture
-The DentalCare Clinic Ecosystem is an omnichannel enterprise dental platform built with:
-- **Backend**: Spring Boot 3.2.5 (Java 17), Spring Data JPA, Spring Security (JWT), WebSocket STOMP (`/ws-dental`), H2 (dev) / PostgreSQL (prod).
-- **Web Portal**: Responsive client & management web portal (`src/main/resources/static/`).
-- **Mobile App**: React Native Expo hybrid application (`mobile-app/`) supporting both Patient and Staff roles.
-- **PC Desktop App**: Standalone Electron / Desktop runner (`desktop-app/`) with WebSocket real-time sync, CMS Command Center, and Notification Hub.
-- **Agrid / Analytics SDK**: Asynchronous, non-blocking user behavior tracking SDK (`agrid-sdk.js`) with 0ms initial render latency and `@Async` ingestion endpoint (`/api/analytics/**`).
-- **Enterprise Medical Security**: 20 security standards including AES-256 encryption for clinical data, RBAC, RLS tenant isolation, DTO binding protection, MIME/magic byte upload validation, rate limiting, and security headers.
+DentalCare Clinic is an enterprise healthcare management ecosystem comprising:
+1. **Spring Boot Backend** (`src/main/java/`):
+   - Java 17, Spring Boot 3.x, Spring Security (JWT), Spring Data JPA (H2 persistent database file mode `/app/data/dentaldb`), WebSocket STOMP messaging (`/ws-dental`).
+   - 36 REST controllers covering appointments, doctors, EMR, dental services, e-commerce orders, warranty certificates, loyalty points, shifts, attendance, inventory, AI vision diagnostics, and Excel/CSV data exports.
+2. **Web Portal (Luxury Healthcare SPA & Standalone Pages)** (`src/main/resources/static/`):
+   - Dual-mode SPA in `index.html`: `#public-landing-page` (Patient facing) and `#management-portal` (Staff/Admin RBAC 12 tabs).
+   - Standalone landing/sub-pages: `booking.html`, `dashboard.html`.
+   - Native SVG vector iconography in `js/dental-icons.js` (Diamond Smile logo, feature badges, service icons, 0% installment partner logos).
+   - Responsive CSS with luxury theme (Medical Emerald/Teal `#0d9488`, Navy `#0f172a`, Gold `#d97706`).
+3. **PC Desktop Application** (`desktop-app/`):
+   - Electron 29 runner (`main.js`, `preload.js`, `index.html`, `js/desktop-renderer.js`).
+   - CMS Command Center for doctors, services, inventory, and branch configuration.
+   - Real-time Notification Hub via STOMP WebSocket (`/ws-dental`) with Web Audio API chime.
+   - UTF-8 BOM CSV / Excel export engine.
+4. **Mobile Application** (`mobile-app/`):
+   - React Native Expo SDK 57 (`App.js`, `src/services/api.js`).
+   - Dual-role ecosystem: Patient Mode (Services, Booking, Cart/Shop, Warranty QR, AI Diagnosis, Forum) and Staff Mode (Appointments, EMR, Shifts, Attendance GPS/IP, Field Intake, Revenue Stats).
+5. **DevOps & Cloudflare VPS Pipeline**:
+   - Multi-stage Dockerfile (Maven builder + Eclipse Temurin 17 JRE runtime, non-root user).
+   - `docker-compose.yml` orchestrating `dental-clinic-app` and `dental-clinic-tunnel` (cloudflared).
+   - Automated deployment and sync scripts (`deploy-all.sh`, `vps-sync.sh`) with health checks, zero-downtime reloads, and auto-recovery.
+
+---
 
 ## Feature Inventory
-| # | Feature | Description | Milestone | Source | Status |
-|---|---------|-------------|-----------|--------|--------|
-| F01-F30 | IT Team Command Center | Profiles, messaging, hashtag parser, activity audit, API monitor, sanitizer | IT-Prev | PREV_ORCH | DONE |
-| F31 | Dental Service Catalog | Entity DentalServiceCatalog, dynamic booking endpoints, pricing, duration, category | M1 | ORIGINAL_REQUEST §1 | DONE |
-| F32 | Dental E-Commerce & Cart | Product catalog, packaging options (box/combo), shopping cart, checkout | M1 | ORIGINAL_REQUEST §1 | DONE |
-| F33 | Porcelain Crown Warranty & QR | PorcelainCrownWarranty entity, QR verification, FDI tooth numbering, labo origin | M1 | ORIGINAL_REQUEST §1 | DONE |
-| F34 | Dental Loyalty Program | LoyaltyAccount, point accumulation, tiering, redemption rules | M1 | ORIGINAL_REQUEST §1 | DONE |
-| F35 | AI Dental Diagnostic Vision | Pathology detection (caries, tartar, gingivitis, wisdom teeth) with 9Router & deterministic fallback | M1 | ORIGINAL_REQUEST §1 | DONE |
-| F36 | Dental Forum & Clinic Map | Community discussion forum & multi-branch directory with GPS turn-by-turn directions | M1 | ORIGINAL_REQUEST §1 | DONE |
-| F37 | Customer Mobile App Experience | Dual-role Expo app adding patient tabs: Services, Booking, E-Commerce, Warranty, AI Diagnostic | M1 | ORIGINAL_REQUEST §1 | DONE |
-| F38 | B2B Tier-2 Agent & Satellite Clinics | Tier2Agent entity, satellite clinic directory, partner distributor management | M2 | ORIGINAL_REQUEST §2 | DONE |
-| F39 | Dental Inventory & Material Orders | DentalMaterial (brackets, implants, consumables), procurement order & approval workflow | M2 | ORIGINAL_REQUEST §2 | DONE |
-| F40 | Staff Timekeeping & Shift Check-In | StaffAttendance entity, GPS/IP verified check-in/out, shift matching | M2 | ORIGINAL_REQUEST §2 | DONE |
-| F41 | Doctor Consultation & Revenue KPIs | DoctorKpiRecord entity, consultation counts, treatment conversions, revenue attribution | M2 | ORIGINAL_REQUEST §2 | DONE |
-| F42 | Field Patient Intake & School Screening | FieldPatientIntake entity, event screening leads, offline sync capability | M2 | ORIGINAL_REQUEST §2 | DONE |
-| F43 | Standalone PC Desktop App Runner | Electron desktop client in desktop-app/, contextIsolation, system tray, real-time STOMP sync | M3 | ORIGINAL_REQUEST §3 | DONE |
-| F44 | Desktop CMS Command Center | Dynamic CMS for Services, Doctors, Inventory, Branches, Menu & Footer configuration | M3 | ORIGINAL_REQUEST §3 | DONE |
-| F45 | Notification Hub & Excel/CSV Export | Centralized desktop alert panel, sound chimes, UTF-8 BOM Excel/CSV multi-table export | M3 | ORIGINAL_REQUEST §3 | DONE |
-| F46 | Agrid / Analytics Tracking SDK | Cross-platform agrid-sdk.js, non-blocking sendBeacon, micro-batching (5s/10 events), 0ms render latency | M4 | ORIGINAL_REQUEST §4 | DONE |
-| F47 | Analytics Ingestion & Privacy Guard | @Async /api/analytics/events endpoint, AnalyticsEvent entity, medical PII redaction | M4 | ORIGINAL_REQUEST §4 | DONE |
-| F48 | Security: IDOR & RBAC Hardening | Fix MedicalRecordController IDOR, lock down /api/articles/** & /api/emr/images/** | M5 | ORIGINAL_REQUEST §5 | DONE |
-| F49 | Security: AES-256 Medical Encryption | JPA AttributeConverter AES-256 GCM for diagnosis, treatment, prescription | M5 | ORIGINAL_REQUEST §5 | DONE |
-| F50 | Security: File Upload Validation | Whitelist image MIME types (png, jpg, webp), magic bytes inspection, 5MB limit | M5 | ORIGINAL_REQUEST §5 | DONE |
-| F51 | Security: Rate Limiting & Bot Throttling | Brute-force protection, account lockout, honeypot/captcha on public endpoints | M5 | ORIGINAL_REQUEST §5 | DONE |
-| F52 | Security: Headers & Secrets Protection | CSP, HSTS, X-Frame-Options, externalized secrets, disable public h2-console | M5 | ORIGINAL_REQUEST §5 | DONE |
-| F53 | E2E Automated Test Suite Pass | 100% pass across Tiers 1-4 for Customer, Staff, Desktop, Analytics, and 20 Security Standards | M6 | ORIGINAL_REQUEST §Acceptance | PLANNED |
-| F54 | Adversarial Hardening & Forensic Audit | Tier 5 adversarial tests, binary forensic integrity verification | M6 | ORIGINAL_REQUEST §Acceptance | PLANNED |
+| # | Feature | Description | Milestone | Source |
+|---|---------|-------------|-----------|--------|
+| 1 | Web Iconography SVG Purge | Remove all 230+ FontAwesome `<i class="fa-*">` tags & JS templates; replace 100% with inline SVG / DentalIcons to eliminate Tofu boxes | M1 | Survey 1, Follow-up 2026-09-30 |
+| 2 | AI Vision Diagnostic Endpoint Fix | Correct URL in `app.js` line 2996 from `/api/ai/diagnose` to `/api/dental-ai/diagnose` to eliminate HTTP 404 in console | M1 | Survey 1, Acceptance Criteria |
+| 3 | Standalone Pages API Integration | Wire `booking.html` and `dashboard.html` to real Spring Boot endpoints (`/api/appointments`, `/api/dentists`, `/api/dashboard/stats`) | M1 | Survey 1, R1 |
+| 4 | PWA Service Worker & Static Assets | Update `sw.js` precache list (`dentalcare-redesign.css`, `dental-icons.js`), delete `index.html.bak` and unused CSS | M1 | Survey 1, R1 |
+| 5 | Web Luxury UI & Responsive Standards | Verify 0% horizontal overflow (360px-430px), 44px touch targets, modal ESC listener and backdrop overlay | M1 | Survey 1, R1, R2, R5 |
+| 6 | Desktop App Dependency & Offline Support | Configure `desktop-app/package.json`, vendorize SockJS/StompJS and FontAwesome locally, create `run.bat` | M2 | Survey 2, R2 |
+| 7 | Desktop CMS Command Center & Export | Ensure CMS services/doctors/inventory/branches and UTF-8 BOM CSV/Excel export function smoothly with Spring Boot APIs | M2 | Survey 2, R2 |
+| 8 | Desktop STOMP Notification Hub | Verify WebSocket `/ws-dental` listener on `/topic/notifications`, `/topic/appointments`, `/topic/orders` with Web Audio chime | M2 | Survey 2, R2 |
+| 9 | Mobile App Fatal Syntax Error Fix | Fix unclosed JSX in `mobile-app/App.js` line 596-598 (`if (!isLoggedIn)`) to resolve Babel parse failure | M3 | Survey 2, R3 |
+| 10 | Mobile Dual Roles & Forum Integration | Render Dental Forum/News tab in Patient/Staff mode using `api.js` forum functions; ensure smooth touch UX | M3 | Survey 2, R3 |
+| 11 | Mobile Camera Scanner Simulation | Add camera/picker simulation for Porcelain Warranty QR lookup and AI Oral Scanner | M3 | Survey 2, R3 |
+| 12 | Mobile App Branding & Assets Config | Update `app.json` branding to "DentalCare Clinic", package name, and provide clean asset placeholders | M3 | Survey 2, R3 |
+| 13 | Cloudflare Tunnel Healthcheck in Compose | Add `--metrics 0.0.0.0:2000` and Docker healthcheck probing `/ready` to `dental-clinic-tunnel` in `docker-compose.yml` | M4 | Survey 3, R4 |
+| 14 | Ingress Hardening & Custom Domain Support | Bind port 8080 to `127.0.0.1:8080:8080`; parameterize `CLOUDFLARE_TUNNEL_TOKEN` for `nhakhoadentalcare.id.vn` | M4 | Survey 3, R4 |
+| 15 | VPS Auto-Sync & Deployment Script | Implement `vps-sync.sh` with concurrency lock, git pull, zero-downtime rebuild, health validation, and rollback | M4 | Survey 3, R4 |
+| 16 | Deploy Script Headless Support | Enhance `deploy-all.sh` to extract latest tunnel URL (`tail -n 1`) and bypass GUI runner on headless servers | M4 | Survey 3, R4 |
+| 17 | Environment Variable Blueprint | Provide `.env.example` with documented keys for database, JWT, ports, and Cloudflare tokens | M4 | Survey 3, R4 |
+| 18 | Dual Track E2E Verification & Gate Audit | Comprehensive opaque-box and white-box test verification across all tiers, ending in forensic audit gate | M5 | Project Pattern, Acceptance Criteria |
+
+---
 
 ## Milestones
 | # | Name | Scope | Dependencies | Status |
 |---|------|-------|-------------|--------|
-| M1 | Customer Dental Ecosystem (Mobile & Web) | F31, F32, F33, F34, F35, F36, F37 | none | DONE |
-| M2 | Staff, B2B Tier-2 Agent & EMR/Field Ops | F38, F39, F40, F41, F42 | M1 | DONE |
-| M3 | PC Desktop App (CMS & Notification Hub) | F43, F44, F45 | M1, M2 | DONE |
-| M4 | Agrid / Analytics Tracking SDK | F46, F47 | none | DONE |
-| M5 | 20 Enterprise Medical Security Standards | F48, F49, F50, F51, F52 | M1, M2, M3, M4 | DONE |
-| M6 | Final E2E Test Suite Pass & Hardening | F53, F54 | M1, M2, M3, M4, M5 | IN_PROGRESS |
+| M1 | Web Portal Luxury UI & REST Fixes | Features 1, 2, 3, 4, 5: SVG icon purge, AI endpoint fix, standalone pages REST wiring, sw.js, UI responsiveness | none | DONE |
+| M2 | Desktop App CMS & Notification Hub | Features 6, 7, 8: Electron offline dependencies, CMS Command Center, STOMP notification, UTF-8 BOM CSV | none | DONE |
+| M3 | Mobile Expo App Fix & Enhancement | Features 9, 10, 11, 12: Fix fatal syntax error in App.js, forum tab, camera QR/AI simulation, branding | none | DONE |
+| M4 | DevOps Cloudflare VPS Pipeline | Features 13, 14, 15, 16, 17: docker-compose healthcheck, 127.0.0.1 binding, vps-sync.sh, deploy-all.sh, .env.example | none | DONE |
+| M5 | E2E System Verification & Gate Audit | Feature 18: Build & test suite verification, Reviewer approval, Challenger verification, Forensic Audit pass | M1, M2, M3, M4 | DONE |
+
+---
 
 ## Interface Contracts
-### M1: Customer Dental Experience
-- Entities: `DentalServiceCatalog`, `DentalProduct`, `ProductPackagingOption`, `DentalOrder`, `PorcelainCrownWarranty`, `LoyaltyAccount`, `AiDentalDiagnosticLog`, `DentalCommunityPost`, `ClinicBranch`.
-- REST Endpoints:
-  - `GET /api/dental-services`: Public catalog list
-  - `GET /api/dental-products`: Public product list with packaging options
-  - `POST /api/dental-orders`: Place product order
-  - `GET /api/warranties/verify?code=...`: Public warranty lookup
-  - `POST /api/dental-ai/diagnose`: Image upload & oral pathology diagnostic result
-  - `GET /api/forum/posts` & `POST /api/forum/posts`: Community discussions
-  - `GET /api/branches`: Clinic locations with GPS coordinates & amenities
+### Web / Desktop / Mobile ↔ Spring Boot Backend
+- **Base REST URL**: `http://localhost:8080` (or Cloudflare Tunnel URL in production)
+- **AI Vision Diagnostic**: `POST /api/dental-ai/diagnose` (Accepts multipart/form-data or JSON with image/symptoms, returns diagnosis payload)
+- **Appointments**:
+  - `GET /api/appointments/available-slots?date={YYYY-MM-DD}&dentistId={id}`
+  - `POST /api/appointments/book` (Payload: `{ customerName, phone, serviceId, dentistId, appointmentDate, timeSlot, notes }`)
+- **Dashboard Stats**: `GET /api/dashboard/stats` (Returns `{ totalAppointments, todayPatients, revenueMonth, pendingCases, ... }`)
+- **WebSocket STOMP Endpoint**: `ws://localhost:8080/ws-dental`
+  - Subscriptions: `/topic/notifications`, `/topic/appointments`, `/topic/orders`
+- **Excel/CSV Export**: `GET /api/export/excel/{type}` where type in `[appointments, inventory, kpi, intake]`
 
-### M2: Staff & B2B Tier-2 Agent Operations
-- Entities: `Tier2Agent`, `DentalMaterial`, `MaterialOrder`, `StaffAttendance`, `DoctorKpiRecord`, `FieldPatientIntake`.
-- REST Endpoints:
-  - `GET /api/tier2-agents` & `POST /api/tier2-agents`: Satellite clinics & distributors
-  - `GET /api/dental-materials` & `PUT /api/dental-materials/{id}/stock`: Material inventory
-  - `POST /api/material-orders` & `PUT /api/material-orders/{id}/status`: Procurement orders & approvals
-  - `POST /api/attendance/check-in` & `POST /api/attendance/check-out`: Staff attendance
-  - `GET /api/staff-kpi/doctor/{id}`: Doctor consultation & conversion KPIs
-  - `POST /api/field-intake`: Conference & school screening patient capture
-
-### M3: PC Desktop App
-- Client Directory: `desktop-app/` (Electron main process, preload script, renderer UI).
-- Real-time STOMP: `/ws-dental`, subscribe to `/topic/notifications`, `/topic/appointments`, `/topic/orders`.
-- REST Endpoints:
-  - `GET /api/cms/config` & `PUT /api/cms/config`: Navigation & footer configuration
-  - `GET /api/export/excel?type={appointments|inventory|kpi|intake}`: UTF-8 BOM CSV / Excel streams
-
-### M4: Agrid / Analytics SDK
-- Client SDK: `src/main/resources/static/js/agrid-sdk.js`
-- API Endpoint: `POST /api/analytics/events` (returns HTTP 202 Accepted, non-blocking `@Async`)
-- Schema: `{ eventType, eventName, pageUrl, referrer, clientSessionId, timestamp, metadata }`
-- Sanitization: Rejects/masks any field containing passwords, tokens, CCCD, or medical diagnosis text.
-
-### M5: 20 Enterprise Security Checklist
-- AES-256 Attribute Converter: `com.dentalclinic.security.crypto.Aes256GcmAttributeConverter`
-- Access Control: `SecurityConfig.java` enforcing strict RBAC (`ROLE_OWNER`, `ROLE_ADMIN`, `ROLE_DENTIST`, `ROLE_RECEPTIONIST`, `ROLE_PATIENT`, `ROLE_AGENT`).
-- File Upload: Whitelist `image/jpeg`, `image/png`, `image/webp`, magic byte checks, 5MB limit.
-- Security Headers: `Content-Security-Policy`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: strict-origin-when-cross-origin`.
+---
 
 ## Code Layout
-- Backend Source: `src/main/java/com/dentalclinic/`
-  - `model/`: Domain entities extending `BaseEntity`
-  - `repository/`: Spring Data JPA repositories
-  - `service/`: Transactional business logic
-  - `controller/`: REST API controllers
-  - `dto/`: Request/Response data transfer objects
-  - `security/`: JWT, crypto, filters, security headers
-- Static Web Assets: `src/main/resources/static/`
-  - `index.html`, `js/app.js`, `js/agrid-sdk.js`, `js/it-team.js`
-- Mobile Application: `mobile-app/`
-- PC Desktop Application: `desktop-app/`
-- Test Suites: `src/test/java/com/dentalclinic/`
+- `src/main/resources/static/` — Web Portal static assets (HTML, CSS, JS, images, SVG icons, PWA manifest/worker) [Worker M1 - DONE]
+- `desktop-app/` — Electron Desktop application runner, preload, UI renderer, package.json [Worker M2 - DONE]
+- `mobile-app/` — React Native Expo application, App.js, services, components [Worker M3 - DONE]
+- `docker-compose.yml`, `deploy-all.sh`, `vps-sync.sh`, `.env.example` — DevOps and deployment automation [Worker M4 - DONE]
+- `src/main/java/com/dentalclinic/` — Spring Boot backend application
+- `src/test/java/com/dentalclinic/` — Backend automated test suites
+- `.agents/teamwork/` — Agent coordination metadata and reports only (never source code)

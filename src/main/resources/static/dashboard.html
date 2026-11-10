@@ -695,7 +695,7 @@
 
             <article class="metric-card">
                 <div class="metric-title">Bệnh nhân mới</div>
-                <div class="metric-value">12</div>
+                <div class="metric-value" id="metricNewPatients">12</div>
                 <div class="metric-sub">42% tổng lịch hẹn</div>
             </article>
 
@@ -707,7 +707,7 @@
 
             <article class="metric-card">
                 <div class="metric-title">Doanh thu dự kiến (ngày)</div>
-                <div class="metric-value">45.2M</div>
+                <div class="metric-value" id="metricRevenue">45.2M</div>
                 <div class="metric-sub">VNĐ (đã bao gồm cọc)</div>
             </article>
         </section>
@@ -836,11 +836,124 @@
             }
         ];
 
+        function getAuthToken() {
+            try {
+                const saved = sessionStorage.getItem('DENTAL_USER') || localStorage.getItem('DENTAL_USER');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    return parsed.token || '';
+                }
+            } catch (e) {}
+            return '';
+        }
+
+        async function apiFetch(url, options = {}) {
+            const headers = options.headers || {};
+            const token = getAuthToken();
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+            if (!headers['Content-Type'] && !(options.body instanceof FormData)) {
+                headers['Content-Type'] = 'application/json';
+            }
+            options.headers = headers;
+            return fetch(url, options);
+        }
+
+        async function loadDashboardData() {
+            // 1. Fetch dashboard stats
+            try {
+                const res = await apiFetch('/api/dashboard/stats');
+                if (res.ok) {
+                    const json = await res.json();
+                    const stats = json.data || json;
+                    if (stats) {
+                        const totalEl = document.getElementById('metricTotal');
+                        const completedEl = document.getElementById('metricCompleted');
+                        const revenueEl = document.getElementById('metricRevenue');
+                        const newPatEl = document.getElementById('metricNewPatients');
+
+                        if (totalEl && stats.totalAppointments !== undefined) {
+                            totalEl.textContent = stats.totalAppointments;
+                        }
+                        if (completedEl && stats.completedCount !== undefined) {
+                            completedEl.textContent = stats.completedCount;
+                        }
+                        if (revenueEl && stats.totalRevenueVND !== undefined) {
+                            revenueEl.textContent = (stats.totalRevenueVND / 1000000).toFixed(1) + 'M';
+                        }
+                        if (newPatEl && stats.depositPaidCount !== undefined) {
+                            newPatEl.textContent = stats.depositPaidCount;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn('Dashboard stats API fallback:', e);
+            }
+
+            // 2. Fetch live appointments
+            try {
+                const res = await apiFetch('/api/appointments');
+                if (res.ok) {
+                    const json = await res.json();
+                    const appList = json.data || json;
+                    if (Array.isArray(appList) && appList.length > 0) {
+                        appointments = appList.map((a, idx) => {
+                            let timeStr = '09:00';
+                            if (a.appointmentTime) {
+                                try {
+                                    const dt = new Date(a.appointmentTime);
+                                    const h = String(dt.getHours()).padStart(2, '0');
+                                    const m = String(dt.getMinutes()).padStart(2, '0');
+                                    timeStr = `${h}:${m}`;
+                                } catch(err) {
+                                    timeStr = String(a.appointmentTime).slice(11, 16) || '09:00';
+                                }
+                            }
+                            let statusVal = 'pending';
+                            let statusText = 'Chờ xác nhận';
+                            if (a.status === 'CONFIRMED') {
+                                statusVal = 'confirmed';
+                                statusText = 'Đã xác nhận';
+                            } else if (a.status === 'COMPLETED' || a.status === 'EXAMINED') {
+                                statusVal = 'completed';
+                                statusText = 'Đã hoàn thành';
+                            } else if (a.status === 'EXAMINING') {
+                                statusVal = 'examining';
+                                statusText = 'Đang trong ca khám';
+                            } else if (a.status === 'ARRIVED') {
+                                statusVal = 'arrived';
+                                statusText = 'Đã tới phòng khám';
+                            }
+
+                            return {
+                                id: a.id ? `BN-${String(a.id).padStart(2, '0')}` : `BN-${idx + 1}`,
+                                rawId: a.id,
+                                time: timeStr,
+                                name: a.patientName || (a.patient ? a.patient.fullName : 'Bệnh nhân'),
+                                phone: a.patientPhone || (a.patient ? a.patient.phone : '0977224504'),
+                                service: a.serviceName || 'Khám tổng quát',
+                                doctor: a.dentist ? `BS. ${a.dentist.fullName || a.dentist.username}` : 'BS. CKI Nguyễn Minh Đức',
+                                status: statusVal,
+                                statusText: statusText,
+                                history: a.notes || 'Hồ sơ khám tiêu chuẩn tại phòng khám DentalCare.',
+                                chair: a.chair || `Ghế 0${(idx % 4) + 1} - Khoa Lâm sàng`
+                            };
+                        });
+                        renderAppointmentsTable();
+                    }
+                }
+            } catch (e) {
+                console.warn('Dashboard appointments API fallback:', e);
+            }
+        }
+
         // Initialize UI & Components on DOM ready
         document.addEventListener('DOMContentLoaded', () => {
             initDateDisplay();
             initTrendChart();
             renderAppointmentsTable();
+            loadDashboardData();
 
             // Global ESC key listener for modal and mobile drawer
             document.addEventListener('keydown', (e) => {
@@ -1011,7 +1124,7 @@
             openDashboardModal(`Tiếp Nhận Ca Khám — ${patient.name}`, bodyHtml, footerHtml);
         }
 
-        function confirmStartExam(patientId) {
+        async function confirmStartExam(patientId) {
             const patient = appointments.find(p => p.id === patientId);
             if (patient) {
                 patient.status = 'examining';
@@ -1019,6 +1132,14 @@
                 renderAppointmentsTable();
                 closeDashboardModal();
                 showToast(`✓ Đã đưa bệnh nhân ${patient.name} vào ca khám lâm sàng.`);
+
+                if (patient.rawId) {
+                    try {
+                        await apiFetch(`/api/appointments/${patient.rawId}/status?status=EXAMINING`, { method: 'PATCH' });
+                    } catch (e) {
+                        console.warn('Status patch fallback:', e);
+                    }
+                }
             }
         }
 
@@ -1065,13 +1186,20 @@
             openDashboardModal(`Nhắc Lịch Hẹn Khám — ${patient.name}`, bodyHtml, footerHtml);
         }
 
-        function confirmCallReminder(patientId) {
+        async function confirmCallReminder(patientId) {
             const patient = appointments.find(p => p.id === patientId);
             if (patient) {
                 const selectedRadio = document.querySelector('input[name="callResult"]:checked');
                 if (selectedRadio && selectedRadio.value === 'confirmed') {
                     patient.status = 'confirmed';
                     patient.statusText = 'Đã nhắc & Xác nhận';
+                    if (patient.rawId) {
+                        try {
+                            await apiFetch(`/api/appointments/${patient.rawId}/status?status=CONFIRMED`, { method: 'PATCH' });
+                        } catch (e) {
+                            console.warn('Status patch fallback:', e);
+                        }
+                    }
                 }
                 renderAppointmentsTable();
                 closeDashboardModal();
@@ -1080,12 +1208,10 @@
         }
 
         // F5 Refresh Action
-        function refreshAppointmentsData() {
+        async function refreshAppointmentsData() {
             showToast('🔄 Đang đồng bộ dữ liệu phòng khám thời gian thực...');
-            setTimeout(() => {
-                renderAppointmentsTable();
-                showToast('✓ Dữ liệu lịch hẹn và chỉ số điều hành đã cập nhật mới nhất.');
-            }, 500);
+            await loadDashboardData();
+            showToast('✓ Dữ liệu lịch hẹn và chỉ số điều hành đã cập nhật mới nhất từ Spring Boot.');
         }
 
         // Toast Feedback System

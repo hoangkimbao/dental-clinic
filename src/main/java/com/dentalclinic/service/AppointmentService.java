@@ -177,6 +177,13 @@ AppointmentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy lịch hẹn #" + id));
     }
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private DentalMaterialService dentalMaterialService;
+
+    public void setDentalMaterialService(DentalMaterialService dentalMaterialService) {
+        this.dentalMaterialService = dentalMaterialService;
+    }
+
     @Transactional
     public Appointment updateStatus(Long id, AppointmentStatus newStatus) {
         Appointment app = getAppointmentById(id);
@@ -191,6 +198,14 @@ AppointmentService {
         );
 
         return saved;
+    }
+
+    @Transactional
+    public Appointment completeTreatmentWithMaterials(Long appointmentId, Long materialId, int quantityUsed) {
+        if (dentalMaterialService != null && materialId != null && quantityUsed > 0) {
+            dentalMaterialService.deductStockForTreatment(materialId, quantityUsed);
+        }
+        return updateStatus(appointmentId, AppointmentStatus.COMPLETED);
     }
 
     @Transactional

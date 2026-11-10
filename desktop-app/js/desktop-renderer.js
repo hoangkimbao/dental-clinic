@@ -3,8 +3,84 @@
  * Desktop Renderer Script (Electron contextBridge + WebSocket STOMP + CMS Engine)
  */
 
-const API_BASE_URL = 'http://localhost:8080';
-const WS_ENDPOINT = `${API_BASE_URL}/ws-dental`;
+// Configurable API & WebSocket Endpoints with fallback to http://localhost:8080 and /ws-dental
+function getStoredApiBaseUrl() {
+    try {
+        const stored = localStorage.getItem('dentalcare_desktop_api_url');
+        if (stored && stored.trim()) {
+            return stored.trim().replace(/\/+$/, '');
+        }
+    } catch (e) {}
+    if (typeof process !== 'undefined' && process.env && process.env.API_BASE_URL) {
+        return process.env.API_BASE_URL.trim().replace(/\/+$/, '');
+    }
+    return 'http://localhost:8080';
+}
+
+let API_BASE_URL = getStoredApiBaseUrl();
+let WS_ENDPOINT = `${API_BASE_URL}/ws-dental`;
+
+function updateServerConfigDisplay() {
+    const lbl = document.getElementById('currentServerLabel');
+    if (lbl) {
+        lbl.textContent = API_BASE_URL;
+    }
+}
+
+function openServerConfigModal() {
+    const input = document.getElementById('cfgApiBaseUrlInput');
+    const preview = document.getElementById('cfgWsEndpointPreview');
+    if (input) input.value = API_BASE_URL;
+    if (preview) preview.value = `${API_BASE_URL}/ws-dental`;
+    openModal('serverConfigModal');
+}
+
+function updateWsEndpointPreview() {
+    const input = document.getElementById('cfgApiBaseUrlInput');
+    const preview = document.getElementById('cfgWsEndpointPreview');
+    const rawVal = (input ? input.value : '') || 'http://localhost:8080';
+    const cleanVal = rawVal.trim().replace(/\/+$/, '');
+    if (preview) preview.value = `${cleanVal}/ws-dental`;
+}
+
+function applyPresetServerUrl(presetUrl) {
+    const input = document.getElementById('cfgApiBaseUrlInput');
+    if (input) {
+        input.value = presetUrl;
+        updateWsEndpointPreview();
+    }
+}
+
+function saveServerConfig() {
+    const input = document.getElementById('cfgApiBaseUrlInput');
+    let newUrl = input ? input.value.trim() : '';
+    if (!newUrl) {
+        newUrl = 'http://localhost:8080';
+    }
+    newUrl = newUrl.replace(/\/+$/, '');
+
+    API_BASE_URL = newUrl;
+    WS_ENDPOINT = `${API_BASE_URL}/ws-dental`;
+
+    try {
+        localStorage.setItem('dentalcare_desktop_api_url', newUrl);
+    } catch (e) {}
+
+    updateServerConfigDisplay();
+    closeModal('serverConfigModal');
+    showToast(`🌐 Đã đổi máy chủ sang: ${newUrl}. Đang kết nối lại...`);
+
+    if (state.stompClient) {
+        try {
+            state.stompClient.disconnect(() => {});
+        } catch (e) {}
+        state.stompClient = null;
+    }
+    state.connected = false;
+    reconnectAttempts = 0;
+    connectWebSocket();
+    refreshAllData();
+}
 
 // State Store
 const state = {
@@ -69,6 +145,7 @@ function playDentalChime(isEmergency = false) {
 // 1. App Initialization
 document.addEventListener('DOMContentLoaded', () => {
     initClock();
+    updateServerConfigDisplay();
     initWindowControls();
     initNavigation();
     initToggles();
@@ -370,8 +447,10 @@ async function refreshAllData() {
 // 4. Module 1: Services CMS
 async function loadServices() {
     const res = await fetchApi('/api/dental-services');
-    if (res && res.data) {
+    if (res && res.data && Array.isArray(res.data)) {
         state.services = res.data;
+    } else if (Array.isArray(res)) {
+        state.services = res;
     } else {
         // Fallback default services
         state.services = [
@@ -487,8 +566,10 @@ async function deleteService(id) {
 // 5. Module 2: Doctor Directory CMS
 async function loadDoctors() {
     const res = await fetchApi('/api/dentists');
-    if (res && res.data) {
+    if (res && res.data && Array.isArray(res.data)) {
         state.doctors = res.data;
+    } else if (Array.isArray(res)) {
+        state.doctors = res;
     } else {
         state.doctors = [
             { id: 1, fullName: 'BS.CKII Nguyễn Văn Tuấn', role: 'ROLE_DENTIST', phone: '0903112233', email: 'dr.tuan@nhakhoadentalcare.id.vn', specialty: 'Trưởng Khoa Cấy Ghép Implant & Chỉnh Nha' },
@@ -542,8 +623,10 @@ function openAddDoctorModal() {
 // 6. Module 3: Medical Supply Inventory CMS
 async function loadInventory() {
     const res = await fetchApi('/api/dental-products');
-    if (res && res.data) {
+    if (res && res.data && Array.isArray(res.data)) {
         state.inventory = res.data;
+    } else if (Array.isArray(res)) {
+        state.inventory = res;
     } else {
         state.inventory = [
             { id: 1, code: 'IMP-STRAUMANN-01', name: 'Trụ Implant Straumann Thụy Sĩ SLA', brand: 'Straumann', category: 'IMPLANT', stockQuantity: 28, basePrice: 18000000 },
@@ -671,8 +754,10 @@ function quickAdjustStock(id, delta) {
 // 7. Module 4: Satellite & Branch C2 CMS
 async function loadBranches() {
     const res = await fetchApi('/api/branches');
-    if (res && res.data) {
+    if (res && res.data && Array.isArray(res.data)) {
         state.branches = res.data;
+    } else if (Array.isArray(res)) {
+        state.branches = res;
     } else {
         state.branches = [
             { id: 1, code: 'HQ-CHOLON', name: 'Trụ Sở Chính DentalCare Chợ Lớn (Quận 5)', address: '386 Chợ Lớn, Phường 11, Quận 5, TP.HCM', phone: '0977 224 504', dentalChairs: 12, isHQ: true },
@@ -727,8 +812,10 @@ function openAddBranchModal() {
 // 8. Module 5: Menu & Footer Config CMS
 async function loadCmsConfig() {
     const res = await fetchApi('/api/cms/config');
-    if (res && res.data) {
+    if (res && res.data && typeof res.data === 'object') {
         state.cmsConfig = res.data;
+    } else if (res && typeof res === 'object' && res.clinicName) {
+        state.cmsConfig = res;
     } else {
         // Fallback default structure
         state.cmsConfig = {
@@ -1026,7 +1113,7 @@ async function exportDataStream(type) {
         showToast(`✅ Xuất thành công file "${filename}"!`);
     } catch (err) {
         console.warn('Backend export failed, falling back to local UTF-8 BOM generation:', err);
-        generateLocalCsvExport(type);
+        await generateLocalCsvExport(type);
     }
 }
 
@@ -1036,7 +1123,7 @@ function triggerQuickExport(type) {
 }
 
 // Local Fallback CSV Generator with Guaranteed UTF-8 BOM (\uFEFF)
-function generateLocalCsvExport(type) {
+async function generateLocalCsvExport(type) {
     let csv = '\uFEFF'; // Prepend UTF-8 BOM
     let filename = `bao-cao-${type}-${new Date().toISOString().slice(0, 10)}.csv`;
 
@@ -1051,7 +1138,7 @@ function generateLocalCsvExport(type) {
     } else if (type === 'kpi') {
         csv += "Mã Bác Sĩ,Họ Và Tên Bác Sĩ,Số Điện Thoại,Email,Tổng Ca Tiếp Nhận,Số Ca Hoàn Tất,Tỷ Lệ Hoàn Thành (%),Đánh Giá Hiệu Suất\n";
         state.doctors.forEach(d => {
-            csv += `${d.id},"${d.fullName}","${d.phone}","${d.email}",12,10,83.3%,"XUẤT SẮC (Platinum)"\n`;
+            csv += `${d.id},"${d.fullName}","${d.phone}","${d.email}",12,10,"83.3%","XUẤT SẮC (Platinum)"\n`;
         });
     } else if (type === 'intake') {
         csv += "Mã Lead / Hồ Sơ,Họ Tên Bệnh Nhân / Học Sinh,Số Điện Thoại,Dịch Vụ Quan Tâm,Nguồn Tiếp Nhận,Kết Quả Sơ Bộ,Mã Voucher,Trạng Thái\n";
@@ -1062,6 +1149,25 @@ function generateLocalCsvExport(type) {
         csv += "Mã Lịch Hẹn,Ngày Khám,Giờ Khám,Tên Bệnh Nhân,Số Điện Thoại,Dịch Vụ Khám,Bác Sĩ Phụ Trách,Trạng Thái,Tiền Cọc (VNĐ)\n";
         csv += `1,"25/09/2026","09:30","Hoàng Minh Quân","0977224504","Cấy ghép Implant Straumann","BS.CKII Nguyễn Văn Tuấn","Đã cọc 100K",100000\n`;
         csv += `2,"25/09/2026","14:00","Lê Thảo Vy","0918334455","Niềng Răng Mắc Cài Damon","ThS.BS Trần Mai Phương","Chờ đặt cọc",0\n`;
+    }
+
+    // Check if running inside Electron Native Runner with saveCsvFile
+    if (window.desktopBridge && window.desktopBridge.saveCsvFile) {
+        try {
+            const result = await window.desktopBridge.saveCsvFile({
+                defaultPath: filename,
+                data: csv
+            });
+            if (result && result.success) {
+                showToast(`📁 Đã lưu file Excel/CSV thành công: ${result.filePath}`);
+                return;
+            } else if (result && result.canceled) {
+                showToast('Hủy lưu file.');
+                return;
+            }
+        } catch (ipcErr) {
+            console.warn('Native save dialog error, falling back to browser download:', ipcErr);
+        }
     }
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });

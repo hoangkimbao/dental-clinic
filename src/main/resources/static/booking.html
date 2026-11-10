@@ -293,19 +293,28 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="service">Dịch vụ nha khoa cần khám <span style="color: red;">*</span></label>
-                <select id="service">
-                    <option value="">-- Chọn dịch vụ phù hợp --</option>
-                    <option value="implant">Trồng răng Implant Thụy Sĩ</option>
-                    <option value="ortho">Niềng răng Chỉnh nha (Invisalign)</option>
-                    <option value="veneer">Dán sứ Veneer / Bọc răng sứ</option>
-                    <option value="whitening">Tẩy trắng răng Laser Whitening</option>
-                    <option value="endodontics">Điều trị tủy răng công nghệ cao</option>
-                    <option value="piezotome">Nhổ răng khôn Piezotome không đau</option>
-                    <option value="general">Khám tổng quát & Lấy cao răng siêu âm</option>
-                </select>
-                <div id="err-service" class="field-error">Vui lòng chọn dịch vụ nha khoa cần khám.</div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="service">Dịch vụ nha khoa cần khám <span style="color: red;">*</span></label>
+                    <select id="service">
+                        <option value="">-- Chọn dịch vụ phù hợp --</option>
+                        <option value="implant">Trồng răng Implant Thụy Sĩ</option>
+                        <option value="ortho">Niềng răng Chỉnh nha (Invisalign)</option>
+                        <option value="veneer">Dán sứ Veneer / Bọc răng sứ</option>
+                        <option value="whitening">Tẩy trắng răng Laser Whitening</option>
+                        <option value="endodontics">Điều trị tủy răng công nghệ cao</option>
+                        <option value="piezotome">Nhổ răng khôn Piezotome không đau</option>
+                        <option value="general">Khám tổng quát & Lấy cao răng siêu âm</option>
+                    </select>
+                    <div id="err-service" class="field-error">Vui lòng chọn dịch vụ nha khoa cần khám.</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="dentist">Bác sĩ chuyên khoa phụ trách</label>
+                    <select id="dentist">
+                        <option value="">-- Bác sĩ trực nhật / Chỉ định bất kỳ --</option>
+                    </select>
+                </div>
             </div>
 
             <div class="grid-2">
@@ -395,6 +404,14 @@
             setupFieldValidation("service", validateService);
             setupFieldValidation("booking-date", validateDate);
 
+            // Fetch live dentists and available slots from Spring Boot API
+            loadDentists();
+            loadAvailableSlots();
+
+            document.getElementById('service')?.addEventListener('change', loadAvailableSlots);
+            document.getElementById('dentist')?.addEventListener('change', loadAvailableSlots);
+            document.getElementById('booking-date')?.addEventListener('change', loadAvailableSlots);
+
             // Radio slot validation
             document.querySelectorAll('input[name="time-slot"]').forEach(radio => {
                 radio.addEventListener('change', () => {
@@ -403,6 +420,63 @@
                 });
             });
         });
+
+        async function loadDentists() {
+            try {
+                const res = await fetch('/api/dentists');
+                if (res.ok) {
+                    const json = await res.json();
+                    const dentists = json.data || json || [];
+                    const sel = document.getElementById('dentist');
+                    if (sel && Array.isArray(dentists) && dentists.length > 0) {
+                        sel.innerHTML = '<option value="">-- Bác sĩ trực nhật / Chỉ định bất kỳ --</option>' +
+                            dentists.map(d => `<option value="${d.id}">BS. ${d.fullName || d.username} (${d.specialty || 'Chuyên khoa RHM'})</option>`).join('');
+                    }
+                }
+            } catch (e) {
+                console.warn('Load dentists fallback:', e);
+            }
+        }
+
+        async function loadAvailableSlots() {
+            const dateInput = document.getElementById('booking-date');
+            const dentistSelect = document.getElementById('dentist');
+            const serviceSelect = document.getElementById('service');
+            const dateVal = dateInput ? dateInput.value : '';
+            const dentistId = dentistSelect ? dentistSelect.value : '';
+            const serviceCode = serviceSelect ? serviceSelect.value : '';
+
+            const params = new URLSearchParams();
+            if (dateVal) params.append('date', dateVal);
+            if (dentistId) params.append('dentistId', dentistId);
+            if (serviceCode) params.append('serviceCode', serviceCode);
+
+            try {
+                const res = await fetch(`/api/appointments/available-slots?${params.toString()}`);
+                if (res.ok) {
+                    const json = await res.json();
+                    const slots = json.data || json || [];
+                    const container = document.querySelector('.options-grid');
+                    if (container && Array.isArray(slots) && slots.length > 0) {
+                        container.innerHTML = slots.map((s, idx) => `
+                            <div class="option-card">
+                                <input type="radio" id="slot-${idx}" name="time-slot" value="${s}">
+                                <label for="slot-${idx}" class="option-label">${s}</label>
+                            </div>
+                        `).join('');
+
+                        container.querySelectorAll('input[name="time-slot"]').forEach(radio => {
+                            radio.addEventListener('change', () => {
+                                const errEl = document.getElementById('err-time-slot');
+                                if (errEl) errEl.classList.remove('active');
+                            });
+                        });
+                    }
+                }
+            } catch (e) {
+                console.warn('Load slots fallback:', e);
+            }
+        }
 
         function setupFieldValidation(fieldId, validateFn) {
             const input = document.getElementById(fieldId);
@@ -508,20 +582,50 @@
             localStorage.setItem("saved_booking_draft", JSON.stringify(draft));
         }
 
-        function applyVoucher() {
-            const code = document.getElementById("voucherCode").value.trim().toUpperCase();
+        async function applyVoucher() {
+            const codeInput = document.getElementById("voucherCode");
             const status = document.getElementById("voucherStatus");
-            if (code === "MINHDUC2026" || code === "NIENG3D5TR") {
-                status.style.color = "var(--color-success)";
-                status.textContent = "✓ Áp dụng voucher thành công! Đã ghi nhận ưu đãi giảm 10% - 5.000.000đ.";
-            } else {
+            const code = codeInput ? codeInput.value.trim().toUpperCase() : '';
+            if (!code) {
                 status.style.color = "var(--color-danger)";
-                status.textContent = "✕ Mã voucher không khả dụng hoặc đã hết lượt áp dụng.";
+                status.textContent = "✕ Vui lòng nhập mã ưu đãi trước khi áp dụng.";
+                return;
+            }
+
+            const serviceSelect = document.getElementById("service");
+            const serviceName = serviceSelect?.options[serviceSelect.selectedIndex]?.text || '';
+
+            status.style.color = "var(--color-text-muted)";
+            status.textContent = "Đang kiểm tra mã ưu đãi...";
+
+            try {
+                const res = await fetch('/api/coupons/validate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: code, serviceName: serviceName })
+                });
+                const json = await res.json();
+                if (res.ok && json.success) {
+                    const d = json.data;
+                    status.style.color = "var(--color-success)";
+                    status.textContent = `✓ Áp dụng voucher [${d.code}] thành công! ${d.title}: ${d.discountDescription}`;
+                } else {
+                    status.style.color = "var(--color-danger)";
+                    status.textContent = `✕ ${json.message || 'Mã voucher không khả dụng hoặc đã hết hạn.'}`;
+                }
+            } catch (e) {
+                if (code === "MINHDUC2026" || code === "NIENG3D5TR") {
+                    status.style.color = "var(--color-success)";
+                    status.textContent = "✓ Áp dụng voucher thành công! Đã ghi nhận ưu đãi giảm 10% - 5.000.000đ.";
+                } else {
+                    status.style.color = "var(--color-danger)";
+                    status.textContent = "✕ Không thể kết nối máy chủ xác thực voucher.";
+                }
             }
         }
 
         let isSubmitting = false;
-        function handleFullBooking(event) {
+        async function handleFullBooking(event) {
             event.preventDefault();
             if (isSubmitting) return;
 
@@ -532,7 +636,6 @@
             const isTimeValid = validateTimeSlot(true);
 
             if (!isNameValid || !isPhoneValid || !isServiceValid || !isDateValid || !isTimeValid) {
-                // Focus first invalid field
                 if (!isNameValid) document.getElementById("fullname").focus();
                 else if (!isPhoneValid) document.getElementById("phone").focus();
                 else if (!isServiceValid) document.getElementById("service").focus();
@@ -541,33 +644,76 @@
             }
 
             const alertBox = document.getElementById("bookingAlert");
+            const fullname = document.getElementById("fullname").value.trim();
+            const phone = document.getElementById("phone").value.trim();
+            const serviceSelect = document.getElementById("service");
+            const serviceText = serviceSelect.options[serviceSelect.selectedIndex]?.text || serviceSelect.value;
+            const bookingDate = document.getElementById("booking-date").value;
+            const notes = document.getElementById("notes").value.trim();
+            const dentistVal = document.getElementById("dentist")?.value;
+            const dentistId = dentistVal ? parseInt(dentistVal, 10) : null;
+            const voucherCode = document.getElementById("voucherCode")?.value.trim() || null;
 
-            if (!navigator.onLine) {
-                alertBox.style.display = "block";
-                alertBox.style.backgroundColor = "var(--color-warning-bg)";
-                alertBox.style.color = "var(--color-warning)";
-                alertBox.textContent = "⚠️ Mất kết nối Internet! Đơn đặt lịch đã lưu tạm trên thiết bị và sẽ tự động đồng bộ khi có kết nối trở lại.";
-                return;
-            }
+            const selectedSlot = document.querySelector('input[name="time-slot"]:checked')?.value || "09:00";
+            let timeFormatted = selectedSlot;
+            if (selectedSlot === "morning") timeFormatted = "09:00:00";
+            else if (selectedSlot === "afternoon") timeFormatted = "14:00:00";
+            else if (selectedSlot === "evening") timeFormatted = "18:00:00";
+            else if (selectedSlot.length === 5) timeFormatted = `${selectedSlot}:00`;
+
+            const appointmentTime = `${bookingDate}T${timeFormatted}`;
+
+            const payload = {
+                patientName: fullname,
+                patientPhone: phone,
+                serviceName: serviceText,
+                appointmentTime: appointmentTime,
+                dentistId: dentistId,
+                notes: notes,
+                couponCode: voucherCode
+            };
 
             isSubmitting = true;
             const submitBtn = document.getElementById("btnSubmitFull");
-            submitBtn.textContent = "Đang xử lý đặt lịch...";
+            submitBtn.textContent = "Đang kết nối hệ thống phòng khám...";
             submitBtn.disabled = true;
 
-            setTimeout(() => {
-                localStorage.removeItem("saved_booking_draft");
+            try {
+                const res = await fetch('/api/appointments/book', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const json = await res.json();
+                if (res.ok && json.success) {
+                    localStorage.removeItem("saved_booking_draft");
+                    alertBox.style.display = "block";
+                    alertBox.style.backgroundColor = "var(--color-success-bg)";
+                    alertBox.style.color = "var(--color-success)";
+                    const bookInfo = json.data || {};
+                    const bookMsg = json.message || "Đặt lịch khám thành công!";
+                    alertBox.innerHTML = `<strong>✓ ${bookMsg}</strong><br>` +
+                        `Mã lịch hẹn: <strong>#${bookInfo.appointmentId || bookInfo.id || 'DC-' + Date.now().toString().slice(-6)}</strong> | ` +
+                        `Thời gian: <strong>${bookingDate} ${selectedSlot}</strong><br>` +
+                        `Phòng khám sẽ gọi tới số <strong>${phone}</strong> để xác nhận trong 15 phút.`;
+                    document.getElementById("fullBookingForm").reset();
+                } else {
+                    alertBox.style.display = "block";
+                    alertBox.style.backgroundColor = "var(--color-danger-bg)";
+                    alertBox.style.color = "var(--color-danger)";
+                    alertBox.textContent = `⚠️ Đặt lịch thất bại: ${json.message || 'Vui lòng kiểm tra lại thông tin.'}`;
+                }
+            } catch (err) {
+                console.error('Booking API error:', err);
                 alertBox.style.display = "block";
-                alertBox.style.backgroundColor = "var(--color-success-bg)";
-                alertBox.style.color = "var(--color-success)";
-                alertBox.textContent = "✓ Đặt lịch khám thành công! Phòng khám đã ghi nhận đơn hẹn và sẽ liên hệ xác nhận trong vòng 15 phút.";
+                alertBox.style.backgroundColor = "var(--color-warning-bg)";
+                alertBox.style.color = "var(--color-warning)";
+                alertBox.textContent = "⚠️ Mất kết nối tới máy chủ! Yêu cầu đặt lịch đã lưu tạm trên thiết bị và sẽ tự động đồng bộ khi có kết nối trở lại.";
+            } finally {
                 submitBtn.textContent = "Xác Nhận Đặt Lịch Khám Online";
                 submitBtn.disabled = false;
                 isSubmitting = false;
-
-                // Reset form inputs except confirmation notice
-                document.getElementById("fullBookingForm").reset();
-            }, 700);
+            }
         }
     </script>
 </body>

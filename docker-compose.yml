@@ -10,13 +10,15 @@ services:
       dockerfile: Dockerfile
     container_name: dental-clinic-app
     ports:
-      - "8080:8080"
+      # Bind strictly to loopback interface to prevent direct bypass of Cloudflare Tunnel
+      - "127.0.0.1:8080:8080"
     environment:
       - SERVER_PORT=8080
-      - SPRING_DATASOURCE_URL=jdbc:h2:file:/app/data/dentaldb;AUTO_SERVER=TRUE
-      - APP_UPLOAD_DIR=/app/uploads/dental-images/
-      - APP_JWT_SECRET=dentalcareluxurysecuresecretkey2026superstrongforproductiontokengeneration32bytes
-      - JAVA_OPTS=-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-default}
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL:-jdbc:h2:file:/app/data/dentaldb;AUTO_SERVER=TRUE}
+      - APP_UPLOAD_DIR=${APP_UPLOAD_DIR:-/app/uploads/dental-images/}
+      - APP_JWT_SECRET=${APP_JWT_SECRET:-dentalcareluxurysecuresecretkey2026superstrongforproductiontokengeneration32bytes}
+      - JAVA_OPTS=${JAVA_OPTS:--XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError -Djava.security.egd=file:/dev/./urandom}
     volumes:
       - dental_data:/app/data
       - dental_uploads:/app/uploads
@@ -27,18 +29,40 @@ services:
       retries: 5
       start_period: 25s
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
 
   # ----------------------------------------------------------------------------
   # Service 2: Cloudflare Tunnel (Secure Public Ingress)
+  # Uses official distroless cloudflare/cloudflared image (no /bin/sh, curl, or wget).
+  # Supports both TryCloudflare (ephemeral) and Named Tunnel (production custom domain)
+  # via native cloudflared CLI and native readiness healthcheck.
   # ----------------------------------------------------------------------------
   tunnel:
     image: cloudflare/cloudflared:latest
     container_name: dental-clinic-tunnel
-    command: tunnel --no-autoupdate --url http://app:8080
+    restart: unless-stopped
+    command: ${CLOUDFLARE_TUNNEL_COMMAND:-tunnel --no-autoupdate --metrics 0.0.0.0:2000 run}
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN:-${TUNNEL_TOKEN:-}}
+      - TUNNEL_METRICS=0.0.0.0:2000
     depends_on:
       app:
         condition: service_healthy
-    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "cloudflared", "tunnel", "--metrics", "127.0.0.1:2000", "ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
 
 volumes:
   dental_data:

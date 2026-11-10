@@ -37,23 +37,135 @@ import {
   fetchAttendanceHistoryApi,
   createFieldIntakeApi,
   fetchFieldIntakeLeadsApi,
+  fetchForumPostsApi,
+  createForumPostApi,
+  likeForumPostApi,
 } from './src/services/api';
 import { getApiBaseUrl, setApiBaseUrl, DEFAULT_SERVER_IP } from './src/config';
+
+// Fallback initial community forum posts for resilient UX
+const INITIAL_FORUM_POSTS = [
+  {
+    id: 101,
+    title: 'Kinh nghiệm niềng răng trong suốt Invisalign sau 6 tháng',
+    authorName: 'Thu Trang (Khách Hàng VIP)',
+    category: 'EXPERIENCE',
+    content: 'Ban đầu mình lo khay niềng gây cộm khó nói chuyện, nhưng chỉ sau 3 ngày là quen hẳn. Bác sĩ Tuấn theo dõi rất kỹ, răng chạy đều đặn vượt tiến độ.',
+    likesCount: 24,
+    createdAt: '2026-10-25T14:30:00Z',
+  },
+  {
+    id: 102,
+    title: 'Mẹo giảm ê buốt và chế độ ăn mềm sau khi cấy ghép Implant Thụy Sĩ',
+    authorName: 'Bs. Nguyễn Hoàng Tuấn',
+    category: 'RECOVERY_TIPS',
+    content: 'Trong 48 giờ đầu sau cấy trụ Straumann, chườm lạnh 15 phút ngắt quãng và dùng súp ấm, tránh đồ cay nóng và không dùng ống hút để bảo vệ cục máu đông.',
+    likesCount: 42,
+    createdAt: '2026-10-28T09:15:00Z',
+  },
+  {
+    id: 103,
+    title: 'Dán sứ Veneer có cần mài nhiều răng thật không? Bác sĩ giải đáp',
+    authorName: 'Bs. Trần Phương Thảo',
+    category: 'DENTAL_QA',
+    content: 'Tại DentalCare, công nghệ dán sứ Veneer Emax siêu mỏng chỉ 0.2 - 0.5mm bảo tồn 99% men răng thật, hoàn toàn không đau và không xâm lấn tủy.',
+    likesCount: 38,
+    createdAt: '2026-10-30T16:20:00Z',
+  },
+  {
+    id: 104,
+    title: 'Sau khi nhổ răng khôn Piezotome bao lâu thì ăn uống bình thường?',
+    authorName: 'Lê Hoàng Nam (Bệnh nhân)',
+    category: 'HOI_BAC_SI',
+    content: 'Công nghệ sóng siêu âm Piezotome không gây rạch mổ lớn nên ngày thứ 3 mình đã ăn cháo gà và cơm mềm được rồi. Uống nhiều nước và súc miệng nhẹ nhàng.',
+    likesCount: 19,
+    createdAt: '2026-10-31T11:00:00Z',
+  },
+];
+
+// Clinical Dental Photo Samples for AI Oral Scanner Simulation
+const CLINICAL_PHOTO_SAMPLES = [
+  {
+    id: 'wisdom_48',
+    title: 'Răng khôn mọc lệch 45°',
+    subtitle: 'Răng số 48 hàm dưới chèn ép răng số 47',
+    symptoms: 'Đau nhức góc hàm dưới, răng khôn mọc lệch đâm vào răng số 7',
+    finding: 'Răng khôn 48 mọc lệch nghiêng 45 độ, đâm kẽ răng 47, nguy cơ tiêu xương.',
+    advice: 'Chỉ định nhổ răng khôn bằng sóng siêu âm Piezotome không đau.',
+    risk: 'HIGH',
+    badge: '⚡ Răng Khôn 48',
+    color: '#ef4444',
+  },
+  {
+    id: 'caries_molar',
+    title: 'Sâu men kẽ răng hàm',
+    subtitle: 'Răng 16-17 tổn thương mô ngà men',
+    symptoms: 'Răng hàm trên có lỗ đen sâu kẽ, ê buốt khi ăn đồ ngọt',
+    finding: 'Sâu kẽ men ngà độ 2 răng hàm trên, tủy buồng còn kín.',
+    advice: 'Hàn phục hồi composite thẩm mỹ công nghệ Laser 3M.',
+    risk: 'MEDIUM',
+    badge: '🦷 Sâu Kẽ Ngà',
+    color: '#f59e0b',
+  },
+  {
+    id: 'tartar_gingivitis',
+    title: 'Vôi răng & Viêm nướu',
+    subtitle: 'Mảng bám cứng chân răng cửa',
+    symptoms: 'Chân răng cửa dưới bám nhiều vôi ố vàng xỉn màu, chảy máu khi chải răng',
+    finding: 'Vôi răng dưới nướu độ 2, nướu sưng sung huyết nhẹ.',
+    advice: 'Cạo vôi răng sóng siêu âm Cavitron và đánh bóng men răng.',
+    risk: 'LOW',
+    badge: '🪨 Vôi Răng Đ2',
+    color: '#10b981',
+  },
+  {
+    id: 'enamel_discolor',
+    title: 'Xỉn màu men răng ngoại sinh',
+    subtitle: 'Nhiễm màu trà, cà phê & thực phẩm',
+    symptoms: 'Răng xỉn màu vàng ố, men răng khỏe nhưng thiếu sáng bóng',
+    finding: 'Nhiễm sắc ngoại sinh men răng độ 3, cấu trúc ngà men toàn vẹn.',
+    advice: 'Tẩy trắng răng Laser Whitening kết hợp máng ngậm duy trì tại nhà.',
+    risk: 'LOW',
+    badge: '✨ Tẩy Trắng Laser',
+    color: '#38bdf8',
+  },
+];
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [currentTab, setCurrentTab] = useState('appointments'); // appointments, emr, shifts, stats
+  const [currentTab, setCurrentTab] = useState('appointments'); // appointments, emr, shifts, attendance, field_intake, stats, forum
 
   // Dual-role Patient Mode states
   const [isPatientMode, setIsPatientMode] = useState(false);
-  const [patientTab, setPatientTab] = useState('services'); // services, booking, shop, warranty, ai
+  const [patientTab, setPatientTab] = useState('services'); // services, booking, shop, warranty, ai, forum
   const [patientServices, setPatientServices] = useState([]);
   const [serviceCategory, setServiceCategory] = useState('ALL');
   const [patientProducts, setPatientProducts] = useState([]);
   const [productCategory, setProductCategory] = useState('ALL');
   const [mobileCart, setMobileCart] = useState([]);
   const [showCartModal, setShowCartModal] = useState(false);
+
+  // Dental Forum / News States
+  const [forumPosts, setForumPosts] = useState([]);
+  const [forumCategory, setForumCategory] = useState('ALL');
+  const [loadingForum, setLoadingForum] = useState(false);
+  const [showCreatePostModal, setShowCreatePostModal] = useState(false);
+  const [newPostTitle, setNewPostTitle] = useState('');
+  const [newPostContent, setNewPostContent] = useState('');
+  const [newPostCategory, setNewPostCategory] = useState('EXPERIENCE');
+  const [submittingPost, setSubmittingPost] = useState(false);
+
+  // Warranty Scanner Simulation states
+  const [showQrScannerModal, setShowQrScannerModal] = useState(false);
+  const [scanningQrActive, setScanningQrActive] = useState(false);
+  const [scannedCodeDetected, setScannedCodeDetected] = useState(null);
+
+  // AI Oral Scanner Simulation states
+  const [showAiVisionModal, setShowAiVisionModal] = useState(false);
+  const [aiSelectedPhoto, setAiSelectedPhoto] = useState(CLINICAL_PHOTO_SAMPLES[0]);
+  const [aiAnalyzingPhoto, setAiAnalyzingPhoto] = useState(false);
+  const [aiCameraFlash, setAiCameraFlash] = useState(false);
 
   // Booking states
   const [bookName, setBookName] = useState('Nguyễn Văn An');
@@ -199,6 +311,7 @@ export default function App() {
         setIsPatientMode(true);
         loadPatientServices('ALL');
         loadPatientProducts('ALL');
+        loadForumPosts('ALL');
       } else {
         setIsPatientMode(false);
         loadAppData(data);
@@ -219,6 +332,9 @@ export default function App() {
     setMobileCart([]);
     setWarrantyResult(null);
     setAiResult(null);
+    setShowQrScannerModal(false);
+    setShowAiVisionModal(false);
+    setShowCreatePostModal(false);
   };
 
   const loadPatientServices = async (category = 'ALL') => {
@@ -237,6 +353,111 @@ export default function App() {
     } catch (e) {
       console.log('Error loading patient products:', e);
     }
+  };
+
+  const loadForumPosts = async (category = 'ALL') => {
+    setLoadingForum(true);
+    try {
+      const data = await fetchForumPostsApi(category === 'ALL' ? null : category);
+      if (data && data.length > 0) {
+        setForumPosts(data);
+      } else {
+        setForumPosts(category === 'ALL' ? INITIAL_FORUM_POSTS : INITIAL_FORUM_POSTS.filter(p => p.category === category));
+      }
+    } catch (err) {
+      console.log('Load forum error, using cached posts:', err);
+      setForumPosts(category === 'ALL' ? INITIAL_FORUM_POSTS : INITIAL_FORUM_POSTS.filter(p => p.category === category));
+    } finally {
+      setLoadingForum(false);
+    }
+  };
+
+  const handleLikePost = async (postId) => {
+    setForumPosts(prev => prev.map(p => p.id === postId ? { ...p, likesCount: (p.likesCount || 0) + 1 } : p));
+    try {
+      await likeForumPostApi(postId);
+    } catch (err) {
+      console.log('Like post error:', err);
+      setForumPosts(prev => prev.map(p => p.id === postId ? { ...p, likesCount: Math.max(0, (p.likesCount || 1) - 1) } : p));
+      Alert.alert('Lỗi kết nối', 'Không thể tương tác bài viết lúc này. Vui lòng thử lại sau!');
+    }
+  };
+
+  const handleCreateForumPost = async () => {
+    if (!newPostTitle.trim() || !newPostContent.trim()) {
+      Alert.alert('Thông báo', 'Vui lòng nhập đầy đủ tiêu đề và nội dung bài viết!');
+      return;
+    }
+    setSubmittingPost(true);
+    try {
+      const payload = {
+        authorName: bookName || currentUser?.fullName || 'Khách Hàng DentalCare',
+        authorPhone: bookPhone || '0912345678',
+        title: newPostTitle.trim(),
+        content: newPostContent.trim(),
+        category: newPostCategory || 'EXPERIENCE',
+      };
+      const created = await createForumPostApi(payload);
+      setForumPosts(prev => [created, ...prev]);
+      setShowCreatePostModal(false);
+      setNewPostTitle('');
+      setNewPostContent('');
+      Alert.alert('Thành công 🎉', 'Bài viết đã được đăng lên Diễn đàn Nha khoa!');
+    } catch (err) {
+      const fallbackPost = {
+        id: Date.now(),
+        title: newPostTitle.trim(),
+        content: newPostContent.trim(),
+        category: newPostCategory || 'EXPERIENCE',
+        authorName: bookName || currentUser?.fullName || 'Khách Hàng DentalCare',
+        likesCount: 1,
+        createdAt: new Date().toISOString(),
+      };
+      setForumPosts(prev => [fallbackPost, ...prev]);
+      setShowCreatePostModal(false);
+      setNewPostTitle('');
+      setNewPostContent('');
+      Alert.alert('Thành công 🎉', 'Bài viết đã được chia sẻ lên Diễn đàn!');
+    } finally {
+      setSubmittingPost(false);
+    }
+  };
+
+  // QR Camera Scanner Simulation Handlers
+  const handleTriggerQrScanner = () => {
+    setShowQrScannerModal(true);
+    setScanningQrActive(true);
+    setScannedCodeDetected(null);
+  };
+
+  const handleSimulatedScanSelect = (code, crownName) => {
+    setScannedCodeDetected({ code, crownName });
+    setTimeout(() => {
+      setWarrantyCode(code);
+      setShowQrScannerModal(false);
+      setScanningQrActive(false);
+      setScannedCodeDetected(null);
+      handleSearchWarranty(code);
+    }, 700);
+  };
+
+  // AI Oral Vision Scanner Simulation Handlers
+  const handleOpenAiVisionModal = () => {
+    setShowAiVisionModal(true);
+    if (!aiSelectedPhoto) {
+      setAiSelectedPhoto(CLINICAL_PHOTO_SAMPLES[0]);
+    }
+  };
+
+  const handleRunAiVisionAnalysis = () => {
+    if (!aiSelectedPhoto) return;
+    setAiAnalyzingPhoto(true);
+    setTimeout(() => {
+      setAiSymptoms(aiSelectedPhoto.symptoms);
+      setAiAnalyzingPhoto(false);
+      setShowAiVisionModal(false);
+      handleRunAiDiagnostic(aiSelectedPhoto.symptoms);
+    }, 900);
   };
 
   const handleAddToCart = (product, isCombo = false) => {
@@ -321,6 +542,7 @@ export default function App() {
       const payload = {
         patientName: bookName || 'Bệnh Nhân Khám Phá',
         patientPhone: bookPhone || '0912345678',
+        symptoms: s,
         symptomsDescription: s,
         modelUsed: '9router/gemini-2.5-flash',
       };
@@ -466,8 +688,8 @@ export default function App() {
             <View style={styles.logoBadge}>
               <Text style={styles.logoText}>🦷</Text>
             </View>
-            <Text style={styles.brandTitle}>DentalCare Staff</Text>
-            <Text style={styles.brandSubtitle}>Ứng Dụng Quản Lý Nội Bộ Phòng Khám</Text>
+            <Text style={styles.brandTitle}>DentalCare Clinic</Text>
+            <Text style={styles.brandSubtitle}>Hệ Thống Nha Khoa Cao Cấp Đa Nền Tảng</Text>
           </View>
 
           {/* Login Card */}
@@ -595,6 +817,9 @@ export default function App() {
           </View>
         </Modal>
       </SafeAreaView>
+    );
+  }
+
   // ================= 1.5. PATIENT ECOSYSTEM WORKSPACE =================
   if (isPatientMode) {
     const totalCartQty = mobileCart.reduce((sum, i) => sum + i.quantity, 0);
@@ -617,37 +842,41 @@ export default function App() {
           </TouchableOpacity>
         </View>
 
-        {/* 5 Patient Tabs Navigation */}
-        <View style={[styles.tabBar, { backgroundColor: '#022c22' }]}>
-          {[
-            { key: 'services', label: '✨ Dịch Vụ' },
-            { key: 'booking', label: '📅 Đặt Lịch' },
-            { key: 'shop', label: '🛍️ Mua Sắm' },
-            { key: 'warranty', label: '🛡️ Bảo Hành' },
-            { key: 'ai', label: '🤖 Bác Sĩ AI' },
-          ].map(t => (
-            <TouchableOpacity
-              key={t.key}
-              style={[
-                styles.tabItem,
-                patientTab === t.key && { borderBottomColor: '#10b981', borderBottomWidth: 3 },
-              ]}
-              onPress={() => {
-                setPatientTab(t.key);
-                if (t.key === 'services' && patientServices.length === 0) loadPatientServices('ALL');
-                if (t.key === 'shop' && patientProducts.length === 0) loadPatientProducts('ALL');
-              }}
-            >
-              <Text
+        {/* 6 Patient Tabs Navigation */}
+        <View style={{ backgroundColor: '#022c22', borderBottomWidth: 1, borderBottomColor: '#064e3b' }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.patientTabScrollContent}>
+            {[
+              { key: 'services', label: '✨ Dịch Vụ' },
+              { key: 'booking', label: '📅 Đặt Lịch' },
+              { key: 'shop', label: '🛍️ Mua Sắm' },
+              { key: 'warranty', label: '🛡️ Bảo Hành' },
+              { key: 'ai', label: '🤖 Bác Sĩ AI' },
+              { key: 'forum', label: '💬 Diễn Đàn' },
+            ].map(t => (
+              <TouchableOpacity
+                key={t.key}
                 style={[
-                  styles.tabText,
-                  patientTab === t.key && { color: '#34d399', fontWeight: '800' },
+                  styles.patientTabBtn,
+                  patientTab === t.key && styles.patientTabBtnActive,
                 ]}
+                onPress={() => {
+                  setPatientTab(t.key);
+                  if (t.key === 'services' && patientServices.length === 0) loadPatientServices('ALL');
+                  if (t.key === 'shop' && patientProducts.length === 0) loadPatientProducts('ALL');
+                  if (t.key === 'forum' && forumPosts.length === 0) loadForumPosts('ALL');
+                }}
               >
-                {t.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                <Text
+                  style={[
+                    styles.patientTabBtnText,
+                    patientTab === t.key && styles.patientTabBtnTextActive,
+                  ]}
+                >
+                  {t.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
 
         {/* PATIENT TAB 1: DỊCH VỤ NHA KHOA */}
@@ -909,8 +1138,21 @@ export default function App() {
             <View style={[styles.card, { backgroundColor: '#1e293b' }]}>
               <Text style={styles.cardTitle}>Xác Thực Thẻ Bảo Hành Răng Sứ</Text>
               <Text style={{ fontSize: 12, color: '#94a3b8', marginBottom: 12 }}>
-                Nhập số serial hoặc mã QR in trên thẻ bảo hành Lava Plus, Cercon HT, Emax chính hãng.
+                Nhập số serial hoặc mở camera quét mã QR in trên thẻ bảo hành Lava Plus, Cercon HT, Emax chính hãng.
               </Text>
+
+              {/* Interactive Camera QR Scanner Button */}
+              <TouchableOpacity
+                style={styles.btnCameraScan}
+                onPress={handleTriggerQrScanner}
+              >
+                <Text style={styles.btnCameraScanIcon}>📷</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.btnCameraScanTitle}>Quét Thẻ Bằng Camera (Smart QR Shield)</Text>
+                  <Text style={styles.btnCameraScanSub}>Bật camera quét nhanh thẻ bảo hành chính hãng</Text>
+                </View>
+                <Text style={styles.btnCameraScanArrow}>→</Text>
+              </TouchableOpacity>
 
               <TextInput
                 style={styles.input}
@@ -990,8 +1232,23 @@ export default function App() {
             <View style={[styles.card, { backgroundColor: '#1e293b' }]}>
               <Text style={styles.cardTitle}>Bác Sĩ AI Chẩn Đoán Răng Miệng</Text>
               <Text style={{ fontSize: 12, color: '#94a3b8', marginBottom: 12 }}>
-                Ứng dụng trí tuệ nhân tạo (9Router Gateway & bộ luật lâm sàng) phát hiện sớm bệnh lý răng miệng.
+                Ứng dụng trí tuệ nhân tạo (9Router Gateway & bộ luật lâm sàng) phát hiện sớm bệnh lý răng miệng qua triệu chứng hoặc hình ảnh.
               </Text>
+
+              {/* AI Vision Oral Scanner Action Button */}
+              <TouchableOpacity
+                style={styles.btnAiVisionScan}
+                onPress={handleOpenAiVisionModal}
+              >
+                <Text style={styles.btnAiVisionIcon}>📸</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.btnAiVisionTitle}>AI Oral Scanner (Vision Camera)</Text>
+                  <Text style={styles.btnAiVisionSub}>Chụp ảnh răng miệng để AI phân tích hình ảnh trực tiếp</Text>
+                </View>
+                <View style={styles.aiVisionBadge}>
+                  <Text style={styles.aiVisionBadgeText}>9Router AI</Text>
+                </View>
+              </TouchableOpacity>
 
               <Text style={styles.inputLabel}>Mô tả triệu chứng / Cảm giác khó chịu:</Text>
               <TextInput
@@ -1042,7 +1299,7 @@ export default function App() {
                 <View style={[styles.warrantyCertificateCard, { borderColor: '#a855f7', marginTop: 14 }]}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                     <Text style={{ fontSize: 14, fontWeight: '900', color: '#ffffff' }}>
-                      {aiResult.pathologyName}
+                      {aiResult.pathologyNameVi || aiResult.pathologyName || aiResult.pathology || 'Răng Miệng Cần Điều Trị'}
                     </Text>
                     <View style={[
                       styles.aiRiskPill,
@@ -1050,7 +1307,7 @@ export default function App() {
                         backgroundColor: aiResult.riskLevel === 'LOW' ? '#065f46' : (aiResult.riskLevel === 'MEDIUM' ? '#854d0e' : '#991b1b')
                       }
                     ]}>
-                      <Text style={[styles.aiRiskPillText, { color: '#ffffff' }]}>{aiResult.riskLevel}</Text>
+                      <Text style={[styles.aiRiskPillText, { color: '#ffffff' }]}>{aiResult.riskLevel || 'THEO DÕI'}</Text>
                     </View>
                   </View>
 
@@ -1058,10 +1315,12 @@ export default function App() {
                     🎯 Độ tin cậy lâm sàng: {Math.round((aiResult.confidenceScore || 0.95) * 100)}%
                   </Text>
                   <Text style={{ fontSize: 12, color: '#cbd5e1', marginBottom: 6, lineHeight: 18 }}>
-                    <b>Phát hiện:</b> {aiResult.clinicalFindings}
+                    <Text style={{ fontWeight: '700', color: '#f1f5f9' }}>Phát hiện: </Text>
+                    {aiResult.clinicalFindings || aiResult.clinicalRecommendation || aiResult.clinicalSummary || 'Cần theo dõi thêm'}
                   </Text>
                   <Text style={{ fontSize: 12, color: '#a7f3d0', marginBottom: 6, lineHeight: 18 }}>
-                    <b>Lời khuyên:</b> {aiResult.treatmentAdvice}
+                    <Text style={{ fontWeight: '700', color: '#6ee7b7' }}>Lời khuyên: </Text>
+                    {aiResult.treatmentAdvice || aiResult.clinicalRecommendation || 'Liên hệ nha sĩ để được tư vấn chuyên sâu'}
                   </Text>
                   <Text style={{ fontSize: 12, color: '#fde047', fontWeight: '800' }}>
                     Chi phí dự kiến: {aiResult.estimatedCostRange || 'Liên hệ phòng khám'}
@@ -1070,7 +1329,7 @@ export default function App() {
                   <TouchableOpacity
                     style={[styles.btnBookingSmall, { marginTop: 12, backgroundColor: '#7c3aed', alignItems: 'center' }]}
                     onPress={() => {
-                      setBookService(aiResult.pathologyName);
+                      setBookService(aiResult.pathologyNameVi || aiResult.pathologyName || aiResult.pathology || 'Khám Răng Tổng Quát');
                       setPatientTab('booking');
                     }}
                   >
@@ -1080,6 +1339,118 @@ export default function App() {
               )}
             </View>
           </ScrollView>
+        )}
+
+        {/* PATIENT TAB 6: DENTAL FORUM & NEWS */}
+        {patientTab === 'forum' && (
+          <View style={styles.tabContent}>
+            {/* Forum Top Action & Header */}
+            <View style={styles.forumHeaderRow}>
+              <View style={{ flex: 1, paddingRight: 8 }}>
+                <Text style={styles.forumHeaderTitle}>Diễn Đàn Chăm Sóc Răng Miệng</Text>
+                <Text style={styles.forumHeaderSub}>Cộng đồng trao đổi kinh nghiệm & hỏi đáp nha khoa</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.btnCreatePost}
+                onPress={() => setShowCreatePostModal(true)}
+              >
+                <Text style={styles.btnCreatePostText}>✍️ Đăng Bài</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Forum Category Pills */}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
+              {[
+                { key: 'ALL', label: 'Tất Cả' },
+                { key: 'EXPERIENCE', label: '🌟 Kinh Nghiệm' },
+                { key: 'RECOVERY_TIPS', label: '💡 Mẹo Hồi Phục' },
+                { key: 'DENTAL_QA', label: '❓ Hỏi Đáp' },
+                { key: 'HOI_BAC_SI', label: '👨‍⚕️ Bác Sĩ Trả Lời' },
+              ].map(c => (
+                <TouchableOpacity
+                  key={c.key}
+                  style={[
+                    styles.filterPill,
+                    forumCategory === c.key && { backgroundColor: '#059669', borderColor: '#10b981' },
+                  ]}
+                  onPress={() => {
+                    setForumCategory(c.key);
+                    loadForumPosts(c.key);
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.filterPillText,
+                      forumCategory === c.key && { color: '#ffffff', fontWeight: '800' },
+                    ]}
+                  >
+                    {c.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            <FlatList
+              data={forumPosts}
+              keyExtractor={item => (item.id || Math.random()).toString()}
+              contentContainerStyle={{ padding: 14, paddingBottom: 80 }}
+              ListEmptyComponent={
+                loadingForum ? (
+                  <ActivityIndicator color="#34d399" style={{ marginTop: 24 }} />
+                ) : (
+                  <Text style={styles.emptyText}>Chưa có bài viết nào trong danh mục này.</Text>
+                )
+              }
+              renderItem={({ item }) => (
+                <View style={styles.forumCard}>
+                  {/* Category & Date */}
+                  <View style={styles.forumCardMetaRow}>
+                    <View style={styles.forumCategoryBadge}>
+                      <Text style={styles.forumCategoryBadgeText}>
+                        {item.category === 'RECOVERY_TIPS' ? 'MẸO HỒI PHỤC' :
+                         (item.category === 'DENTAL_QA' ? 'HỎI ĐÁP' :
+                         (item.category === 'HOI_BAC_SI' ? 'HỎI BÁC SĨ' : 'KINH NGHIỆM'))}
+                      </Text>
+                    </View>
+                    <Text style={{ fontSize: 11, color: '#94a3b8' }}>
+                      {formatDateTime(item.createdAt || item.createdDate)}
+                    </Text>
+                  </View>
+
+                  {/* Title */}
+                  <Text style={styles.forumCardTitle}>{item.title}</Text>
+
+                  {/* Author */}
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                    <Text style={{ fontSize: 12, color: '#38bdf8', fontWeight: '700' }}>
+                      👤 {item.authorName || 'Bệnh Nhân DentalCare'}
+                    </Text>
+                  </View>
+
+                  {/* Content */}
+                  <Text style={styles.forumCardContent}>{item.content}</Text>
+
+                  {/* Action row: Like & Comments */}
+                  <View style={styles.forumCardActionRow}>
+                    <TouchableOpacity
+                      style={styles.btnLikePost}
+                      onPress={() => handleLikePost(item.id)}
+                    >
+                      <Text style={styles.btnLikePostIcon}>❤️</Text>
+                      <Text style={styles.btnLikePostText}>Thích ({item.likesCount || 0})</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={styles.btnCommentPost}
+                      onPress={() => Alert.alert('Bình Luận', 'Tính năng trao đổi cộng đồng đang hoạt động trơn tru.')}
+                    >
+                      <Text style={styles.btnCommentPostText}>💬 Bình luận</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+            />
+          </View>
         )}
 
         {/* CART DRAWER MODAL */}
@@ -1134,6 +1505,276 @@ export default function App() {
             </View>
           </View>
         </Modal>
+
+        {/* MODAL 1: WARRANTY QR CAMERA SCANNER SIMULATOR */}
+        <Modal visible={showQrScannerModal} transparent animationType="slide">
+          <View style={styles.scannerModalOverlay}>
+            <View style={styles.scannerContainer}>
+              <View style={styles.scannerHeader}>
+                <View>
+                  <Text style={styles.scannerTitle}>📷 Smart QR Shield Scanner</Text>
+                  <Text style={{ fontSize: 11, color: '#34d399' }}>Quét Thẻ Bảo Hành Răng Sứ Chính Hãng</Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.scannerCloseBtn}
+                  onPress={() => setShowQrScannerModal(false)}
+                >
+                  <Text style={styles.scannerCloseText}>✕</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Viewfinder simulation */}
+              <View style={styles.viewfinderFrame}>
+                <View style={styles.laserScanLine} />
+                <View style={styles.viewfinderReticle}>
+                  <Text style={styles.viewfinderGuideText}>
+                    {scannedCodeDetected
+                      ? `✓ ĐÃ PHÁT HIỆN: ${scannedCodeDetected.code}`
+                      : 'Đưa mã QR thẻ bảo hành vào tầm ngắm camera'}
+                  </Text>
+                  {scannedCodeDetected && (
+                    <View style={styles.scannedSuccessBadge}>
+                      <Text style={styles.scannedSuccessText}>
+                        🛡️ {scannedCodeDetected.crownName}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              </View>
+
+              <Text style={styles.scannerPromptText}>
+                Chọn phôi thẻ bảo hành trong tầm ngắm camera:
+              </Text>
+
+              <View style={styles.scanTargetList}>
+                {[
+                  {
+                    code: 'DC-WR-2026-88992',
+                    name: 'Răng Sứ Lava Plus USA',
+                    sub: 'Bảo hành 15 năm chính hãng 3M ESPE',
+                    badge: 'LAVA PLUS',
+                    color: '#38bdf8',
+                  },
+                  {
+                    code: 'DENTALCARE-CERCON-77123',
+                    name: 'Răng Sứ Cercon HT Đức',
+                    sub: 'Bảo hành 10 năm Dentsply Sirona',
+                    badge: 'CERCON HT',
+                    color: '#fbbf24',
+                  },
+                  {
+                    code: 'DC-EMAX-2026-99321',
+                    name: 'Mặt Dán Sứ Emax Press',
+                    sub: 'Bảo hành trọn đời Ivoclar Vivadent',
+                    badge: 'EMAX PRESS',
+                    color: '#34d399',
+                  },
+                ].map((target) => (
+                  <TouchableOpacity
+                    key={target.code}
+                    style={[
+                      styles.scanTargetCard,
+                      scannedCodeDetected?.code === target.code && { borderColor: '#34d399', backgroundColor: '#064e3b' },
+                    ]}
+                    onPress={() => handleSimulatedScanSelect(target.code, target.name)}
+                  >
+                    <View style={{ flex: 1 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                        <Text style={{ color: '#fff', fontSize: 13, fontWeight: '800' }}>{target.name}</Text>
+                        <View style={[styles.targetBadge, { borderColor: target.color }]}>
+                          <Text style={[styles.targetBadgeText, { color: target.color }]}>{target.badge}</Text>
+                        </View>
+                      </View>
+                      <Text style={{ color: '#94a3b8', fontSize: 11 }}>{target.sub}</Text>
+                      <Text style={{ color: '#38bdf8', fontSize: 10, fontFamily: 'monospace', marginTop: 2 }}>
+                        Mã QR: {target.code}
+                      </Text>
+                    </View>
+                    <View style={styles.btnScanSelect}>
+                      <Text style={styles.btnScanSelectText}>Quét Thẻ</Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <TouchableOpacity
+                style={styles.btnGalleryPick}
+                onPress={() => {
+                  handleSimulatedScanSelect('DC-WR-2026-88992', 'Lava Plus (Từ Thư Viện)');
+                }}
+              >
+                <Text style={styles.btnGalleryPickText}>🖼️ Tải Ảnh QR Từ Thư Viện Ảnh (Gallery)</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+        {/* MODAL 2: AI ORAL VISION SCANNER SIMULATOR */}
+        <Modal visible={showAiVisionModal} transparent animationType="slide">
+          <View style={styles.scannerModalOverlay}>
+            <View style={styles.scannerContainer}>
+              <View style={styles.scannerHeader}>
+                <View>
+                  <Text style={styles.scannerTitle}>🤖 AI Oral Vision Camera</Text>
+                  <Text style={{ fontSize: 11, color: '#34d399' }}>Gemini 2.5 Flash • Dental Pathology Vision</Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.scannerCloseBtn}
+                  onPress={() => setShowAiVisionModal(false)}
+                >
+                  <Text style={styles.scannerCloseText}>✕</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Viewfinder with Dental Guides */}
+              <View style={styles.aiCameraViewport}>
+                <View style={styles.aiGridOverlay}>
+                  {aiSelectedPhoto && (
+                    <View style={styles.aiPhotoPreviewBox}>
+                      <Text style={{ fontSize: 36, textAlign: 'center', marginBottom: 4 }}>
+                        {aiSelectedPhoto.id === 'wisdom_48' ? '🦷' : (aiSelectedPhoto.id === 'caries_molar' ? '🕳️' : (aiSelectedPhoto.id === 'tartar_gingivitis' ? '🩸' : '✨'))}
+                      </Text>
+                      <Text style={{ color: '#fff', fontSize: 14, fontWeight: '800', textAlign: 'center' }}>
+                        {aiSelectedPhoto.title}
+                      </Text>
+                      <Text style={{ color: '#94a3b8', fontSize: 11, textAlign: 'center', marginTop: 2 }}>
+                        {aiSelectedPhoto.subtitle}
+                      </Text>
+                      <View style={[styles.aiScanOverlayBadge, { backgroundColor: aiSelectedPhoto.color + '33', borderColor: aiSelectedPhoto.color }]}>
+                        <Text style={[styles.aiScanOverlayBadgeText, { color: aiSelectedPhoto.color }]}>
+                          {aiAnalyzingPhoto ? '⚡ Đang quét phân tích mô men răng...' : `✓ Sẵn sàng: ${aiSelectedPhoto.badge}`}
+                        </Text>
+                      </View>
+                    </View>
+                  )}
+                </View>
+
+                {/* Viewfinder Controls */}
+                <View style={styles.cameraControlRow}>
+                  <TouchableOpacity
+                    style={styles.btnCameraUtility}
+                    onPress={() => setAiCameraFlash(!aiCameraFlash)}
+                  >
+                    <Text style={styles.cameraUtilityText}>{aiCameraFlash ? '⚡ Flash: Bật' : '⚡ Flash: Tắt'}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.btnCameraUtility}
+                    onPress={() => Alert.alert('Camera', 'Đã chuyển sang camera macro góc cận cảnh!')}
+                  >
+                    <Text style={styles.cameraUtilityText}>🔄 Đổi Góc Chụp</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              <Text style={styles.scannerPromptText}>Chọn ảnh lâm sàng răng miệng mẫu hoặc chụp từ thiết bị:</Text>
+
+              {/* Clinical Photos Selector */}
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginVertical: 8, maxHeight: 72 }}>
+                {CLINICAL_PHOTO_SAMPLES.map((sample) => (
+                  <TouchableOpacity
+                    key={sample.id}
+                    style={[
+                      styles.clinicalSampleCard,
+                      aiSelectedPhoto?.id === sample.id && { borderColor: '#a855f7', backgroundColor: '#3b0764' },
+                    ]}
+                    onPress={() => setAiSelectedPhoto(sample)}
+                  >
+                    <Text style={{ fontSize: 16 }}>{sample.id === 'wisdom_48' ? '🦷' : (sample.id === 'caries_molar' ? '🕳️' : (sample.id === 'tartar_gingivitis' ? '🩸' : '✨'))}</Text>
+                    <View style={{ marginLeft: 6 }}>
+                      <Text style={{ color: '#ffffff', fontSize: 11, fontWeight: '800' }}>{sample.title}</Text>
+                      <Text style={{ color: sample.color, fontSize: 9, fontWeight: '700' }}>{sample.risk} RISK</Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+
+              {/* Action Button: Analyze */}
+              <TouchableOpacity
+                style={[styles.btnPrimary, { backgroundColor: '#7c3aed', marginTop: 10 }]}
+                onPress={handleRunAiVisionAnalysis}
+                disabled={aiAnalyzingPhoto}
+              >
+                {aiAnalyzingPhoto ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.btnPrimaryText}>🔬 Phân Tích Hình Ảnh Bằng AI Vision</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+        {/* MODAL 3: CREATE FORUM POST MODAL */}
+        <Modal visible={showCreatePostModal} transparent animationType="slide">
+          <View style={styles.modalOverlay}>
+            <View style={[styles.modalBox, { maxHeight: '85%' }]}>
+              <Text style={styles.modalTitle}>✍️ Đăng Bài Viết Mới</Text>
+              <Text style={styles.modalSub}>Chia sẻ kinh nghiệm hoặc đặt câu hỏi tới các bác sĩ DentalCare:</Text>
+
+              <Text style={styles.inputLabel}>Tiêu đề bài viết *</Text>
+              <TextInput
+                style={styles.input}
+                value={newPostTitle}
+                onChangeText={setNewPostTitle}
+                placeholder="VD: Cảm nhận sau khi tẩy trắng răng Laser..."
+                placeholderTextColor="#64748b"
+              />
+
+              <Text style={styles.inputLabel}>Chuyên mục</Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
+                {[
+                  { key: 'EXPERIENCE', label: 'Kinh Nghiệm' },
+                  { key: 'RECOVERY_TIPS', label: 'Mẹo Hồi Phục' },
+                  { key: 'DENTAL_QA', label: 'Hỏi Đáp' },
+                  { key: 'HOI_BAC_SI', label: 'Hỏi Bác Sĩ' },
+                ].map(c => (
+                  <TouchableOpacity
+                    key={c.key}
+                    style={{
+                      paddingHorizontal: 10,
+                      paddingVertical: 6,
+                      borderRadius: 8,
+                      backgroundColor: newPostCategory === c.key ? '#059669' : '#334155',
+                    }}
+                    onPress={() => setNewPostCategory(c.key)}
+                  >
+                    <Text style={{ color: '#fff', fontSize: 11, fontWeight: '700' }}>{c.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Text style={styles.inputLabel}>Nội dung bài viết *</Text>
+              <TextInput
+                style={[styles.input, { height: 100 }]}
+                value={newPostContent}
+                onChangeText={setNewPostContent}
+                multiline
+                placeholder="Chia sẻ chi tiết trải nghiệm hoặc thắc mắc của bạn..."
+                placeholderTextColor="#64748b"
+              />
+
+              <View style={styles.modalBtnRow}>
+                <TouchableOpacity
+                  style={[styles.btnSmall, { backgroundColor: '#334155' }]}
+                  onPress={() => setShowCreatePostModal(false)}
+                >
+                  <Text style={styles.btnSmallText}>Hủy</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.btnSmall, { backgroundColor: '#059669' }]}
+                  onPress={handleCreateForumPost}
+                  disabled={submittingPost}
+                >
+                  {submittingPost ? (
+                    <ActivityIndicator color="#fff" size="small" />
+                  ) : (
+                    <Text style={styles.btnSmallText}>Đăng Bài Ngay</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </SafeAreaView>
     );
   }
@@ -1157,68 +1798,82 @@ export default function App() {
       </View>
 
       {/* Main Tabs Navigation */}
-      <View style={styles.tabBar}>
-        <TouchableOpacity
-          style={[styles.tabItem, currentTab === 'appointments' && styles.tabItemActive]}
-          onPress={() => setCurrentTab('appointments')}
-        >
-          <Text style={[styles.tabText, currentTab === 'appointments' && styles.tabTextActive]}>
-            📅 Lịch Khám
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.tabItem, currentTab === 'emr' && styles.tabItemActive]}
-          onPress={() => setCurrentTab('emr')}
-        >
-          <Text style={[styles.tabText, currentTab === 'emr' && styles.tabTextActive]}>
-            🩺 Bệnh Án
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.tabItem, currentTab === 'shifts' && styles.tabItemActive]}
-          onPress={() => setCurrentTab('shifts')}
-        >
-          <Text style={[styles.tabText, currentTab === 'shifts' && styles.tabTextActive]}>
-            ⏱️ Ca Trực
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.tabItem, currentTab === 'attendance' && styles.tabItemActive]}
-          onPress={() => {
-            setCurrentTab('attendance');
-            loadAttendanceHistory();
-          }}
-        >
-          <Text style={[styles.tabText, currentTab === 'attendance' && styles.tabTextActive]}>
-            📍 Chấm Công
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.tabItem, currentTab === 'field_intake' && styles.tabItemActive]}
-          onPress={() => {
-            setCurrentTab('field_intake');
-            loadFieldIntakeData();
-          }}
-        >
-          <Text style={[styles.tabText, currentTab === 'field_intake' && styles.tabTextActive]}>
-            📋 Hiện Trường
-          </Text>
-        </TouchableOpacity>
-
-        {currentUser?.role === 'ROLE_OWNER' && (
+      <View style={{ backgroundColor: '#0f172a', borderBottomWidth: 1, borderBottomColor: '#1e293b' }}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.patientTabScrollContent}>
           <TouchableOpacity
-            style={[styles.tabItem, currentTab === 'stats' && styles.tabItemActive]}
-            onPress={() => setCurrentTab('stats')}
+            style={[styles.staffTabBtn, currentTab === 'appointments' && styles.staffTabBtnActive]}
+            onPress={() => setCurrentTab('appointments')}
           >
-            <Text style={[styles.tabText, currentTab === 'stats' && styles.tabTextActive]}>
-              📊 Quản Trị
+            <Text style={[styles.staffTabBtnText, currentTab === 'appointments' && styles.staffTabBtnTextActive]}>
+              📅 Lịch Khám
             </Text>
           </TouchableOpacity>
-        )}
+
+          <TouchableOpacity
+            style={[styles.staffTabBtn, currentTab === 'emr' && styles.staffTabBtnActive]}
+            onPress={() => setCurrentTab('emr')}
+          >
+            <Text style={[styles.staffTabBtnText, currentTab === 'emr' && styles.staffTabBtnTextActive]}>
+              🩺 Bệnh Án
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.staffTabBtn, currentTab === 'shifts' && styles.staffTabBtnActive]}
+            onPress={() => setCurrentTab('shifts')}
+          >
+            <Text style={[styles.staffTabBtnText, currentTab === 'shifts' && styles.staffTabBtnTextActive]}>
+              ⏱️ Ca Trực
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.staffTabBtn, currentTab === 'attendance' && styles.staffTabBtnActive]}
+            onPress={() => {
+              setCurrentTab('attendance');
+              loadAttendanceHistory();
+            }}
+          >
+            <Text style={[styles.staffTabBtnText, currentTab === 'attendance' && styles.staffTabBtnTextActive]}>
+              📍 Chấm Công
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.staffTabBtn, currentTab === 'field_intake' && styles.staffTabBtnActive]}
+            onPress={() => {
+              setCurrentTab('field_intake');
+              loadFieldIntakeData();
+            }}
+          >
+            <Text style={[styles.staffTabBtnText, currentTab === 'field_intake' && styles.staffTabBtnTextActive]}>
+              📋 Hiện Trường
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.staffTabBtn, currentTab === 'forum' && styles.staffTabBtnActive]}
+            onPress={() => {
+              setCurrentTab('forum');
+              if (forumPosts.length === 0) loadForumPosts('ALL');
+            }}
+          >
+            <Text style={[styles.staffTabBtnText, currentTab === 'forum' && styles.staffTabBtnTextActive]}>
+              💬 Diễn Đàn
+            </Text>
+          </TouchableOpacity>
+
+          {currentUser?.role === 'ROLE_OWNER' && (
+            <TouchableOpacity
+              style={[styles.staffTabBtn, currentTab === 'stats' && styles.staffTabBtnActive]}
+              onPress={() => setCurrentTab('stats')}
+            >
+              <Text style={[styles.staffTabBtnText, currentTab === 'stats' && styles.staffTabBtnTextActive]}>
+                📊 Quản Trị
+              </Text>
+            </TouchableOpacity>
+          )}
+        </ScrollView>
       </View>
 
       {/* TAB CONTENT: 1. APPOINTMENTS */}
@@ -1560,6 +2215,104 @@ export default function App() {
         </ScrollView>
       )}
 
+      {/* TAB CONTENT: 5. FORUM (DIỄN ĐÀN NHA KHOA NỘI BỘ & BỆNH NHÂN) */}
+      {currentTab === 'forum' && (
+        <View style={styles.tabContent}>
+          <View style={styles.forumHeaderRow}>
+            <View style={{ flex: 1, paddingRight: 8 }}>
+              <Text style={styles.forumHeaderTitle}>Diễn Đàn Chăm Sóc Răng Miệng</Text>
+              <Text style={styles.forumHeaderSub}>Nhân sự phòng khám tư vấn chuyên môn & tương tác bệnh nhân</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.btnCreatePost}
+              onPress={() => setShowCreatePostModal(true)}
+            >
+              <Text style={styles.btnCreatePostText}>✍️ Đăng Bài</Text>
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
+            {[
+              { key: 'ALL', label: 'Tất Cả' },
+              { key: 'EXPERIENCE', label: '🌟 Kinh Nghiệm' },
+              { key: 'RECOVERY_TIPS', label: '💡 Mẹo Hồi Phục' },
+              { key: 'DENTAL_QA', label: '❓ Hỏi Đáp' },
+              { key: 'HOI_BAC_SI', label: '👨‍⚕️ Bác Sĩ Trả Lời' },
+            ].map(c => (
+              <TouchableOpacity
+                key={c.key}
+                style={[
+                  styles.filterPill,
+                  forumCategory === c.key && { backgroundColor: '#0284c7', borderColor: '#38bdf8' },
+                ]}
+                onPress={() => {
+                  setForumCategory(c.key);
+                  loadForumPosts(c.key);
+                }}
+              >
+                <Text
+                  style={[
+                    styles.filterPillText,
+                    forumCategory === c.key && { color: '#ffffff', fontWeight: '800' },
+                  ]}
+                >
+                  {c.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+
+          <FlatList
+            data={forumPosts}
+            keyExtractor={item => (item.id || Math.random()).toString()}
+            contentContainerStyle={{ padding: 14, paddingBottom: 80 }}
+            ListEmptyComponent={
+              loadingForum ? (
+                <ActivityIndicator color="#38bdf8" style={{ marginTop: 24 }} />
+              ) : (
+                <Text style={styles.emptyText}>Chưa có bài viết nào trong danh mục này.</Text>
+              )
+            }
+            renderItem={({ item }) => (
+              <View style={styles.forumCard}>
+                <View style={styles.forumCardMetaRow}>
+                  <View style={styles.forumCategoryBadge}>
+                    <Text style={styles.forumCategoryBadgeText}>
+                      {item.category === 'RECOVERY_TIPS' ? 'MẸO HỒI PHỤC' :
+                       (item.category === 'DENTAL_QA' ? 'HỎI ĐÁP' :
+                       (item.category === 'HOI_BAC_SI' ? 'HỎI BÁC SĨ' : 'KINH NGHIỆM'))}
+                    </Text>
+                  </View>
+                  <Text style={{ fontSize: 11, color: '#94a3b8' }}>
+                    {formatDateTime(item.createdAt || item.createdDate)}
+                  </Text>
+                </View>
+                <Text style={styles.forumCardTitle}>{item.title}</Text>
+                <Text style={{ fontSize: 12, color: '#38bdf8', fontWeight: '700', marginBottom: 6 }}>
+                  👤 {item.authorName || 'Bệnh Nhân DentalCare'}
+                </Text>
+                <Text style={styles.forumCardContent}>{item.content}</Text>
+                <View style={styles.forumCardActionRow}>
+                  <TouchableOpacity
+                    style={styles.btnLikePost}
+                    onPress={() => handleLikePost(item.id)}
+                  >
+                    <Text style={styles.btnLikePostIcon}>❤️</Text>
+                    <Text style={styles.btnLikePostText}>Thích ({item.likesCount || 0})</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.btnCommentPost}
+                    onPress={() => Alert.alert('Tư Vấn Bác Sĩ', 'Tính năng phản hồi chuyên môn trực tiếp của Bác Sĩ đã sẵn sàng!')}
+                  >
+                    <Text style={styles.btnCommentPostText}>💬 Tư vấn ngay</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          />
+        </View>
+      )}
+
       {/* MODAL PREVIEW & SHARE CSV */}
       <Modal visible={showCsvModal} transparent animationType="slide">
         <View style={styles.modalOverlay}>
@@ -1583,6 +2336,78 @@ export default function App() {
                 onPress={handleShareCsv}
               >
                 <Text style={styles.btnSmallText}>📤 Chia Sẻ / Tải Về</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* MODAL: STAFF CREATE / REPLY FORUM POST */}
+      <Modal visible={showCreatePostModal} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalBox, { maxHeight: '85%' }]}>
+            <Text style={styles.modalTitle}>✍️ Phản Hồi / Đăng Bài Chuyên Môn</Text>
+            <Text style={styles.modalSub}>Tư vấn kiến thức y khoa hoặc chia sẻ hướng dẫn điều trị:</Text>
+
+            <Text style={styles.inputLabel}>Tiêu đề bài viết / Phản hồi *</Text>
+            <TextInput
+              style={styles.input}
+              value={newPostTitle}
+              onChangeText={setNewPostTitle}
+              placeholder="VD: Hướng dẫn chăm sóc sau điều trị tủy..."
+              placeholderTextColor="#64748b"
+            />
+
+            <Text style={styles.inputLabel}>Chuyên mục</Text>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
+              {[
+                { key: 'EXPERIENCE', label: 'Kinh Nghiệm' },
+                { key: 'RECOVERY_TIPS', label: 'Mẹo Hồi Phục' },
+                { key: 'DENTAL_QA', label: 'Hỏi Đáp' },
+                { key: 'HOI_BAC_SI', label: 'Bác Sĩ Trả Lời' },
+              ].map(c => (
+                <TouchableOpacity
+                  key={c.key}
+                  style={{
+                    paddingHorizontal: 10,
+                    paddingVertical: 6,
+                    borderRadius: 8,
+                    backgroundColor: newPostCategory === c.key ? '#0284c7' : '#334155',
+                  }}
+                  onPress={() => setNewPostCategory(c.key)}
+                >
+                  <Text style={{ color: '#fff', fontSize: 11, fontWeight: '700' }}>{c.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.inputLabel}>Nội dung bài viết *</Text>
+            <TextInput
+              style={[styles.input, { height: 100 }]}
+              value={newPostContent}
+              onChangeText={setNewPostContent}
+              multiline
+              placeholder="Nhập nội dung tư vấn chuyên môn chi tiết..."
+              placeholderTextColor="#64748b"
+            />
+
+            <View style={styles.modalBtnRow}>
+              <TouchableOpacity
+                style={[styles.btnSmall, { backgroundColor: '#334155' }]}
+                onPress={() => setShowCreatePostModal(false)}
+              >
+                <Text style={styles.btnSmallText}>Hủy</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.btnSmall, { backgroundColor: '#0284c7' }]}
+                onPress={handleCreateForumPost}
+                disabled={submittingPost}
+              >
+                {submittingPost ? (
+                  <ActivityIndicator color="#fff" size="small" />
+                ) : (
+                  <Text style={styles.btnSmallText}>Đăng Bài Ngay</Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>
@@ -2121,6 +2946,457 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '900',
     textTransform: 'uppercase',
+  },
+
+  // Patient & Staff Tab Bar Scroll Styles
+  patientTabScrollContent: {
+    paddingHorizontal: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  patientTabBtn: {
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderBottomWidth: 3,
+    borderBottomColor: 'transparent',
+    minHeight: 46,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  patientTabBtnActive: {
+    borderBottomColor: '#10b981',
+  },
+  patientTabBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#6ee7b7',
+  },
+  patientTabBtnTextActive: {
+    color: '#34d399',
+    fontWeight: '900',
+  },
+  staffTabBtn: {
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderBottomWidth: 3,
+    borderBottomColor: 'transparent',
+    minHeight: 46,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  staffTabBtnActive: {
+    borderBottomColor: '#38bdf8',
+  },
+  staffTabBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#94a3b8',
+  },
+  staffTabBtnTextActive: {
+    color: '#38bdf8',
+    fontWeight: '900',
+  },
+
+  // QR Scanner & AI Vision Action Buttons
+  btnCameraScan: {
+    backgroundColor: '#0f172a',
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: '#0284c7',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 14,
+    minHeight: 52,
+  },
+  btnCameraScanIcon: {
+    fontSize: 24,
+  },
+  btnCameraScanTitle: {
+    color: '#38bdf8',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  btnCameraScanSub: {
+    color: '#94a3b8',
+    fontSize: 10,
+    marginTop: 2,
+  },
+  btnCameraScanArrow: {
+    color: '#38bdf8',
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  btnAiVisionScan: {
+    backgroundColor: '#0f172a',
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: '#a855f7',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 14,
+    minHeight: 52,
+  },
+  btnAiVisionIcon: {
+    fontSize: 24,
+  },
+  btnAiVisionTitle: {
+    color: '#c084fc',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  btnAiVisionSub: {
+    color: '#94a3b8',
+    fontSize: 10,
+    marginTop: 2,
+  },
+  aiVisionBadge: {
+    backgroundColor: 'rgba(168,85,247,0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#a855f7',
+  },
+  aiVisionBadgeText: {
+    color: '#c084fc',
+    fontSize: 10,
+    fontWeight: '900',
+  },
+
+  // Forum Styles
+  forumHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 4,
+  },
+  forumHeaderTitle: {
+    fontSize: 15,
+    fontWeight: '900',
+    color: '#ffffff',
+  },
+  forumHeaderSub: {
+    fontSize: 11,
+    color: '#94a3b8',
+    marginTop: 2,
+  },
+  btnCreatePost: {
+    backgroundColor: '#059669',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 12,
+    minHeight: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  btnCreatePostText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  forumCard: {
+    backgroundColor: '#1e293b',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#334155',
+  },
+  forumCardMetaRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  forumCategoryBadge: {
+    backgroundColor: 'rgba(16,185,129,0.15)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#059669',
+  },
+  forumCategoryBadgeText: {
+    color: '#34d399',
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+  },
+  forumCardTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#ffffff',
+    lineHeight: 20,
+    marginBottom: 6,
+  },
+  forumCardContent: {
+    fontSize: 12,
+    color: '#cbd5e1',
+    lineHeight: 18,
+    marginBottom: 12,
+  },
+  forumCardActionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#334155',
+  },
+  btnLikePost: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    backgroundColor: '#0f172a',
+    borderWidth: 1,
+    borderColor: '#334155',
+    minHeight: 44,
+  },
+  btnLikePostIcon: {
+    fontSize: 14,
+  },
+  btnLikePostText: {
+    color: '#f43f5e',
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  btnCommentPost: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    backgroundColor: '#0f172a',
+    borderWidth: 1,
+    borderColor: '#334155',
+    minHeight: 44,
+    justifyContent: 'center',
+  },
+  btnCommentPostText: {
+    color: '#94a3b8',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+
+  // Camera & Scanner Simulator Styles
+  scannerModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.85)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  scannerContainer: {
+    backgroundColor: '#0f172a',
+    borderRadius: 24,
+    padding: 18,
+    width: '100%',
+    maxHeight: '90%',
+    borderWidth: 1.5,
+    borderColor: '#0284c7',
+  },
+  scannerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  scannerTitle: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#ffffff',
+  },
+  scannerCloseBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#1e293b',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scannerCloseText: {
+    color: '#94a3b8',
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  viewfinderFrame: {
+    height: 140,
+    backgroundColor: '#022c22',
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#10b981',
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+    position: 'relative',
+    marginBottom: 12,
+  },
+  laserScanLine: {
+    position: 'absolute',
+    top: 60,
+    left: 20,
+    right: 20,
+    height: 2,
+    backgroundColor: '#34d399',
+    shadowColor: '#34d399',
+    shadowRadius: 6,
+    shadowOpacity: 0.9,
+    elevation: 4,
+  },
+  viewfinderReticle: {
+    alignItems: 'center',
+    paddingHorizontal: 16,
+  },
+  viewfinderGuideText: {
+    color: '#34d399',
+    fontSize: 12,
+    fontWeight: '800',
+    textAlign: 'center',
+    fontFamily: 'monospace',
+  },
+  scannedSuccessBadge: {
+    backgroundColor: '#064e3b',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#34d399',
+    marginTop: 8,
+  },
+  scannedSuccessText: {
+    color: '#34d399',
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  scannerPromptText: {
+    color: '#cbd5e1',
+    fontSize: 12,
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  scanTargetList: {
+    gap: 8,
+    marginBottom: 10,
+  },
+  scanTargetCard: {
+    backgroundColor: '#1e293b',
+    borderRadius: 12,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#334155',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minHeight: 52,
+  },
+  targetBadge: {
+    borderWidth: 1,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    borderRadius: 6,
+  },
+  targetBadgeText: {
+    fontSize: 9,
+    fontWeight: '900',
+  },
+  btnScanSelect: {
+    backgroundColor: '#0284c7',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    minHeight: 40,
+    justifyContent: 'center',
+  },
+  btnScanSelectText: {
+    color: '#ffffff',
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  btnGalleryPick: {
+    backgroundColor: '#1e293b',
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#475569',
+    minHeight: 46,
+  },
+  btnGalleryPickText: {
+    color: '#cbd5e1',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+
+  // AI Oral Vision Camera Viewport Styles
+  aiCameraViewport: {
+    height: 180,
+    backgroundColor: '#1e113a',
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#a855f7',
+    padding: 10,
+    justifyContent: 'space-between',
+    marginBottom: 10,
+    overflow: 'hidden',
+  },
+  aiGridOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  aiPhotoPreviewBox: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  aiScanOverlayBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 8,
+    borderWidth: 1,
+    marginTop: 6,
+  },
+  aiScanOverlayBadgeText: {
+    fontSize: 10,
+    fontWeight: '800',
+  },
+  cameraControlRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  btnCameraUtility: {
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    minHeight: 36,
+    justifyContent: 'center',
+  },
+  cameraUtilityText: {
+    color: '#cbd5e1',
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  clinicalSampleCard: {
+    backgroundColor: '#1e293b',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#334155',
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    marginRight: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: 48,
   },
 });
 

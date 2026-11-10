@@ -33,6 +33,7 @@ body {
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
 }
+body.modal-open, body.overflow-hidden { overflow: hidden !important; }
 body, p, span, a, div { overflow-wrap: anywhere; }
 ::selection { background: #cfe4d6; color: var(--dc-ink); }
 button, input, select, textarea { font: inherit; }
@@ -143,8 +144,8 @@ body > div.bg-slate-950 .text-emerald-400 { color: #c5da9a !important; }
     shape-rendering: geometricPrecision;
 }
 .ui-icon { overflow: visible; }
-.dental-icon-box { display: grid; place-items: center; flex: 0 0 auto; }
-i.fa-solid, i.fa-regular, i.fa-brands { font-style: normal !important; }
+.ui-icon { display: inline-block; vertical-align: middle; }
+i[class*="fa-"] { display: inline-block; width: 1em; height: 1em; overflow: hidden; font-style: normal; vertical-align: -0.15em; }
 
 /* Landing page: warm editorial layout and clear conversion path */
 #main-content { min-height: 70vh; }

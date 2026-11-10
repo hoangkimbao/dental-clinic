@@ -125,6 +125,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/community/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/branches/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/appointments/available-slots").permitAll()
+                .requestMatchers("/api/payments/**").permitAll()
+                .requestMatchers("/api/dental-images/**").permitAll()
+                .requestMatchers("/api/materials/**", "/api/dental-materials/**").permitAll()
 
                 // Patient Mobile App & Dashboards (Secured)
                 .requestMatchers("/api/mobile/**").authenticated()

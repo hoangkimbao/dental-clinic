@@ -32,11 +32,11 @@ let itTeamState = {
 };
 
 const IT_AGENTS_METADATA = {
-    'it-backend': { icon: 'fa-server', color: 'text-sky-400', bg: 'bg-sky-500/20', border: 'border-sky-500/30' },
-    'it-frontend': { icon: 'fa-laptop-code', color: 'text-purple-400', bg: 'bg-purple-500/20', border: 'border-purple-500/30' },
-    'it-qa': { icon: 'fa-vial-circle-check', color: 'text-emerald-400', bg: 'bg-emerald-500/20', border: 'border-emerald-500/30' },
-    'it-devops': { icon: 'fa-network-wired', color: 'text-amber-400', bg: 'bg-amber-500/20', border: 'border-amber-500/30' },
-    'it-security': { icon: 'fa-shield-halved', color: 'text-rose-400', bg: 'bg-rose-500/20', border: 'border-rose-500/30' }
+    'it-backend': { icon: 'server', color: 'text-sky-400', bg: 'bg-sky-500/20', border: 'border-sky-500/30' },
+    'it-frontend': { icon: 'laptop-code', color: 'text-purple-400', bg: 'bg-purple-500/20', border: 'border-purple-500/30' },
+    'it-qa': { icon: 'vial-circle-check', color: 'text-emerald-400', bg: 'bg-emerald-500/20', border: 'border-emerald-500/30' },
+    'it-devops': { icon: 'network-wired', color: 'text-amber-400', bg: 'bg-amber-500/20', border: 'border-amber-500/30' },
+    'it-security': { icon: 'shield-halved', color: 'text-rose-400', bg: 'bg-rose-500/20', border: 'border-rose-500/30' }
 };
 
 const IT_HASHTAGS = [
@@ -110,7 +110,7 @@ function renderAgentsGrid() {
     grid.innerHTML = itTeamState.agents.map(agent => {
         const code = agent.agentCode ? agent.agentCode.toLowerCase() : '';
         const meta = IT_AGENTS_METADATA[code] || IT_AGENTS_METADATA['it-' + code] || {
-            icon: 'fa-robot', color: 'text-brand-400', bg: 'bg-brand-500/20', border: 'border-brand-500/30'
+            icon: 'robot', color: 'text-brand-400', bg: 'bg-brand-500/20', border: 'border-brand-500/30'
         };
 
         const statusBadgeColor = agent.status === 'ONLINE' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
@@ -123,7 +123,7 @@ function renderAgentsGrid() {
                     <div class="flex items-start justify-between gap-3 mb-3">
                         <div class="flex items-center gap-3">
                             <div class="w-12 h-12 rounded-2xl ${meta.bg} ${meta.color} flex items-center justify-center text-xl font-bold shadow-md">
-                                <i class="fa-solid ${meta.icon}"></i>
+                                ${window.DentalIcons ? window.DentalIcons.renderIcon(meta.icon) : ''}
                             </div>
                             <div>
                                 <h4 class="text-sm font-black text-white">${escapeHtml(agent.displayName)}</h4>
@@ -135,8 +135,8 @@ function renderAgentsGrid() {
                         </span>
                     </div>
 
-                    <div class="text-xs text-slate-300 font-semibold mb-2">
-                        <i class="fa-solid fa-briefcase text-slate-400 mr-1"></i> ${escapeHtml(agent.role || '')}
+                    <div class="text-xs text-slate-300 font-semibold mb-2 flex items-center gap-1">
+                        ${window.DentalIcons ? window.DentalIcons.renderIcon('briefcase', { className: 'text-slate-400' }) : ''} <span>${escapeHtml(agent.role || '')}</span>
                     </div>
 
                     <p class="text-xs text-slate-400 leading-relaxed line-clamp-2 mb-3">
@@ -206,7 +206,7 @@ function renderMessagesFeed() {
     if (!itTeamState.messages || itTeamState.messages.length === 0) {
         feed.innerHTML = `
             <div class="text-center py-12 text-slate-400 space-y-2">
-                <i class="fa-solid fa-comments text-3xl text-slate-600"></i>
+                <div class="flex justify-center">${DentalIcons.renderIcon('comments', { className: 'w-10 h-10 text-slate-600' })}</div>
                 <div class="text-sm font-bold">Chưa có chỉ thị hoặc trao đổi nào</div>
                 <p class="text-xs text-slate-500">Gửi tin nhắn với hashtag như #it-backend để bắt đầu điều phối.</p>
             </div>
@@ -236,7 +236,7 @@ function renderMessagesFeed() {
 
                 <div class="pt-2 flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-700/40">
                     <button onclick="toggleThreadReplies(${msg.id})" class="hover:text-teal-400 flex items-center gap-1 font-bold cursor-pointer">
-                        <i class="fa-solid fa-reply"></i> Luồng phản hồi & AI
+                        ${DentalIcons.renderIcon('reply', { className: 'w-3.5 h-3.5 inline-block' })} Luồng phản hồi & AI
                     </button>
                     <span class="text-[10px] text-slate-500">ID: #${msg.id}</span>
                 </div>
@@ -290,7 +290,7 @@ function renderThreadReplies(parentId, replies) {
                     Gửi
                 </button>
                 <button onclick="askAiInThread(${parentId})" id="btn-ask-ai-thread-${parentId}" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl transition flex items-center gap-1 cursor-pointer">
-                    <i class="fa-solid fa-brain text-amber-300"></i> Hỏi AI
+                    ${DentalIcons.renderIcon('brain', { className: 'w-3.5 h-3.5 text-amber-300 inline-block' })} Hỏi AI
                 </button>
             </div>
         `;
@@ -321,7 +321,7 @@ function renderThreadReplies(parentId, replies) {
                 Gửi
             </button>
             <button onclick="askAiInThread(${parentId})" id="btn-ask-ai-thread-${parentId}" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl transition flex items-center gap-1 cursor-pointer">
-                <i class="fa-solid fa-brain text-amber-300"></i> Hỏi AI
+                ${DentalIcons.renderIcon('brain', { className: 'w-3.5 h-3.5 text-amber-300 inline-block' })} Hỏi AI
             </button>
         </div>
     `;
@@ -339,7 +339,7 @@ async function askAiInThread(parentId) {
     const origBtnHtml = btn ? btn.innerHTML : '';
     if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> AI suy luận...';
+        btn.innerHTML = `${DentalIcons.renderIcon('spinner', { className: 'w-3.5 h-3.5 mr-1 inline-block animate-spin', spin: true })} AI suy luận...`;
     }
 
     try {
@@ -481,7 +481,7 @@ async function handleAskAiCopilot(event) {
     const origBtnHtml = btn ? btn.innerHTML : '';
     if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Đang suy luận (combo_toc_do)...';
+        btn.innerHTML = `${DentalIcons.renderIcon('spinner', { className: 'w-3.5 h-3.5 mr-1 inline-block animate-spin', spin: true })} Đang suy luận (combo_toc_do)...`;
     }
 
     try {
@@ -691,7 +691,7 @@ function renderMemoriesList() {
     if (!itTeamState.memories || itTeamState.memories.length === 0) {
         list.innerHTML = `
             <div class="text-center py-10 text-slate-400">
-                <i class="fa-solid fa-database text-2xl text-slate-600 mb-2"></i>
+                <div class="flex justify-center mb-2">${DentalIcons.renderIcon('database', { className: 'w-8 h-8 text-slate-600' })}</div>
                 <div class="text-xs">Chưa có khóa bộ nhớ nào được lưu.</div>
             </div>
         `;
@@ -722,7 +722,7 @@ function renderMemoriesList() {
                         </span>
                         <button onclick="openEditMemoryModal('${escapeHtml(m.agentCode)}', '${escapeHtml(m.memoryKey)}', '${escapeHtml(m.priority)}', this)"
                                 class="text-xs text-teal-400 hover:text-teal-300 font-bold px-2 py-0.5 bg-slate-900/60 rounded-lg hover:bg-slate-700/60 border border-slate-700/50 transition flex items-center gap-1 cursor-pointer">
-                            <i class="fa-solid fa-pen-to-square"></i> Sửa
+                            ${DentalIcons.renderIcon('pen-to-square', { className: 'w-3 h-3 inline-block' })} Sửa
                         </button>
                     </div>
                 </div>

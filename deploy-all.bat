@@ -46,6 +46,18 @@ if %ERRORLEVEL% EQU 0 (
 
 :: 2. Build and Start Container Stack
 echo [*] Step 2/5: Building and starting DentalCare container stack & Cloudflare tunnel...
+
+:: Configure native Cloudflared tunnel command for distroless container
+if not defined CLOUDFLARE_TUNNEL_COMMAND (
+    if defined CLOUDFLARE_TUNNEL_TOKEN (
+        set "CLOUDFLARE_TUNNEL_COMMAND=tunnel --no-autoupdate --metrics 0.0.0.0:2000 run"
+    ) else if defined TUNNEL_TOKEN (
+        set "CLOUDFLARE_TUNNEL_COMMAND=tunnel --no-autoupdate --metrics 0.0.0.0:2000 run"
+    ) else (
+        set "CLOUDFLARE_TUNNEL_COMMAND=tunnel --no-autoupdate --metrics 0.0.0.0:2000 --url http://app:8080"
+    )
+)
+
 %COMPOSE_CMD% up -d --build
 if %ERRORLEVEL% NEQ 0 (
     echo [ERROR] Failed to start Docker stack. Please check docker-compose.yml and logs.
@@ -94,7 +106,7 @@ set "TUNNEL_URL="
 :POLL_TUNNEL_LOOP
 set /a TUNNEL_RETRY+=1
 
-for /f "usebackq delims=" %%U in (`powershell -NoProfile -ExecutionPolicy Bypass -Command "$log = (%COMPOSE_CMD% logs tunnel 2>&1) -join \"`n\"; if ($log -match 'https://[a-zA-Z0-9\-]+\.trycloudflare\.com') { $matches[0] }"`) do (
+for /f "usebackq delims=" %%U in (`powershell -NoProfile -ExecutionPolicy Bypass -Command "$log = (%COMPOSE_CMD% logs tunnel 2>&1) -join \"`n\"; $m = [regex]::Matches($log, 'https://[a-zA-Z0-9\-]+\.trycloudflare\.com'); if ($m.Count -gt 0) { $m[$m.Count - 1].Value }"`) do (
     set "TUNNEL_URL=%%U"
 )
 

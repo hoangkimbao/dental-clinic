@@ -209,12 +209,17 @@ ipcMain.handle('save-file-dialog', async (event, { defaultPath, data, encoding =
             const hasBom = data.startsWith('\uFEFF');
             const finalString = hasBom ? data : '\uFEFF' + data;
             bufferToWrite = Buffer.from(finalString, 'utf-8');
-        } else if (Buffer.isBuffer(data)) {
-            // Check if buffer starts with EF BB BF
-            const hasBom = data.length >= 3 && data[0] === 0xEF && data[1] === 0xBB && data[2] === 0xBF;
-            bufferToWrite = hasBom ? data : Buffer.concat([Buffer.from([0xEF, 0xBB, 0xBF]), data]);
         } else {
-            bufferToWrite = Buffer.from(JSON.stringify(data), 'utf-8');
+            let buf;
+            if (Buffer.isBuffer(data)) {
+                buf = data;
+            } else if (Array.isArray(data) || data instanceof Uint8Array) {
+                buf = Buffer.from(data);
+            } else {
+                buf = Buffer.from(String(data), 'utf-8');
+            }
+            const hasBom = buf.length >= 3 && buf[0] === 0xEF && buf[1] === 0xBB && buf[2] === 0xBF;
+            bufferToWrite = hasBom ? buf : Buffer.concat([Buffer.from([0xEF, 0xBB, 0xBF]), buf]);
         }
 
         await fs.promises.writeFile(filePath, bufferToWrite);

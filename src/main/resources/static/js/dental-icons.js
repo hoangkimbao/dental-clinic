@@ -974,37 +974,162 @@
 
         /**
          * Get Standalone UI SVG helper (for offline / zero-font-load immunity)
-         * @param {string} iconKey - HOTLINE, ZALO, CALENDAR, SCROLL_TOP, CART, STAR, CHECK, CLOSE, PAPER_PLANE
-         * @param {Object} [options]
-         * @returns {string} SVG HTML string
          */
         getUiSvg: function (iconKey, options = {}) {
-            const cls = options.className || 'w-4 h-4 inline-block';
-            const normalized = String(iconKey || '').toUpperCase().trim();
-            switch (normalized) {
-                case 'HOTLINE':
-                case 'PHONE':
-                    return `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
-                case 'CALENDAR':
-                case 'BOOKING':
-                    return `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="m9 16 2 2 4-4"/></svg>`;
-                case 'CART':
-                    return `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>`;
-                case 'STAR':
-                    return `<svg class="${cls}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
-                case 'CHECK':
-                    return `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>`;
-                case 'CLOSE':
-                case 'X':
-                    return `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
-                case 'PAPER_PLANE':
-                    return `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>`;
-                case 'SCROLL_TOP':
-                case 'CHEVRON_UP':
-                    return `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>`;
-                default:
-                    return `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg>`;
+            let cls = options.className || 'w-4 h-4 inline-block';
+            let key = String(iconKey || '').toLowerCase().trim();
+            if (key.startsWith('fa-')) key = key.slice(3);
+
+            const map = {
+                home: ['M3 10.8 12 3l9 7.8', 'M5.5 9.5V21h13V9.5', 'M9.5 21v-6h5v6'],
+                house: ['M3 10.8 12 3l9 7.8', 'M5.5 9.5V21h13V9.5', 'M9.5 21v-6h5v6'],
+                person: ['M20 21a8 8 0 0 0-16 0', 'M12 13a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z'],
+                user: ['M20 21a8 8 0 0 0-16 0', 'M12 13a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z'],
+                'user-doctor': ['M20 21a8 8 0 0 0-16 0', 'M12 13a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z', 'M12 16v3', 'M10.5 17.5h3'],
+                'user-shield': ['M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z', 'm9 12 2 2 4-4'],
+                'user-check': ['M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2', 'M8.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z', 'm17 11 2 2 4-4'],
+                'user-plus': ['M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2', 'M8.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z', 'M20 8v6', 'M23 11h-6'],
+                calendar: ['M7 3v4', 'M17 3v4', 'M4 9h16', 'M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z', 'M8 13h3', 'M8 17h3'],
+                booking: ['M7 3v4', 'M17 3v4', 'M4 9h16', 'M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z', 'M8 13h3', 'M8 17h3'],
+                'calendar-check': ['M7 3v4', 'M17 3v4', 'M4 9h16', 'M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z', 'm9 14 2 2 4-4'],
+                'calendar-day': ['M7 3v4', 'M17 3v4', 'M4 9h16', 'M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z', 'M8 13h4', 'M8 17h4'],
+                'calendar-days': ['M7 3v4', 'M17 3v4', 'M4 9h16', 'M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z', 'M8 13h2', 'M14 13h2', 'M8 17h2', 'M14 17h2'],
+                clock: ['M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z', 'M12 6v6l4 2'],
+                'clock-rotate-left': ['M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8', 'M3 3v5h5', 'M12 7v5l3 3'],
+                stopwatch: ['M12 22a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z', 'M12 6v6l3 2', 'M10 2h4'],
+                shield: ['M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z', 'm9 12 2 2 4-4'],
+                'shield-virus': ['M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z', 'M12 8v8', 'M8 12h8'],
+                'shield-check': ['M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z', 'm9 12 2 2 4-4'],
+                'shield-halved': ['M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z', 'M12 3v18'],
+                card: ['M3 6h18v12H3z', 'M3 10h18', 'M7 15h3'],
+                'credit-card': ['M3 6h18v12H3z', 'M3 10h18', 'M7 15h3'],
+                cart: ['M5 8h14l1 13H4L5 8Z', 'M9 9V6a3 3 0 0 1 6 0v3'],
+                'cart-shopping': ['M5 8h14l1 13H4L5 8Z', 'M9 9V6a3 3 0 0 1 6 0v3'],
+                'bag-shopping': ['M5 8h14l1 13H4L5 8Z', 'M9 9V6a3 3 0 0 1 6 0v3'],
+                'cart-plus': ['M5 8h14l1 13H4L5 8Z', 'M9 9V6a3 3 0 0 1 6 0v3', 'M12 12v6', 'M9 15h6'],
+                sparkle: ['m12 3 1.7 5.3L19 10l-5.3 1.7L12 17l-1.7-5.3L5 10l5.3-1.7L12 3Z', 'm19 14 .8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14Z'],
+                'wand-magic-sparkles': ['m12 3 1.7 5.3L19 10l-5.3 1.7L12 17l-1.7-5.3L5 10l5.3-1.7L12 3Z', 'm19 14 .8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14Z'],
+                star: ['m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z'],
+                crown: ['m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7Z', 'M5 20h14'],
+                award: ['M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z', 'm8.21 13.89-1.21 7.11 5-3 5 3-1.21-7.11'],
+                camera: ['M4 7h3l1.4-2h7.2L17 7h3v12H4z', 'M12 16.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z'],
+                tooth: ['M7.5 3.5c-2.4 0-4 1.8-4 4.4 0 3.2 1.7 4.8 2.4 7.2.6 2.1.7 5.4 2.2 5.4 1.4 0 1.5-5.2 3.9-5.2s2.5 5.2 3.9 5.2c1.5 0 1.6-3.3 2.2-5.4.7-2.4 2.4-4 2.4-7.2 0-2.6-1.6-4.4-4-4.4-1.7 0-2.8 1-4.5 1s-2.8-1-4.5-1Z'],
+                'teeth-open': ['M7.5 3.5c-2.4 0-4 1.8-4 4.4 0 3.2 1.7 4.8 2.4 7.2.6 2.1.7 5.4 2.2 5.4 1.4 0 1.5-5.2 3.9-5.2s2.5 5.2 3.9 5.2c1.5 0 1.6-3.3 2.2-5.4.7-2.4 2.4-4 2.4-7.2 0-2.6-1.6-4.4-4-4.4-1.7 0-2.8 1-4.5 1s-2.8-1-4.5-1Z'],
+                arrow: ['M5 12h14', 'm13 6 6 6-6 6'],
+                'arrow-right': ['M5 12h14', 'm13 6 6-6-6-6'],
+                'arrow-left': ['M19 12H5', 'm11 18-6-6 6-6'],
+                'arrow-right-from-bracket': ['M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4', 'M16 17l5-5-5-5', 'M21 12H9'],
+                'right-to-bracket': ['M14 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4', 'M10 17l5-5-5-5', 'M15 12H3'],
+                'arrow-up-right-from-square': ['M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6', 'M15 3h6v6', 'm10 14 11-11'],
+                chevron: ['m7 10 5 5 5-5'],
+                'chevron-down': ['m7 10 5 5 5-5'],
+                'chevron-up': ['m18 15-6-6-6 6'],
+                scroll_top: ['m18 15-6-6-6 6'],
+                plus: ['M12 5v14', 'M5 12h14'],
+                close: ['M18 6 6 18', 'M6 6l12 12'],
+                xmark: ['M18 6 6 18', 'M6 6l12 12'],
+                x: ['M18 6 6 18', 'M6 6l12 12'],
+                question: ['M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z', 'M9.6 9a2.5 2.5 0 1 1 4.6 1.3c-1 1.1-2.2 1.4-2.2 3.2', 'M12 17.5h.01'],
+                'circle-question': ['M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z', 'M9.6 9a2.5 2.5 0 1 1 4.6 1.3c-1 1.1-2.2 1.4-2.2 3.2', 'M12 17.5h.01'],
+                check: ['m5 12 4 4L19 6'],
+                'circle-check': ['M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z', 'm8 12 3 3 5-5'],
+                phone: ['M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z'],
+                'phone-volume': ['M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z'],
+                hotline: ['M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z'],
+                location: ['M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z', 'M12 10a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z'],
+                'location-dot': ['M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z', 'M12 10a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z'],
+                gift: ['M3 9h18v4H3z', 'M5 13v8h14v-8', 'M12 9v12', 'M12 9H8.5a2.5 2.5 0 1 1 2.5-2.5V9Z', 'M12 9h3.5A2.5 2.5 0 1 0 13 6.5V9Z'],
+                chart: ['M4 19V5', 'M4 19h17', 'm7 15 4-4 3 2 5-6'],
+                'chart-area': ['M4 19V5', 'M4 19h17', 'm7 15 4-4 3 2 5-6'],
+                'gauge-high': ['M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z', 'm12 12 4-4'],
+                bell: ['M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9', 'M10 21h4'],
+                book: ['M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22V4.5Z', 'M4 5h13'],
+                file: ['M6 2h8l5 5v15H6z', 'M14 2v6h5', 'M9 13h7', 'M9 17h7'],
+                'file-medical': ['M6 2h8l5 5v15H6z', 'M14 2v6h5', 'M12 11v6', 'M9 14h6'],
+                'notes-medical': ['M6 2h8l5 5v15H6z', 'M14 2v6h5', 'M12 11v6', 'M9 14h6'],
+                'pen-to-square': ['M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7', 'M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z'],
+                'floppy-disk': ['M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z', 'M17 21v-8H7v8', 'M7 3v5h8'],
+                'folder-open': ['M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z'],
+                search: ['M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z', 'm17 17 4 4'],
+                'magnifying-glass': ['M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z', 'm17 17 4 4'],
+                chat: ['M21 11.5a8.4 8.4 0 0 1-9 8.4 9.5 9.5 0 0 1-4-.9L3 21l1.7-4.5a8 8 0 1 1 16.3-5Z'],
+                comments: ['M21 11.5a8.4 8.4 0 0 1-9 8.4 9.5 9.5 0 0 1-4-.9L3 21l1.7-4.5a8 8 0 1 1 16.3-5Z'],
+                refresh: ['M20 7v5h-5', 'M4 17v-5h5', 'M5.6 9a7 7 0 0 1 12-2L20 12', 'M18.4 15a7 7 0 0 1-12 2L4 12'],
+                spinner: ['M12 2v4', 'M12 18v4', 'M4.93 4.93l2.83 2.83', 'M16.24 16.24l2.83 2.83', 'M2 12h4', 'M18 12h4', 'M4.93 19.07l2.83-2.83', 'M16.24 7.76l2.83-2.83'],
+                'rotate-right': ['M20 7v5h-5', 'M5.6 9a7 7 0 0 1 12-2L20 12'],
+                warning: ['M12 3 2.7 20h18.6L12 3Z', 'M12 9v4', 'M12 17h.01'],
+                'triangle-exclamation': ['M12 3 2.7 20h18.6L12 3Z', 'M12 9v4', 'M12 17h.01'],
+                'circle-exclamation': ['M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z', 'M12 8v5', 'M12 16h.01'],
+                lock: ['M5 10h14v11H5z', 'M8 10V7a4 4 0 0 1 8 0v3', 'M12 14v3'],
+                box: ['M3 7 12 2l9 5-9 5-9-5Z', 'M3 7v10l9 5 9-5V7', 'M12 12v10'],
+                'box-open': ['M3 7 12 2l9 5-9 5-9-5Z', 'M3 7v10l9 5 9-5V7', 'M12 12v10'],
+                'layer-group': ['M12 2 2 7l10 5 10-5-10-5Z', 'm2 17 10 5 10-5', 'm2 12 10 5 10-5'],
+                percent: ['M19 5 5 19', 'M6.5 6.5h.01', 'M17.5 17.5h.01'],
+                eye: ['M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z', 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z'],
+                play: ['m8 5 12 7-12 7V5Z'],
+                qr: ['M3 3h7v7H3z', 'M14 3h7v7h-7z', 'M3 14h7v7H3z', 'M14 14h3v3h-3z', 'M19 14v2', 'M14 19h2', 'M19 19h2v2h-2z'],
+                qrcode: ['M3 3h7v7H3z', 'M14 3h7v7h-7z', 'M3 14h7v7H3z', 'M14 14h3v3h-3z', 'M19 14v2', 'M14 19h2', 'M19 19h2v2h-2z'],
+                tag: ['m20 13-7 7-10-10V3h7l10 10Z', 'M7 7h.01'],
+                tags: ['m20 13-7 7-10-10V3h7l10 10Z', 'M7 7h.01'],
+                wallet: ['M3 5h17v15H3z', 'M3 8h17', 'M16 14h4'],
+                'money-bill-wave': ['M2 6h20v12H2z', 'M6 12h.01', 'M18 12h.01', 'M12 12a3 3 0 1 0 0-1'],
+                users: ['M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2', 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z', 'M20 21v-2a4 4 0 0 0-3-3.9', 'M16 3.1a4 4 0 0 1 0 7.8'],
+                'id-badge': ['M16 2H8a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z', 'M12 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4z', 'M8 17a4 4 0 0 1 8 0'],
+                terminal: ['M4 5h16v14H4z', 'm7 9 3 3-3 3', 'M12 15h4'],
+                trash: ['M3 6h18', 'M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6', 'M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2', 'M10 11v6', 'M14 11v6'],
+                'trash-can': ['M3 6h18', 'M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6', 'M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2', 'M10 11v6', 'M14 11v6'],
+                bars: ['M4 6h16', 'M4 12h16', 'M4 18h16'],
+                menu: ['M4 6h16', 'M4 12h16', 'M4 18h16'],
+                brain: ['M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04Z', 'M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-2.04Z'],
+                robot: ['M12 2v2', 'M4 8h16v12H4z', 'M9 13v.01', 'M15 13v.01', 'M9 17h6'],
+                server: ['M2 4h20v6H2z', 'M2 14h20v6H2z', 'M6 7h.01', 'M6 17h.01'],
+                'laptop-code': ['M4 6h16v10H4z', 'M2 18h20', 'm9 9-2 2 2 2', 'm15 9 2 2-2 2'],
+                'vial-circle-check': ['m16 2-2 2v8a4 4 0 0 1-8 0V4L4 2', 'm15 15 2 2 4-4'],
+                'network-wired': ['M12 12 5 5', 'M12 12l7-7', 'M12 12l-7 7', 'M12 12l7 7', 'M9 3H3v6h6z', 'M21 3h-6v6h6z', 'M9 15H3v6h6z', 'M21 15h-6v6h6z'],
+                briefcase: ['M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16', 'M2 7h20v13a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7z'],
+                database: ['M21 5c0 1.66-4 3-9 3s-9-1.34-9-3 4-3 9-3 9 1.34 9 3z', 'M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5', 'M3 12c0 1.66 4 3 9 3s9-1.34 9-3'],
+                stethoscope: ['M4.5 3v5a4.5 4.5 0 0 0 9 0V3', 'M9 12.5v3.5a3 3 0 0 0 6 0v-2', 'M15 12h2v4a2 2 0 1 0 4 0v-1a2 2 0 1 0-4 0'],
+                fire: ['M12 2c1.5 3 4 5.5 4 8.5 0 3.59-2.91 6.5-6.5 6.5A6.5 6.5 0 0 1 3 10.5c0-1.5 1-3.5 2-4.5.5 2 1.5 3 3 3 0-3 1.5-5.5 4-7Z'],
+                bolt: ['M13 2 3 14h9l-1 8 10-12h-9l1-8Z'],
+                door: ['M18 20V6a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v14', 'M2 20h20', 'M14 12v.01'],
+                'door-open': ['M13 4h3a2 2 0 0 1 2 2v14M2 20h20', 'm13 4-9 3v13h9V4Z'],
+                paperplane: ['m22 2-7 20-4-9-9-4Z', 'M22 2 11 13'],
+                'paper-plane': ['m22 2-7 20-4-9-9-4Z', 'M22 2 11 13'],
+                reply: ['m9 14-5-5 5-5', 'M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v2.5'],
+                'circle-xmark': ['M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z', 'm15 9-6 6', 'm9 9 6 6'],
+                'clipboard-check': ['M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2', 'M9 2h6a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z', 'm9 14 2 2 4-4'],
+                heart: ['M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z'],
+                'arrows-up-down': ['m7 15 5 5 5-5', 'M12 9v11', 'm7 9 5-5 5 5', 'M12 4v11']
+            };
+
+            const paths = map[key] || map.sparkle;
+            const isFilled = key === 'star' || key === 'crown';
+            const spinClass = (options.spin || key === 'spinner') ? ' ui-icon-spin animate-spin' : '';
+
+            return `<svg class="${cls}${spinClass} ui-icon" viewBox="0 0 24 24" width="1em" height="1em" fill="${isFilled ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${paths.map(d => `<path d="${d}"/>`).join('')}</svg>`;
+        },
+
+        /**
+         * Render Icon helper for templates
+         */
+        renderIcon: function (iconKey, options = {}) {
+            let cls = typeof options === 'string' ? options : (options.className || '');
+            let key = String(iconKey || '').trim();
+
+            if (key.includes(' ')) {
+                const parts = key.split(/\s+/);
+                const extra = parts.filter(p => !['fa-solid', 'fa-regular', 'fa-brands', 'fa-fw', 'fa-spin', 'fa-pulse', 'fa-lg', 'fa-xs', 'fa-sm'].includes(p) && !p.startsWith('fa-'));
+                if (extra.length > 0) {
+                    cls = (cls ? cls + ' ' : '') + extra.join(' ');
+                }
+                const hasSpin = parts.includes('fa-spin') || parts.includes('animate-spin');
+                if (hasSpin && typeof options === 'object') options.spin = true;
+                const faPart = parts.find(p => p.startsWith('fa-') && !['fa-solid', 'fa-regular', 'fa-brands', 'fa-spin'].includes(p));
+                if (faPart) key = faPart;
             }
+
+            if (key.startsWith('fa-')) key = key.slice(3);
+            return DentalIcons.getUiSvg(key, typeof options === 'object' ? Object.assign({}, options, { className: cls }) : { className: cls });
         },
 
         /**

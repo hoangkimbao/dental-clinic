@@ -145,6 +145,15 @@ document.addEventListener('DOMContentLoaded', () => {
             closeCartModal();
             closeAuthModal();
             if (typeof closeProductPackagingModal === 'function') closeProductPackagingModal();
+            if (typeof closeStaffCreateModal === 'function') closeStaffCreateModal();
+            if (typeof closeCouponCreateModal === 'function') closeCouponCreateModal();
+            if (typeof closeAiWriterModal === 'function') closeAiWriterModal();
+            if (typeof closeHandbookArticleModal === 'function') closeHandbookArticleModal();
+            if (typeof closeForumPostModal === 'function') closeForumPostModal();
+            if (typeof closeItteamMemoryModal === 'function') closeItteamMemoryModal();
+            document.querySelectorAll('[id$="-modal"]:not(.hidden)').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.modal-overlay.active').forEach(el => el.classList.remove('active'));
+            document.body.classList.remove('overflow-hidden');
             document.body.classList.remove('modal-open');
         }
     });
@@ -484,7 +493,7 @@ function renderDynamicRoleView() {
 
     // 0. IT ADMIN / QUẢN TRỊ VIÊN (ROLE_ADMIN) -> TRUY CẬP ĐẶC VỤ IT VÀ QUẢN TRỊ TOÀN DIỆN
     if (role === 'ROLE_ADMIN') {
-        portalTitle.innerHTML = `<i class="fa-solid fa-terminal text-teal-400"></i> IT Command Center &amp; Quản Trị Hệ Thống`;
+        portalTitle.innerHTML = `${DentalIcons.renderIcon('terminal', { className: 'w-4 h-4 text-teal-400 inline-block mr-1.5' })} IT Command Center &amp; Quản Trị Hệ Thống`;
         if (tabDashboard) tabDashboard.style.display = 'flex';
         if (tabAppointments) {
             tabAppointments.style.display = 'flex';
@@ -516,7 +525,7 @@ function renderDynamicRoleView() {
 
     // 1. KHÁCH HÀNG / BỆNH NHÂN (ROLE_PATIENT) -> 100% KHÔNG THẤY DASHBOARD & STAFF TABS
     if (role === 'ROLE_PATIENT') {
-        portalTitle.innerHTML = `<i class="fa-solid fa-user text-brand-400"></i> Cổng Chăm Sóc Khách Hàng`;
+        portalTitle.innerHTML = `${DentalIcons.renderIcon('user', { className: 'w-4 h-4 text-brand-400 inline-block mr-1.5' })} Cổng Chăm Sóc Khách Hàng`;
         if (tabDashboard) tabDashboard.style.display = 'none';
         if (tabShifts) tabShifts.style.display = 'none';
         const tabCoupons = document.getElementById('tab-coupons'); if (tabCoupons) tabCoupons.style.display = 'none';
@@ -539,7 +548,7 @@ function renderDynamicRoleView() {
     } 
     // 2. CHỦ PHÒNG & LỄ TÂN (ROLE_OWNER, ROLE_RECEPTIONIST) -> MỞ DASHBOARD & QUẢN LÝ ƯU ĐÃI & STAFF TABS
     else if (['ROLE_OWNER', 'ROLE_RECEPTIONIST'].includes(role)) {
-        portalTitle.innerHTML = `<i class="fa-solid fa-gauge-high text-brand-400"></i> Khu Quản Trị &amp; Điều Phối`;
+        portalTitle.innerHTML = `${DentalIcons.renderIcon('gauge-high', { className: 'w-4 h-4 text-brand-400 inline-block mr-1.5' })} Khu Quản Trị &amp; Điều Phối`;
         if (tabDashboard) tabDashboard.style.display = 'flex';
         if (tabAppointments) {
             tabAppointments.style.display = 'flex';
@@ -570,7 +579,7 @@ function renderDynamicRoleView() {
     }
     // 3. NHA SĨ (ROLE_DENTIST) -> KHÔNG VÀO DASHBOARD
     else if (role === 'ROLE_DENTIST') {
-        portalTitle.innerHTML = `<i class="fa-solid fa-stethoscope text-brand-400"></i> Không Gian Làm Việc Bác Sĩ`;
+        portalTitle.innerHTML = `${DentalIcons.renderIcon('stethoscope', { className: 'w-4 h-4 text-brand-400 inline-block mr-1.5' })} Không Gian Làm Việc Bác Sĩ`;
         if (tabDashboard) tabDashboard.style.display = 'none';
         if (tabShifts) tabShifts.style.display = 'none';
         const tabCoupons = document.getElementById('tab-coupons'); if (tabCoupons) tabCoupons.style.display = 'none';
@@ -596,7 +605,7 @@ function renderDynamicRoleView() {
     }
     // 4. PHỤ TÁ & TẠP VỤ -> KHÔNG VÀO DASHBOARD
     else {
-        portalTitle.innerHTML = `<i class="fa-solid fa-clipboard-check text-brand-400"></i> Lịch Trực &amp; Nhiệm Vụ Ca`;
+        portalTitle.innerHTML = `${DentalIcons.renderIcon('clipboard-check', { className: 'w-4 h-4 text-brand-400 inline-block mr-1.5' })} Lịch Trực &amp; Nhiệm Vụ Ca`;
         if (tabDashboard) tabDashboard.style.display = 'none';
         if (tabAppointments) tabAppointments.style.display = 'none';
         if (tabEMR) tabEMR.style.display = 'none';
@@ -846,7 +855,7 @@ async function simulateDepositPayment() {
 
             document.getElementById('qr-active').innerHTML = `
                 <div class="p-4 bg-emerald-50 text-emerald-800 rounded-xl font-bold text-xs space-y-1">
-                    <i class="fa-solid fa-circle-check text-emerald-600 text-2xl mb-1"></i>
+                    <div class="flex justify-center">${DentalIcons.renderIcon('circle-check', { className: 'w-7 h-7 text-emerald-600 mb-1' })}</div>
                     <div>ĐÃ GHI NHẬN GIAO DỊCH MÔ PHỎNG</div>
                     <div class="text-[10px] text-emerald-600 font-mono">Mã thử nghiệm: ${escapeHtml(data.transactionCode)}</div>
                     <div class="text-[10px] text-slate-500">Không phải xác nhận thanh toán thật.</div>
@@ -1007,27 +1016,27 @@ async function loadAppointments() {
                 <td class="py-3.5 px-4 text-right space-x-1">
                     ${(currentUser && ['ROLE_OWNER', 'ROLE_RECEPTIONIST'].includes(currentUser.role) && a.status === 'DEPOSIT_PAID') ? `
                         <button onclick="updateStatus(${a.id}, 'CONFIRMED')" class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-1 rounded text-[11px] font-bold shadow-sm transition hover:scale-105 active:scale-95 cursor-pointer">
-                            <i class="fa-solid fa-check mr-1"></i>Xác nhận
+                            ${DentalIcons.renderIcon('check', { className: 'w-3 h-3 mr-1 inline-block' })}Xác nhận
                         </button>
                     ` : ''}
                     ${(currentUser && ['ROLE_OWNER', 'ROLE_RECEPTIONIST'].includes(currentUser.role) && a.status === 'PENDING') ? `
                         <button onclick="updateStatus(${a.id}, 'CONFIRMED')" title="Thu cọc / Xác nhận tại quầy" class="bg-amber-600/80 hover:bg-amber-600 text-white px-2.5 py-1 rounded text-[11px] font-bold shadow-sm transition cursor-pointer">
-                            <i class="fa-solid fa-money-bill-wave mr-1"></i>Thu cọc & Xác nhận
+                            ${DentalIcons.renderIcon('money-bill-wave', { className: 'w-3 h-3 mr-1 inline-block' })}Thu cọc & Xác nhận
                         </button>
                     ` : ''}
                     ${(currentUser && ['ROLE_OWNER', 'ROLE_DENTIST'].includes(currentUser.role) && a.status === 'CONFIRMED') ? `
                         <button onclick="updateStatus(${a.id}, 'COMPLETED')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded text-[11px] font-bold shadow-sm transition hover:scale-105 active:scale-95 cursor-pointer">
-                            <i class="fa-solid fa-stethoscope mr-1"></i>Khám xong
+                            ${DentalIcons.renderIcon('stethoscope', { className: 'w-3 h-3 mr-1 inline-block' })}Khám xong
                         </button>
                     ` : ''}
                     ${(currentUser && ['ROLE_RECEPTIONIST'].includes(currentUser.role) && a.status === 'CONFIRMED') ? `
                         <span class="inline-flex items-center gap-1 text-[11px] font-bold text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/20">
-                            <i class="fa-solid fa-circle-check"></i> Đã đón tiếp
+                            ${DentalIcons.renderIcon('circle-check', { className: 'w-3 h-3 inline-block' })} Đã đón tiếp
                         </span>
                     ` : ''}
                     ${(a.status === 'COMPLETED') ? `
                         <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                            <i class="fa-solid fa-circle-check"></i> Hoàn tất
+                            ${DentalIcons.renderIcon('circle-check', { className: 'w-3 h-3 inline-block' })} Hoàn tất
                         </span>
                     ` : ''}
                 </td>
@@ -1201,7 +1210,7 @@ async function loadNotifications() {
         container.innerHTML = notifs.map(n => `
             <div class="p-4 rounded-2xl bg-slate-900 border border-slate-700 shadow-sm flex items-start space-x-3">
                 <div class="w-8 h-8 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center text-xs font-bold mt-0.5">
-                    <i class="fa-solid fa-bell"></i>
+                    ${DentalIcons.renderIcon('bell', { className: 'w-4 h-4' })}
                 </div>
                 <div class="flex-1">
                     <div class="flex justify-between items-center">
@@ -1229,11 +1238,11 @@ function showToast(msg) {
     toast.className = 'pointer-events-auto bg-slate-950/95 text-white text-xs font-bold px-4 py-3 rounded-2xl shadow-2xl flex items-center justify-between gap-3 border border-slate-700/80 backdrop-blur-md transition-all duration-300 transform translate-y-2 opacity-0';
     toast.innerHTML = `
         <div class="flex items-center gap-2.5">
-            <i class="fa-solid fa-circle-check text-brand-400 text-sm"></i>
+            ${DentalIcons.renderIcon('circle-check', { className: 'w-4 h-4 text-brand-400 shrink-0 inline-block' })}
             <span class="leading-snug">${msg}</span>
         </div>
         <button onclick="this.parentElement.remove()" class="text-slate-500 hover:text-white transition ml-2 cursor-pointer">
-            <i class="fa-solid fa-xmark"></i>
+            ${DentalIcons.renderIcon('xmark', { className: 'w-3.5 h-3.5 inline-block' })}
         </button>
     `;
     container.appendChild(toast);
@@ -1424,7 +1433,7 @@ async function validateBookingCoupon() {
     const code = input.value.trim().toUpperCase();
     if (!code) {
         msgEl.className = 'mt-2 p-2.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-2';
-        msgEl.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Vui lòng nhập mã ưu đãi!';
+        msgEl.innerHTML = `${DentalIcons.renderIcon('circle-exclamation', { className: 'w-4 h-4 text-rose-600 shrink-0 inline-block' })} Vui lòng nhập mã ưu đãi!`;
         msgEl.classList.remove('hidden');
         return;
     }
@@ -1450,26 +1459,26 @@ async function validateBookingCoupon() {
         } else {
             appliedCouponData = null;
             msgEl.className = 'mt-2 p-2.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-2';
-            msgEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${res.data?.message || 'Mã ưu đãi không hợp lệ!'}`;
+            msgEl.innerHTML = `${DentalIcons.renderIcon('triangle-exclamation', { className: 'w-4 h-4 text-rose-600 shrink-0 inline-block' })} ${res.data?.message || 'Mã ưu đãi không hợp lệ!'}`;
             msgEl.classList.remove('hidden');
             return;
         }
 
         msgEl.className = 'mt-2 p-2.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 flex items-center gap-2 animate-fadeIn';
-        msgEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i> <div><b>${appliedCouponData.title}</b>: <span class="text-rose-600 font-extrabold">${appliedCouponData.discountDescription}</span> (Đã áp dụng thành công!)</div>`;
+        msgEl.innerHTML = `${DentalIcons.renderIcon('circle-check', { className: 'w-4 h-4 text-emerald-600 shrink-0 inline-block' })} <div><b>${appliedCouponData.title}</b>: <span class="text-rose-600 font-extrabold">${appliedCouponData.discountDescription}</span> (Đã áp dụng thành công!)</div>`;
         msgEl.classList.remove('hidden');
         showToast(`🎉 Áp dụng thành công mã voucher: ${code}!`);
     } catch (err) {
         if (localCoupons[code]) {
             appliedCouponData = localCoupons[code];
             msgEl.className = 'mt-2 p-2.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 flex items-center gap-2 animate-fadeIn';
-            msgEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i> <div><b>${appliedCouponData.title}</b>: <span class="text-rose-600 font-extrabold">${appliedCouponData.discountDescription}</span> (Đã áp dụng thành công!)</div>`;
+            msgEl.innerHTML = `${DentalIcons.renderIcon('circle-check', { className: 'w-4 h-4 text-emerald-600 shrink-0 inline-block' })} <div><b>${appliedCouponData.title}</b>: <span class="text-rose-600 font-extrabold">${appliedCouponData.discountDescription}</span> (Đã áp dụng thành công!)</div>`;
             msgEl.classList.remove('hidden');
             showToast(`🎉 Áp dụng thành công mã voucher: ${code}!`);
         } else {
             appliedCouponData = null;
             msgEl.className = 'mt-2 p-2.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-2';
-            msgEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Mã voucher không tồn tại hoặc đã hết hạn!';
+            msgEl.innerHTML = `${DentalIcons.renderIcon('triangle-exclamation', { className: 'w-4 h-4 text-rose-600 shrink-0 inline-block' })} Mã voucher không tồn tại hoặc đã hết hạn!`;
             msgEl.classList.remove('hidden');
         }
     }
@@ -1578,7 +1587,7 @@ async function loadDashboardCoupons() {
                 </td>
                 <td class="py-3.5 px-4 text-right">
                     <button onclick="deleteCoupon(${c.id}, '${c.code}')" class="text-rose-400 hover:text-rose-300 font-bold text-xs p-1.5 hover:bg-rose-500/20 rounded-lg transition cursor-pointer" title="Xóa mã">
-                        <i class="fa-solid fa-trash-can"></i>
+                        ${DentalIcons.renderIcon('trash-can', { className: 'w-3.5 h-3.5' })}
                     </button>
                 </td>
             </tr>
@@ -1890,9 +1899,9 @@ async function submitAiArticle(publishImmediately) {
             previewBox.innerHTML = `
                 <div class="font-black text-slate-900 text-sm mb-1">${article.title}</div>
                 <div class="text-[11px] text-slate-500 mb-2 flex items-center gap-3">
-                    <span><i class="fa-solid fa-user-doctor text-purple-600"></i> ${article.authorName || doctorName}</span>
-                    <span><i class="fa-regular fa-clock text-amber-500"></i> ${article.readTime || '5 phút đọc'}</span>
-                    <span class="text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Đã kích hoạt SEO URL: /${article.slug}</span>
+                    <span class="inline-flex items-center gap-1">${DentalIcons.renderIcon('user-doctor', { className: 'w-3 h-3 text-purple-600 inline-block' })} ${article.authorName || doctorName}</span>
+                    <span class="inline-flex items-center gap-1">${DentalIcons.renderIcon('clock', { className: 'w-3 h-3 text-amber-500 inline-block' })} ${article.readTime || '5 phút đọc'}</span>
+                    <span class="text-emerald-600 font-bold inline-flex items-center gap-1">${DentalIcons.renderIcon('check', { className: 'w-3 h-3 inline-block' })} Đã kích hoạt SEO URL: /${article.slug}</span>
                 </div>
                 <p class="text-[11px] text-slate-600 line-clamp-2 italic">${article.summary || ''}</p>
                 <div class="pt-2 flex items-center gap-2">
@@ -1965,7 +1974,7 @@ async function loadDynamicArticles() {
                     </div>
                     <div class="flex items-center justify-between pt-3 border-t border-slate-100 text-[11px] text-brand-700 font-bold">
                         <span>Đọc tiếp ➔</span>
-                        <span class="text-slate-600 font-medium"><i class="fa-regular fa-clock"></i> ${art.readTime || '5 phút đọc'}</span>
+                        <span class="text-slate-600 font-medium inline-flex items-center gap-1">${DentalIcons.renderIcon('clock', { className: 'w-3 h-3 inline-block' })} ${art.readTime || '5 phút đọc'}</span>
                     </div>
                 </div>
             `;
@@ -2277,7 +2286,7 @@ function renderDentalServices(services) {
     if (!services || services.length === 0) {
         grid.innerHTML = `
             <div class="col-span-full text-center py-12 text-slate-400 text-xs">
-                <i class="fa-solid fa-folder-open text-3xl mb-2 text-slate-300"></i>
+                <div class="flex justify-center mb-2">${DentalIcons.renderIcon('folder-open', { className: 'w-8 h-8 text-slate-300' })}</div>
                 <p>Chưa tìm thấy dịch vụ trong chuyên mục này.</p>
             </div>`;
         return;
@@ -2303,7 +2312,7 @@ function renderDentalServices(services) {
                         </div>
                         ${svc.isFeatured ? `
                             <span class="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider bg-rose-50 text-rose-600 border border-rose-200 px-2.5 py-0.5 rounded-full">
-                                <i class="fa-solid fa-fire text-rose-500"></i> Nổi Bật
+                                ${DentalIcons.renderIcon('fire', { className: 'w-3 h-3 text-rose-500 inline-block mr-1' })} Nổi Bật
                             </span>` : ''}
                     </div>
                     <span class="text-[10px] font-extrabold uppercase tracking-widest text-slate-600 font-mono">${svc.code || ''}</span>
@@ -2318,7 +2327,7 @@ function renderDentalServices(services) {
                 <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
                     <div>
                         <div class="text-[10px] text-slate-600 font-semibold flex items-center gap-1">
-                            <i class="fa-regular fa-clock"></i> ${svc.durationMinutes || 45} phút
+                            ${DentalIcons.renderIcon('clock', { className: 'w-3 h-3 inline-block mr-1' })} ${svc.durationMinutes || 45} phút
                         </div>
                         <div class="text-sm font-black text-brand-700">
                             ${formatVND(svc.price)}
@@ -2326,7 +2335,7 @@ function renderDentalServices(services) {
                     </div>
                     <button type="button" onclick="selectServiceForBooking('${svc.name.replace(/'/g, "\\'")}')" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer">
                         <span>Đặt Lịch</span>
-                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        ${DentalIcons.renderIcon('arrow-right', { className: 'w-3 h-3' })}
                     </button>
                 </div>
             </div>`;
@@ -2424,7 +2433,7 @@ function renderDentalProducts(products) {
     if (!products || products.length === 0) {
         grid.innerHTML = `
             <div class="col-span-full text-center py-12 text-slate-400 text-xs">
-                <i class="fa-solid fa-box-open text-3xl mb-2 text-slate-300"></i>
+                <div class="flex justify-center mb-2">${DentalIcons.renderIcon('box-open', { className: 'w-8 h-8 text-slate-300' })}</div>
                 <p>Chưa có sản phẩm trong danh mục này.</p>
             </div>`;
         return;
@@ -2531,7 +2540,7 @@ function openProductPackagingModal(productId) {
                             ${opt.discountPercent > 0 ? `<span class="bg-rose-100 text-rose-700 text-[10px] px-2 py-0.5 rounded-full font-black uppercase">-${opt.discountPercent}% Tiết Kiệm</span>` : ''}
                         </div>
                         <div class="text-[11px] text-slate-500 mt-0.5">
-                            ${opt.bonusGifts ? `<i class="fa-solid fa-gift text-amber-500 mr-1"></i>Tặng kèm: <b>${opt.bonusGifts}</b>` : 'Quy cách chuẩn nha khoa'}
+                            ${opt.bonusGifts ? `${DentalIcons.renderIcon('gift', { className: 'w-3.5 h-3.5 text-amber-500 mr-1 inline-block' })}Tặng kèm: <b>${opt.bonusGifts}</b>` : 'Quy cách chuẩn nha khoa'}
                         </div>
                     </div>
                 </div>
@@ -2665,7 +2674,7 @@ function renderCart() {
     if (cartItems.length === 0) {
         container.innerHTML = `
             <div class="text-center py-16 text-slate-400 space-y-3">
-                <i class="fa-solid fa-cart-shopping text-4xl text-slate-300"></i>
+                <div class="flex justify-center mb-2">${DentalIcons.renderIcon('cart-shopping', { className: 'w-10 h-10 text-slate-300' })}</div>
                 <div class="text-xs font-bold text-slate-600">Giỏ hàng của bạn đang trống</div>
                 <p class="text-[11px] text-slate-400">Hãy dạo xem các sản phẩm chăm sóc răng miệng chính hãng nhé!</p>
             </div>`;
@@ -2689,7 +2698,7 @@ function renderCart() {
                     <button type="button" onclick="updateCartItemQty(${idx}, 1)" aria-label="Tăng số lượng" class="w-11 h-11 min-w-[44px] min-h-[44px] text-sm text-slate-700 hover:bg-slate-200 flex items-center justify-center font-bold active:bg-slate-300 transition-colors">+</button>
                 </div>
                 <button type="button" onclick="removeCartItem(${idx})" aria-label="Xóa sản phẩm" class="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl p-1 transition cursor-pointer" title="Xóa khỏi giỏ">
-                    <i class="fa-solid fa-trash-can text-sm"></i>
+                    ${DentalIcons.renderIcon('trash-can', { className: 'w-3.5 h-3.5' })}
                 </button>
             </div>
         </div>
@@ -2745,7 +2754,7 @@ async function submitDentalOrder() {
     const submitBtn = document.getElementById('btn-submit-order');
     if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Đang tạo đơn hàng...';
+        submitBtn.innerHTML = `${DentalIcons.renderIcon('spinner', { className: 'w-3.5 h-3.5 mr-1 inline-block animate-spin', spin: true })} Đang tạo đơn hàng...`;
     }
 
     try {
@@ -2771,7 +2780,7 @@ async function submitDentalOrder() {
     } finally {
         if (submitBtn) {
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fa-solid fa-bag-shopping"></i> Đặt Hàng Ngay (1-Click)';
+            submitBtn.innerHTML = `${DentalIcons.renderIcon('bag-shopping', { className: 'w-3.5 h-3.5 mr-1 inline-block' })} Đặt Hàng Ngay (1-Click)`;
         }
     }
 }
@@ -2794,7 +2803,7 @@ async function searchWarranty() {
         resultCard.classList.remove('hidden');
         resultCard.innerHTML = `
             <div class="text-center py-6 text-slate-400">
-                <i class="fa-solid fa-spinner animate-spin text-2xl text-sky-400 mb-2"></i>
+                <div class="flex justify-center mb-2">${DentalIcons.renderIcon('spinner', { className: 'w-7 h-7 text-sky-400 animate-spin', spin: true })}</div>
                 <div class="text-xs">Đang truy vấn cơ sở dữ liệu phôi sứ chính hãng...</div>
             </div>`;
 
@@ -2811,7 +2820,7 @@ async function searchWarranty() {
                     <div class="flex items-center justify-between border-b border-slate-700/80 pb-3">
                         <div class="flex items-center gap-2.5">
                             <div class="w-10 h-10 rounded-xl bg-slate-900 border border-sky-500/50 p-1 flex items-center justify-center shrink-0">
-                                ${window.DentalIcons ? window.DentalIcons.getBadgeSvg('WARRANTY', { className: 'w-full h-full' }) : '<i class="fa-solid fa-shield-halved text-sky-400 text-lg"></i>'}
+                                ${window.DentalIcons ? window.DentalIcons.getBadgeSvg('WARRANTY', { className: 'w-full h-full' }) : DentalIcons.renderIcon('shield-halved', { className: 'w-5 h-5 text-sky-400' })}
                             </div>
                             <div>
                                 <span class="text-[10px] text-sky-300 font-extrabold uppercase tracking-widest">Thẻ Bảo Hành Điện Tử</span>
@@ -2852,13 +2861,13 @@ async function searchWarranty() {
 
                     <div class="pt-3 border-t border-slate-700/80 flex items-center justify-between text-[11px] text-slate-400">
                         <span class="font-mono text-[10px]">QR Code: ${wr.qrVerificationCode}</span>
-                        <span class="text-emerald-400 font-bold"><i class="fa-solid fa-circle-check"></i> Xác thực nguồn gốc 100%</span>
+                        <span class="text-emerald-400 font-bold inline-flex items-center gap-1">${DentalIcons.renderIcon('circle-check', { className: 'w-3.5 h-3.5 inline-block' })} Xác thực nguồn gốc 100%</span>
                     </div>
                 </div>`;
         } else {
             resultCard.innerHTML = `
                 <div class="p-4 rounded-xl bg-rose-950/40 border border-rose-800 text-rose-300 text-xs text-center space-y-1">
-                    <i class="fa-solid fa-triangle-exclamation text-rose-400 text-lg"></i>
+                    <div class="flex justify-center mb-1">${DentalIcons.renderIcon('triangle-exclamation', { className: 'w-6 h-6 text-rose-400' })}</div>
                     <p class="font-bold">Không tìm thấy thông tin thẻ bảo hành với từ khóa "${query}"</p>
                     <p class="text-[11px] text-rose-400">Vui lòng kiểm tra lại mã số in trên thẻ cứng hoặc liên hệ hotline phòng khám để được hỗ trợ.</p>
                 </div>`;
@@ -2993,7 +3002,7 @@ async function runAiDiagnostic() {
         };
 
         let diag = null;
-        const res = await fetch('/api/ai/diagnose', {
+        const res = await fetch('/api/dental-ai/diagnose', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -3042,7 +3051,7 @@ async function runAiDiagnostic() {
                     <div class="flex items-center justify-between border-b border-slate-200 pb-3">
                         <div class="flex items-center gap-2.5">
                             <div class="w-11 h-11 rounded-xl bg-purple-950 p-1 border border-purple-500/40 flex items-center justify-center shrink-0">
-                                ${window.DentalIcons ? window.DentalIcons.getBadgeSvg('AI_DOCTOR', { className: 'w-full h-full' }) : '<i class="fa-solid fa-brain text-purple-400"></i>'}
+                                ${window.DentalIcons ? window.DentalIcons.getBadgeSvg('AI_DOCTOR', { className: 'w-full h-full' }) : DentalIcons.renderIcon('brain', { className: 'w-5 h-5 text-purple-400' })}
                             </div>
                             <div>
                                 <span class="text-[10px] text-purple-700 font-black uppercase tracking-wider">Kết Quả Chẩn Đoán AI</span>
@@ -3069,7 +3078,7 @@ async function runAiDiagnostic() {
 
                     <div class="bg-purple-50/70 p-4 rounded-2xl border border-purple-200/80 space-y-2 text-xs">
                         <div class="font-bold text-purple-900 flex items-center gap-1.5">
-                            <i class="fa-solid fa-user-doctor text-purple-700"></i> Phác đồ & Lời khuyên điều trị:
+                            ${DentalIcons.renderIcon('user-doctor', { className: 'w-4 h-4 text-purple-700 inline-block mr-1' })} Phác đồ & Lời khuyên điều trị:
                         </div>
                         <p class="text-purple-950 font-medium leading-relaxed">${treatmentAdvice}</p>
                         <div class="flex items-center justify-between pt-2 border-t border-purple-200 text-[11px]">
@@ -3080,7 +3089,7 @@ async function runAiDiagnostic() {
 
                     <div class="flex gap-2">
                         <button type="button" onclick="prefillBookingService('${safePathologyForClick}')" class="flex-1 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-black shadow-md transition flex items-center justify-center gap-1.5 cursor-pointer">
-                            <i class="fa-solid fa-calendar-check"></i> Đặt Lịch Khám Ngay
+                            ${DentalIcons.renderIcon('calendar-check', { className: 'w-4 h-4 inline-block mr-1' })} Đặt Lịch Khám Ngay
                         </button>
                     </div>
                 </div>`;
@@ -3093,7 +3102,7 @@ async function runAiDiagnostic() {
                     <h4 class="text-sm font-bold text-slate-800">Không thể kết nối đến máy chủ Bác sĩ AI</h4>
                     <p class="text-xs text-slate-500">Mạng chậm hoặc máy chủ AI phản hồi quá thời gian cho phép. Quý khách vui lòng thử lại.</p>
                     <button type="button" onclick="runAiDiagnostic()" class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition shadow-sm cursor-pointer inline-flex items-center gap-2">
-                        <i class="fa-solid fa-rotate-right"></i> Thử Lại Ngay
+                        ${DentalIcons.renderIcon('rotate-right', { className: 'w-3.5 h-3.5 inline-block mr-1' })} Thử Lại Ngay
                     </button>
                 </div>`;
             result.classList.remove('hidden');
@@ -3107,7 +3116,7 @@ async function runAiDiagnostic() {
                 <h4 class="text-sm font-bold text-slate-800">Lỗi kết nối Bác sĩ AI</h4>
                 <p class="text-xs text-slate-500">Không thể xử lý yêu cầu lúc này. Quý khách vui lòng thử lại hoặc gọi hotline.</p>
                 <button type="button" onclick="runAiDiagnostic()" class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition shadow-sm cursor-pointer inline-flex items-center gap-2">
-                    <i class="fa-solid fa-rotate-right"></i> Thử Lại Ngay
+                    ${DentalIcons.renderIcon('rotate-right', { className: 'w-3.5 h-3.5 inline-block mr-1' })} Thử Lại Ngay
                 </button>
             </div>`;
         result.classList.remove('hidden');
@@ -3171,7 +3180,7 @@ function renderReviews(reviews) {
     container.innerHTML = reviews.map(rev => {
         const stars = Math.min(5, Math.max(1, rev.rating || 5));
         const starsHtml = Array.from({ length: 5 }, (_, i) => 
-            `<i class="fa-solid fa-star ${i < stars ? 'text-amber-400' : 'text-slate-600'}"></i>`
+            DentalIcons.renderIcon('star', { className: `w-4 h-4 inline-block ${i < stars ? 'text-amber-400' : 'text-slate-600'}` })
         ).join('');
         const doctorName = String(rev.doctorName || 'Bác sĩ DentalCare');
         const treatment = rev.treatmentType || rev.treatment || 'Dịch vụ nha khoa';
@@ -3184,7 +3193,7 @@ function renderReviews(reviews) {
                             ${starsHtml}
                         </div>
                         <span class="verified-badge inline-flex items-center gap-1 text-[11px] font-bold text-teal-400 bg-teal-950/80 border border-teal-800 px-2.5 py-0.5 rounded-full">
-                            <i class="fa-solid fa-circle-check"></i> ${escapeHtml(treatment)}
+                            ${DentalIcons.renderIcon('circle-check', { className: 'w-3 h-3 inline-block mr-1' })} ${escapeHtml(treatment)}
                         </span>
                     </div>
                     <blockquote class="text-slate-300 text-sm leading-relaxed italic quote">
@@ -3281,17 +3290,17 @@ function renderBranches(branches, nearestId = null, distanceKm = null) {
 
                     <h3 class="text-sm font-black text-white mb-2 leading-snug">${b.branchName}</h3>
                     <p class="text-xs text-slate-300 mb-3 flex items-start gap-2">
-                        <span class="w-4 h-4 shrink-0 mt-0.5 inline-block">${window.DentalIcons ? window.DentalIcons.getBadgeSvg('BRANCH_MAP', { className: 'w-full h-full' }) : '<i class="fa-solid fa-location-dot text-teal-400"></i>'}</span>
+                        <span class="w-4 h-4 shrink-0 mt-0.5 inline-block">${window.DentalIcons ? window.DentalIcons.getBadgeSvg('BRANCH_MAP', { className: 'w-full h-full' }) : DentalIcons.renderIcon('location-dot', { className: 'w-4 h-4 text-teal-400' })}</span>
                         <span>${b.address}</span>
                     </p>
 
                     <div class="space-y-1.5 text-xs text-slate-400 mb-4">
                         <div class="flex items-center gap-1.5">
-                            <i class="fa-solid fa-phone text-amber-400 text-[11px]"></i>
+                            ${DentalIcons.renderIcon('phone', { className: 'w-3 h-3 text-amber-400 inline-block mr-1' })}
                             <a href="tel:${b.phone}" class="hover:text-white font-bold">${b.phone}</a>
                         </div>
                         <div class="flex items-center gap-1.5">
-                            <i class="fa-solid fa-clock text-sky-400 text-[11px]"></i>
+                            ${DentalIcons.renderIcon('clock', { className: 'w-3 h-3 text-sky-400 inline-block mr-1' })}
                             <span>${b.openingHours || '08:00 - 20:00 (Cả T7 & CN)'}</span>
                         </div>
                     </div>
@@ -3308,7 +3317,7 @@ function renderBranches(branches, nearestId = null, distanceKm = null) {
                 <div class="pt-3 border-t border-slate-700/80 flex items-center justify-between">
                     <a href="https://www.google.com/maps?q=${b.latitude},${b.longitude}" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-teal-300 hover:text-teal-200 flex items-center gap-1">
                         <span>Chỉ Đường</span>
-                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        ${DentalIcons.renderIcon('arrow-up-right-from-square', { className: 'w-2.5 h-2.5 inline-block ml-1' })}
                     </a>
                     <a href="#booking-section" onclick="showLandingPage()" class="px-3 py-1.5 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold rounded-xl transition">
                         Đặt Lịch Tại Đây
@@ -3390,7 +3399,7 @@ function renderForumPosts(posts) {
     if (!posts || posts.length === 0) {
         container.innerHTML = `
             <div class="col-span-full text-center py-12 text-slate-400 text-xs">
-                <i class="fa-solid fa-comments text-3xl mb-2 text-slate-300"></i>
+                <div class="flex justify-center mb-2">${DentalIcons.renderIcon('comments', { className: 'w-8 h-8 text-slate-300' })}</div>
                 <p>Chưa có bài viết thảo luận trong chuyên mục này.</p>
             </div>`;
         return;
@@ -3412,7 +3421,7 @@ function renderForumPosts(posts) {
                         <span class="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border ${cat.color}">
                             ${cat.name}
                         </span>
-                        <span class="text-[11px] text-slate-600 font-semibold"><i class="fa-regular fa-clock"></i> 2 giờ trước</span>
+                        <span class="text-[11px] text-slate-600 font-semibold inline-flex items-center gap-1">${DentalIcons.renderIcon('clock', { className: 'w-3 h-3 inline-block' })} 2 giờ trước</span>
                     </div>
 
                     <h3 class="text-sm font-black text-slate-900 mb-2 hover:text-amber-700 transition">
@@ -3435,7 +3444,7 @@ function renderForumPosts(posts) {
                     </div>
 
                     <button type="button" onclick="likeForumPost(${post.id}, this)" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-600 text-xs font-bold transition cursor-pointer">
-                        <i class="fa-regular fa-heart text-rose-500"></i>
+                        <span class="post-heart-icon inline-flex items-center text-rose-500">${DentalIcons.renderIcon('heart', { className: 'w-3.5 h-3.5' })}</span>
                         <span class="post-like-count">${post.likesCount || 0}</span>
                     </button>
                 </div>
@@ -3524,10 +3533,10 @@ async function likeForumPost(postId, btnElement) {
                 const countSpan = btnElement.querySelector('.post-like-count');
                 if (countSpan) countSpan.innerText = updated.likesCount;
                 btnElement.classList.add('text-rose-600', 'bg-rose-50');
-                const heartIcon = btnElement.querySelector('i');
+                const heartIcon = btnElement.querySelector('.post-heart-icon');
                 if (heartIcon) {
-                    heartIcon.classList.remove('fa-regular');
-                    heartIcon.classList.add('fa-solid');
+                    heartIcon.innerHTML = DentalIcons.renderIcon('heart', { className: 'w-3.5 h-3.5 text-rose-600 fill-current' });
+                    // Heart filled with DentalIcons SVG
                 }
             }
         }
@@ -3571,7 +3580,7 @@ async function loadInventoryMaterials() {
                         <td class="py-3 px-4 text-right font-mono text-slate-300">${priceFormatted}</td>
                         <td class="py-3 px-4 text-center">
                             <button onclick="handleQuickStockAdjust(${m.id}, ${m.stockQuantity})" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition">
-                                <i class="fa-solid fa-arrows-up-down mr-1"></i> Điều Chỉnh
+                                ${DentalIcons.renderIcon('arrows-up-down', { className: 'w-3 h-3 mr-1 inline-block' })} Điều Chỉnh
                             </button>
                         </td>
                     </tr>
@@ -3726,8 +3735,8 @@ async function loadAttendanceRecords() {
                 if (a.status === 'CHECKED_OUT') statusBadge = `<span class="bg-sky-950 text-sky-300 border border-sky-800 px-2 py-0.5 rounded font-bold text-[11px]">ĐÃ RA CA</span>`;
 
                 const gpsBadge = a.gpsVerified 
-                    ? `<span class="text-emerald-400 font-bold"><i class="fa-solid fa-circle-check"></i> Hợp lệ</span>` 
-                    : `<span class="text-slate-500"><i class="fa-solid fa-circle-xmark"></i> Không</span>`;
+                    ? `<span class="text-emerald-400 font-bold inline-flex items-center gap-1">${DentalIcons.renderIcon('circle-check', { className: 'w-3.5 h-3.5 inline-block' })} Hợp lệ</span>` 
+                    : `<span class="text-slate-500 inline-flex items-center gap-1">${DentalIcons.renderIcon('circle-xmark', { className: 'w-3.5 h-3.5 inline-block' })} Không</span>`;
 
                 return `
                     <tr class="hover:bg-slate-700/40 transition">

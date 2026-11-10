@@ -183,4 +183,84 @@ Toàn bộ nghiệp vụ, thuật ngữ, giao diện và luồng ứng dụng ph
 
 Hãy áp dụng định hướng ngành Nha Khoa này vào toàn bộ mã nguồn, dữ liệu và giao diện!
 
+## Follow-up — 2026-09-23T07:08:19Z
 
+# Teamwork Project Prompt
+
+Deploy the DentalCare Clinic Spring Boot application for external user testing across planned platforms (Web, Mobile, Desktop).
+
+Working directory: d:\java\dental-clinic
+Integrity mode: development
+
+## Requirements
+
+### R1. Backend & Web Portal Deployment (Docker + Tunnel)
+Create a `Dockerfile` and `docker-compose.yml` to package the Spring Boot app and expose it publicly via a secure tunnel (e.g., Cloudflared or Ngrok). This fulfills the Web Portal requirement.
+
+### R2. Mobile App (PWA)
+Transform the existing Web Portal into a Progressive Web App (PWA) by adding a `manifest.json` and a basic Service Worker. This allows Android and iOS users to "Install" the app directly to their home screens, fulfilling the Mobile App requirement without needing the Android/iOS SDKs.
+
+### R3. PC Desktop App Runner
+Create a lightweight Desktop App runner for Windows (e.g., using Python `webview`, a simple C# wrapper, or Electron) that acts as a Command Center. It should load the public tunnel URL in a dedicated native desktop window. 
+
+### R4. Deployment Script
+Create a unified launch script (`deploy-all.bat` or `.sh`) that:
+1. Starts the Docker stack & Tunnel.
+2. Fetches the generated public URL.
+3. Builds/configures the Desktop App runner to point to this URL.
+
+## Acceptance Criteria
+
+### Automated Verification
+- [ ] `docker-compose.yml` starts cleanly and the web server responds with 200 OK.
+- [ ] `manifest.json` and `sw.js` are present in the `src/main/resources/static` directory and correctly linked in `index.html`.
+- [ ] The Desktop Runner script executes without syntax errors and successfully opens a native window pointing to a URL.
+
+## Follow-up — 2026-09-24T17:36:16Z
+
+Khắc phục triệt để toàn bộ các lỗi hiển thị (vỡ khung, tràn lề, lỗi font chữ, đè nút bấm, vỡ giao diện trên điện thoại di động) và thiết kế bộ icon/logo độc bản trên toàn bộ hệ thống Web Portal DentalCare Clinic tại `D:\java\dental-clinic`.
+
+Working directory: D:\java\dental-clinic
+Integrity mode: development
+
+## Requirements
+
+### R1. Quét & Sửa triệt để lỗi vỡ Layout & Hiển thị trên Desktop & Tablet
+- Rà soát toàn bộ các phân vùng giao diện: Header/Navbar, Hero Banner, Thẻ dịch vụ nha khoa, Đội ngũ bác sĩ, Bảng giá so sánh, Đánh giá của khách hàng, Bản đồ chi nhánh, Footer.
+- Khắc phục các lỗi căn lề (alignment), lệch lưới CSS Grid/Flexbox, khoảng cách trống bất hợp lý, hoặc các khối nội dung bị thụt thò, đè lên nhau.
+- Đảm bảo font chữ hiển thị chuẩn Unicode tiếng Việt, không bị lỗi dấu, không bị nhảy dòng ngớ ngẩn (word-break hợp lý).
+
+### R2. Chuẩn hóa 100% Giao diện Mobile Responsive (375px - 430px)
+- Triệt tiêu hoàn toàn lỗi tràn ngang màn hình (`overflow-x: hidden` / không cho phép thanh cuộn ngang xuất hiện trên điện thoại).
+- Căn chỉnh lại kích thước các thẻ (cards), nút bấm (buttons), bảng giá và chữ viết sao cho vừa vặn với kích thước màn hình smartphone (iPhone, Samsung, Xiaomi).
+- Đảm bảo Menu điều hướng di động (Hamburger Menu) bấm vào mở mượt mà, full màn hình hoặc trượt mượt, font chữ to rõ, dễ bấm bằng ngón tay cái (touch target >= 44px).
+
+### R3. Sửa lỗi hiển thị các Khối Tương tác & Cửa sổ bật lên (Modals & Drawers)
+- **Form/Modal Đặt lịch khám**: Các ô chọn dịch vụ, chọn bác sĩ, chọn ngày/giờ không bị vỡ hàng, không bị che khuất nút "Xác nhận đặt lịch" trên màn hình nhỏ.
+- **Bác sĩ AI Chẩn đoán**: Khung tải ảnh hiển thị rõ ràng tỷ lệ ảnh xem trước (preview), không bị kéo dãn hình ảnh, thẻ kết quả chẩn đoán hiển thị đẹp mắt chuẩn y khoa.
+- **Giỏ hàng & Thẻ bảo hành**: Thẻ bảo hành răng sứ hiển thị rõ mã QR, thông tin răng, thời hạn bảo hành chuẩn xác không bị tràn chữ.
+
+### R4. Thiết kế & Cá nhân hóa Bộ Icon/Logo Độc Bản cho từng Dịch vụ & Phân hệ (Unique Iconography & Badging)
+- Khắc phục tình trạng các icon/logo bị rập khuôn, trùng lặp hoặc generic: Mỗi dịch vụ nha khoa chính (Niềng răng chỉnh nha 3D, Cấy ghép Implant Thụy Sĩ, Dán sứ Veneer thẩm mỹ, Nhổ răng khôn sóng siêu âm Piezotome, Điều trị tủy, Tẩy trắng răng Laser Whitening) phải có **bộ nhận diện icon/logo SVG độc bản riêng biệt, mô phỏng đúng đặc thù chuyên môn**, phối màu gradient cao cấp.
+- Bộ huy hiệu tính năng (Feature Badges): Phân biệt rõ rệt bằng biểu tượng trực quan riêng cho Bác sĩ AI Chẩn đoán (AI Neural/Vision chip), Tra cứu Thẻ bảo hành (Smart QR Shield), Tích điểm Loyalty (Golden Crown), Hệ thống Chi nhánh Bản đồ (Location GPS Pin).
+- Logo thương hiệu chính DentalCare: Nổi bật, sắc nét, có biểu tượng nụ cười kim cương sang trọng kết hợp chữ typography cao cấp.
+
+### R5. Thẩm mỹ chuẩn nhận diện thương hiệu "DentalCare Luxury"
+- Đảm bảo màu sắc chủ đạo đồng nhất: Xanh ngọc bích y tế (Medical Emerald/Teal), Xanh Navy sang trọng, Nền trắng sáng tinh tế, điểm xuyết Gold ánh kim cho dịch vụ VIP.
+- Các icon SVG và hình ảnh hiển thị sắc nét, có tỷ lệ co dãn cố định (`aspect-ratio`), không bị méo mó khi co kéo cửa sổ trình duyệt.
+
+## Acceptance Criteria
+
+### Kiểm thử Hiển thị & Responsive (Visual & Layout Standards)
+- [ ] Màn hình điện thoại (chiều rộng từ 360px đến 430px) hoàn toàn không có thanh cuộn ngang (0% horizontal overflow).
+- [ ] Toàn bộ các tiêu đề, văn bản tiếng Việt hiển thị sắc nét, không bị lỗi font (tofu / ô vuông) hay đè chữ lên nhau.
+- [ ] Tất cả các nút bấm CTA (Đặt lịch ngay, Tư vấn, Chẩn đoán AI) có kích thước tối thiểu 44x44px, hiển thị nổi bật và bấm chuẩn xác trên cảm ứng.
+
+### Tính Độc bản & Nhận diện Icon (Visual Identity Verification)
+- [ ] 100% các thẻ dịch vụ nha khoa và tính năng cốt lõi sở hữu biểu tượng (SVG icon/badge) độc bản, không bị trùng lặp icon generic, thể hiện đúng bản chất dịch vụ.
+- [ ] Bộ icon hiển thị sắc nét ở mọi độ phân giải (Retina/Mobile), không bị vỡ hạt hay lệch tâm viewBox.
+
+### Tương tác Modal & Trạng thái tải (Component Integrity)
+- [ ] Modal Đặt lịch khám và Giỏ hàng hiển thị vừa vặn trong màn hình, có nút đóng (X) rõ ràng, cuộn mượt mà nếu nội dung dài.
+- [ ] Không có bất kỳ lỗi CSS hay JavaScript nào làm tê liệt hiển thị giao diện trong Console của trình duyệt.
+- [ ] Kiểm thử tự động / Script kiểm tra giao diện xác nhận 100% các thành phần UI đạt chuẩn chất lượng hiển thị.

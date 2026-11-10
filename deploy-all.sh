@@ -7,9 +7,27 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
+# Parse CLI options for headless / server mode
+SERVER_MODE=0
+for arg in "$@"; do
+    case "$arg" in
+        --server|--headless|-s)
+            SERVER_MODE=1
+            ;;
+    esac
+done
+
+# Auto-detect headless Linux environments (e.g., VPS without X11/Wayland display)
+if [ -z "$DISPLAY" ] && [ -z "$WAYLAND_DISPLAY" ] && [ "$(uname -s 2>/dev/null)" = "Linux" ]; then
+    SERVER_MODE=1
+fi
+
 echo "=============================================================================="
 echo "      DENTALCARE LUXURY CLINIC — OMNICHANNEL ENTERPRISE DEPLOYMENT"
 echo "                Web Portal | Mobile PWA | PC Desktop Runner"
+if [ $SERVER_MODE -eq 1 ]; then
+    echo "                [Mode: Headless Server / VPS Mode]"
+fi
 echo "=============================================================================="
 echo ""
 
@@ -41,17 +59,34 @@ fi
 
 # 2. Build & Start Stack
 echo "[*] Step 2/5: Building and starting container stack & Cloudflare tunnel..."
+
+# Source .env if present
+if [ -f "$SCRIPT_DIR/.env" ]; then
+    set -a
+    . "$SCRIPT_DIR/.env" 2>/dev/null || true
+    set +a
+fi
+
+# Configure native Cloudflared tunnel command for distroless container
+if [ -z "$CLOUDFLARE_TUNNEL_COMMAND" ]; then
+    if [ -n "$CLOUDFLARE_TUNNEL_TOKEN" ] || [ -n "$TUNNEL_TOKEN" ]; then
+        export CLOUDFLARE_TUNNEL_COMMAND="tunnel --no-autoupdate --metrics 0.0.0.0:2000 run"
+    else
+        export CLOUDFLARE_TUNNEL_COMMAND="tunnel --no-autoupdate --metrics 0.0.0.0:2000 --url http://app:8080"
+    fi
+fi
+
 $COMPOSE_CMD up -d --build
 echo "[OK] Containers started."
 echo ""
 
 # 3. Wait for Local Backend Health
-echo "[*] Step 3/5: Waiting for backend to become ready on http://localhost:8080..."
+echo "[*] Step 3/5: Waiting for backend to become ready on http://127.0.0.1:8080..."
 APP_RETRIES=0
 MAX_APP_RETRIES=30
 while [ $APP_RETRIES -lt $MAX_APP_RETRIES ]; do
     APP_RETRIES=$((APP_RETRIES + 1))
-    HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/ || true)
+    HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8080/ || true)
     if [ "$HTTP_STATUS" = "200" ]; then
         echo "[OK] Backend is healthy (HTTP 200 OK)."
         break
@@ -61,17 +96,32 @@ while [ $APP_RETRIES -lt $MAX_APP_RETRIES ]; do
 done
 echo ""
 
-# 4. Poll Cloudflared Container Logs for Public Tunnel URL
+# 4. Poll Cloudflared Container Logs for Public Tunnel URL (Latest tail -n 1)
 echo "[*] Step 4/5: Polling Cloudflare tunnel logs for public URL..."
 TUNNEL_RETRIES=0
 MAX_TUNNEL_RETRIES=20
 TUNNEL_URL=""
 
+CUSTOM_DOMAIN="${CLOUDFLARE_CUSTOM_DOMAIN:-nhakhoadentalcare.id.vn}"
+NAMED_TUNNEL=0
+if [ -n "$CLOUDFLARE_TUNNEL_TOKEN" ] || [ -n "$TUNNEL_TOKEN" ]; then
+    NAMED_TUNNEL=1
+fi
+
 while [ $TUNNEL_RETRIES -lt $MAX_TUNNEL_RETRIES ]; do
     TUNNEL_RETRIES=$((TUNNEL_RETRIES + 1))
-    TUNNEL_URL=$($COMPOSE_CMD logs tunnel 2>&1 | grep -oE 'https://[a-zA-Z0-9-]+\.trycloudflare\.com' | head -n 1 || true)
-    if [ -n "$TUNNEL_URL" ]; then
-        break
+    
+    if [ $NAMED_TUNNEL -eq 1 ]; then
+        if $COMPOSE_CMD logs tunnel 2>&1 | grep -qiE '(Registered tunnel connection|Connection [a-f0-9-]+ registered)'; then
+            TUNNEL_URL="https://$CUSTOM_DOMAIN"
+            break
+        fi
+    else
+        # Extract the latest TryCloudflare URL using tail -n 1
+        TUNNEL_URL=$($COMPOSE_CMD logs tunnel 2>&1 | grep -oE 'https://[a-zA-Z0-9-]+\.trycloudflare\.com' | tail -n 1 || true)
+        if [ -n "$TUNNEL_URL" ]; then
+            break
+        fi
     fi
     echo "    - Attempt $TUNNEL_RETRIES/$MAX_TUNNEL_RETRIES: Waiting for tunnel URL, waiting 2s..."
     sleep 2
@@ -84,31 +134,37 @@ if [ -n "$TUNNEL_URL" ]; then
     echo "  [SUCCESS] CLOUDFLARE PUBLIC TUNNEL ESTABLISHED!"
     echo "=============================================================================="
     echo "  Public Web Portal & Mobile PWA URL : $TUNNEL_URL"
-    echo "  Local Direct Backend URL           : http://localhost:8080"
+    echo "  Local Direct Backend URL           : http://127.0.0.1:8080"
     echo "=============================================================================="
 else
     echo ""
     echo "=============================================================================="
     echo "  [WARNING] CLOUDFLARE TUNNEL RETRIEVAL TIMED OUT"
     echo "=============================================================================="
-    echo "  Falling back to local backend URL: http://localhost:8080"
+    echo "  Falling back to local backend URL: http://127.0.0.1:8080"
     echo "=============================================================================="
-    TARGET_URL="http://localhost:8080"
+    TARGET_URL="http://127.0.0.1:8080"
 fi
 echo ""
 
-# 5. Launch Desktop Runner
-echo "[*] Step 5/5: Launching Desktop Runner pointed to $TARGET_URL..."
-if command -v python3 &> /dev/null && [ -f "desktop-runner/runner.py" ]; then
-    python3 desktop-runner/runner.py "$TARGET_URL" &
-elif command -v python &> /dev/null && [ -f "desktop-runner/runner.py" ]; then
-    python desktop-runner/runner.py "$TARGET_URL" &
-elif command -v xdg-open &> /dev/null; then
-    xdg-open "$TARGET_URL"
-elif command -v open &> /dev/null; then
-    open "$TARGET_URL"
+# 5. Launch Desktop Runner or Skip for Headless VPS
+if [ $SERVER_MODE -eq 1 ]; then
+    echo "[*] Step 5/5: Headless server environment detected (or --server flag passed)."
+    echo "    Skipping GUI Desktop Runner launch."
+    echo "    DentalCare Clinic is active and serving traffic at: $TARGET_URL"
 else
-    echo "[INFO] Open $TARGET_URL in your browser."
+    echo "[*] Step 5/5: Launching Desktop Runner pointed to $TARGET_URL..."
+    if command -v python3 &> /dev/null && [ -f "desktop-runner/runner.py" ]; then
+        python3 desktop-runner/runner.py "$TARGET_URL" &
+    elif command -v python &> /dev/null && [ -f "desktop-runner/runner.py" ]; then
+        python desktop-runner/runner.py "$TARGET_URL" &
+    elif command -v xdg-open &> /dev/null; then
+        xdg-open "$TARGET_URL"
+    elif command -v open &> /dev/null; then
+        open "$TARGET_URL"
+    else
+        echo "[INFO] Open $TARGET_URL in your browser."
+    fi
 fi
 
 echo ""

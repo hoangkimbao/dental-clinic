@@ -12,8 +12,9 @@ import java.util.Optional;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Optional<Payment> findByAppointment(Appointment appointment);
+    Optional<Payment> findByTransactionCode(String transactionCode);
     List<Payment> findByStatus(String status);
 
-    @Query("SELECT COALESCE(SUM(p.amount), 0.0) FROM Payment p WHERE p.status = 'SUCCESS'")
+    @Query("SELECT COALESCE(SUM(p.amount), 0.0) FROM Payment p WHERE p.status IN ('SUCCESS', 'PAID')")
     Double sumTotalSuccessfulPayments();
 }

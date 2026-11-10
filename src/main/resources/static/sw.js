@@ -4,7 +4,7 @@
  * Scope: /
  */
 
-const CACHE_VERSION = 'dentalcare-pwa-v1';
+const CACHE_VERSION = 'dentalcare-pwa-v2';
 const STATIC_CACHE = `dentalcare-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `dentalcare-runtime-${CACHE_VERSION}`;
 
@@ -16,7 +16,9 @@ const PRECACHE_URLS = [
     '/booking.html',
     '/manifest.json',
     '/css/tailwind.min.css',
-    '/css/clinic-ui-refresh.css',
+    '/css/dentalcare-redesign.css',
+    '/js/dental-icons.js',
+    '/js/ui-icons.js',
     '/js/app.js',
     '/js/it-team.js',
     '/js/agrid-sdk.js',
@@ -36,7 +38,6 @@ const PRECACHE_URLS = [
     '/images/articles/article-implant.svg',
     '/images/articles/article-wisdom.svg',
     '/images/articles/article-veneer.svg',
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
     'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js'
 ];
 
