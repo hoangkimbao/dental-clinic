@@ -1719,22 +1719,26 @@ function selectTimeSlot(timeStr, btnElement) {
     trackGaEvent('select_time_slot', { slot: timeStr, date: `${yyyy}-${mm}-${dd}` });
 }
 
-// ================= FAQ ACCORDION TOGGLER =================
+// ================= FAQ ACCORDION TOGGLER (INDEPENDENT TOGGLE) =================
 function toggleFaq(faqId) {
     const content = document.getElementById(`content-${faqId}`);
     const icon = document.getElementById(`icon-${faqId}`);
     if (!content || !icon) return;
 
     const isClosed = content.classList.contains('hidden');
-    
-    // Close other FAQs
-    document.querySelectorAll('[id^="content-faq-"]').forEach(el => el.classList.add('hidden'));
-    document.querySelectorAll('[id^="icon-faq-"]').forEach(el => el.classList.remove('rotate-180', 'text-brand-600'));
-
     if (isClosed) {
         content.classList.remove('hidden');
-        icon.classList.add('rotate-180', 'text-brand-600');
+        if (icon) {
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-up');
+        }
         trackGaEvent('view_faq_answer', { faq_id: faqId });
+    } else {
+        content.classList.add('hidden');
+        if (icon) {
+            icon.classList.remove('fa-chevron-up');
+            icon.classList.add('fa-chevron-down');
+        }
     }
 }
 

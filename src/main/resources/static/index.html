@@ -240,7 +240,7 @@ footer { background: #0d3534 !important; }
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400..900;1,400..900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400..900;1,400..900&display=swap"></noscript>
-    <link rel="stylesheet" href="css/dentalcare-redesign.css?v=20261123_1620">
+    <link rel="stylesheet" href="css/dentalcare-redesign.css?v=20261123_1645">
     <!-- DentalCare Bespoke SVG Iconography & Brand System (R4, R5) -->
     <script src="js/dental-icons.js"></script>
     <script src="js/ui-icons.js"></script>
@@ -2158,11 +2158,11 @@ footer { background: #0d3534 !important; }
                     </p>
                 </div>
 
-                <!-- FAQ Accordion List -->
+                <!-- FAQ Accordion List (Mở sẵn toàn bộ câu trả lời) -->
                 <div class="space-y-4">
                     
-                    <!-- FAQ 1 (Mở sẵn mặc định) -->
-                    <div class="border border-teal-500/40 rounded-2xl overflow-hidden shadow-sm hover:border-brand-500 transition">
+                    <!-- FAQ 1 -->
+                    <div class="border border-teal-500/30 rounded-2xl overflow-hidden shadow-sm hover:border-teal-500 transition">
                         <button onclick="toggleFaq('faq-1')" class="w-full p-5 text-left flex items-center justify-between font-extrabold text-sm text-slate-900 bg-slate-50/80 hover:bg-slate-50 transition cursor-pointer">
                             <span class="flex items-center gap-3">
                                 <span class="w-7 h-7 rounded-xl bg-teal-600 text-white flex items-center justify-center text-xs font-black">01</span>
@@ -2176,43 +2176,43 @@ footer { background: #0d3534 !important; }
                     </div>
 
                     <!-- FAQ 2 -->
-                    <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:border-brand-500 transition">
-                        <button onclick="toggleFaq('faq-2')" class="w-full p-5 text-left flex items-center justify-between font-extrabold text-sm text-slate-900 bg-slate-50/50 hover:bg-slate-50 transition cursor-pointer">
+                    <div class="border border-amber-500/30 rounded-2xl overflow-hidden shadow-sm hover:border-amber-500 transition">
+                        <button onclick="toggleFaq('faq-2')" class="w-full p-5 text-left flex items-center justify-between font-extrabold text-sm text-slate-900 bg-slate-50/80 hover:bg-slate-50 transition cursor-pointer">
                             <span class="flex items-center gap-3">
-                                <span class="w-7 h-7 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-black">02</span>
+                                <span class="w-7 h-7 rounded-xl bg-amber-500 text-white flex items-center justify-center text-xs font-black">02</span>
                                 Quy trình điều trị kéo dài bao lâu?
                             </span>
-                            <i id="icon-faq-2" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-300"></i>
+                            <i id="icon-faq-2" class="fa-solid fa-chevron-up text-amber-600 text-xs transition-transform duration-300"></i>
                         </button>
-                        <div id="content-faq-2" class="hidden p-5 bg-white text-xs text-slate-600 leading-relaxed border-t border-slate-100 space-y-2">
+                        <div id="content-faq-2" class="p-5 bg-white text-xs text-slate-600 leading-relaxed border-t border-slate-100 space-y-2">
                             <p>Thời gian và quy trình phụ thuộc tình trạng răng và chỉ định điều trị. Bác sĩ sẽ thăm khám, trao đổi phương án và thời gian dự kiến với bạn.</p>
                         </div>
                     </div>
 
                     <!-- FAQ 3 -->
-                    <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:border-brand-500 transition">
-                        <button onclick="toggleFaq('faq-3')" class="w-full p-5 text-left flex items-center justify-between font-extrabold text-sm text-slate-900 bg-slate-50/50 hover:bg-slate-50 transition cursor-pointer">
+                    <div class="border border-emerald-500/30 rounded-2xl overflow-hidden shadow-sm hover:border-emerald-500 transition">
+                        <button onclick="toggleFaq('faq-3')" class="w-full p-5 text-left flex items-center justify-between font-extrabold text-sm text-slate-900 bg-slate-50/80 hover:bg-slate-50 transition cursor-pointer">
                             <span class="flex items-center gap-3">
-                                <span class="w-7 h-7 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-black">03</span>
+                                <span class="w-7 h-7 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-xs font-black">03</span>
                                 Gửi yêu cầu đặt lịch có đồng nghĩa với xác nhận lịch hoặc thanh toán không?
                             </span>
-                            <i id="icon-faq-3" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-300"></i>
+                            <i id="icon-faq-3" class="fa-solid fa-chevron-up text-emerald-600 text-xs transition-transform duration-300"></i>
                         </button>
-                        <div id="content-faq-3" class="hidden p-5 bg-white text-xs text-slate-600 leading-relaxed border-t border-slate-100 space-y-2">
+                        <div id="content-faq-3" class="p-5 bg-white text-xs text-slate-600 leading-relaxed border-t border-slate-100 space-y-2">
                             <p>Không. Gửi yêu cầu trên website chưa xác nhận lịch và chưa phải thanh toán. Phòng khám sẽ liên hệ để xác nhận thời gian phù hợp.</p>
                         </div>
                     </div>
 
                     <!-- FAQ 4 -->
-                    <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:border-brand-500 transition">
-                        <button onclick="toggleFaq('faq-4')" class="w-full p-5 text-left flex items-center justify-between font-extrabold text-sm text-slate-900 bg-slate-50/50 hover:bg-slate-50 transition cursor-pointer">
+                    <div class="border border-indigo-500/30 rounded-2xl overflow-hidden shadow-sm hover:border-indigo-500 transition">
+                        <button onclick="toggleFaq('faq-4')" class="w-full p-5 text-left flex items-center justify-between font-extrabold text-sm text-slate-900 bg-slate-50/80 hover:bg-slate-50 transition cursor-pointer">
                             <span class="flex items-center gap-3">
-                                <span class="w-7 h-7 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-black">04</span>
+                                <span class="w-7 h-7 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-xs font-black">04</span>
                                 Làm sao để tìm hiểu các dịch vụ nha khoa?
                             </span>
-                            <i id="icon-faq-4" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-300"></i>
+                            <i id="icon-faq-4" class="fa-solid fa-chevron-up text-indigo-600 text-xs transition-transform duration-300"></i>
                         </button>
-                        <div id="content-faq-4" class="hidden p-5 bg-white text-xs text-slate-600 leading-relaxed border-t border-slate-100 space-y-2">
+                        <div id="content-faq-4" class="p-5 bg-white text-xs text-slate-600 leading-relaxed border-t border-slate-100 space-y-2">
                             <p>Bạn có thể tra cứu danh mục dịch vụ đang được phòng khám cung cấp trên website. Bác sĩ sẽ tư vấn lựa chọn phù hợp sau khi thăm khám.</p>
                         </div>
                     </div>
@@ -3911,7 +3911,7 @@ footer { background: #0d3534 !important; }
         <!-- GSAP 3.12 Core Animation Engine for 3D UI & Micro-interactions -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
         <!-- Deferred Non-Critical Scripts -->
-    <script defer src="js/app.js?v=20261123_1620"></script>
+    <script defer src="js/app.js?v=20261123_1645"></script>
     <script defer src="js/it-team.js"></script>
     <!-- Agrid User Behavior Analytics Tracking SDK (0ms initial render latency) -->
     <script defer src="js/agrid-sdk.js"></script>
