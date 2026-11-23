@@ -41,7 +41,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 :focus-visible { outline: 3px solid #77b99a; outline-offset: 3px; }
 img { max-width: 100%; }
 .hidden, [hidden] { display: none !important; }
-.font-serif-luxury, #public-landing-page h1, #public-landing-page h2 { font-family: 'Playfair Display', Georgia, serif !important; }
+.font-serif-luxury, #public-landing-page h1, #public-landing-page h2, h1, h2, h3, h4, h5, h6 { font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important; letter-spacing: -0.02em; }
 .max-w-7xl { max-width: 1260px !important; }
 
 /* Compact clinic information strip and main navigation */

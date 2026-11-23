@@ -137,7 +137,7 @@ body::selection { background: var(--clinic-teal); color: #fff; }
 body::-webkit-scrollbar { width: 10px; }
 body::-webkit-scrollbar-thumb { background: #a9ccc4; border: 3px solid #fbfdfc; border-radius: 999px; }
 
-.font-serif-luxury { font-family: 'Playfair Display', Georgia, serif; }
+.font-serif-luxury { font-family: 'Plus Jakarta Sans', Inter, sans-serif; }
 .glass-nav {
     background: rgba(255, 255, 255, .86) !important;
     border-bottom: 1px solid rgba(219, 232, 227, .9) !important;
@@ -238,9 +238,9 @@ footer { background: #0d3534 !important; }
     <!-- Google Fonts & Bespoke SVG Icons (Asynchronous & Non-blocking) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap"></noscript>
-    <link rel="stylesheet" href="css/dentalcare-redesign.css?v=20261123_1140">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400..900;1,400..900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400..900;1,400..900&display=swap"></noscript>
+    <link rel="stylesheet" href="css/dentalcare-redesign.css?v=20261123_1600">
     <!-- DentalCare Bespoke SVG Iconography & Brand System (R4, R5) -->
     <script src="js/dental-icons.js"></script>
     <script src="js/ui-icons.js"></script>
@@ -254,7 +254,7 @@ footer { background: #0d3534 !important; }
         body { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
         h1, h2, h3, h4, h5, h6, .text-balance { text-wrap: balance; }
         body, p, span, h1, h2, h3, h4, h5, h6, a, div { overflow-wrap: break-word; }
-        .font-serif-luxury { font-family: 'Playfair Display', Georgia, serif; }
+        .font-serif-luxury { font-family: 'Plus Jakarta Sans', Inter, sans-serif; }
 
         .glass-nav {
             background: rgba(255, 255, 255, 0.9);
@@ -332,6 +332,15 @@ footer { background: #0d3534 !important; }
     </style>
 
     <style id="critical-desktop-and-toast-overrides">
+        /* TYPOGRAPHY OVERRIDE: 100% CLEAN NATIVE VIETNAMESE TYPOGRAPHY (PLUS JAKARTA SANS) */
+        h1, h2, h3, h4, h5, h6,
+        #public-landing-page h1,
+        #public-landing-page h2,
+        .font-serif-luxury {
+            font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+            letter-spacing: -0.02em;
+        }
+
         /* CRITICAL RESPONSIVE & TOAST HIGH-CONTRAST OVERRIDES */
         @media (min-width: 768px) {
             #mobile-menu-btn,
@@ -3901,7 +3910,7 @@ footer { background: #0d3534 !important; }
         <!-- GSAP 3.12 Core Animation Engine for 3D UI & Micro-interactions -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
         <!-- Deferred Non-Critical Scripts -->
-    <script defer src="js/app.js?v=20261123_1140"></script>
+    <script defer src="js/app.js?v=20261123_1600"></script>
     <script defer src="js/it-team.js"></script>
     <!-- Agrid User Behavior Analytics Tracking SDK (0ms initial render latency) -->
     <script defer src="js/agrid-sdk.js"></script>
