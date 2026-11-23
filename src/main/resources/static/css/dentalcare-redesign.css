@@ -329,8 +329,21 @@ i[class*="fa-"] { display: inline-block; width: 1em; height: 1em; overflow: hidd
 #booking-section::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size: 38px 38px; opacity: .4; }
 #booking-section h2 { color: white !important; }
 #booking-section .text-slate-400 { color: #d0ddd4 !important; }
-#booking-section .grid.grid-cols-1.lg\:grid-cols-12 { gap: 1.25rem !important; }
-#booking-section .lg\:col-span-7, #booking-section .lg\:col-span-5 { grid-column: auto !important; }
+#booking-section .grid.grid-cols-1.lg\:grid-cols-12 {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.95fr) !important;
+    gap: clamp(1.5rem, 3vw, 2.5rem) !important;
+    align-items: start !important;
+}
+#booking-section .lg\:col-span-7, #booking-section .lg\:col-span-5 {
+    grid-column: auto !important;
+    width: 100% !important;
+}
+#booking-section .grid.grid-cols-1.sm\:grid-cols-2 {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 1rem !important;
+}
 #booking-section .lg\:col-span-7 { padding: clamp(1.2rem, 3vw, 2.25rem) !important; border-radius: 1.4rem !important; box-shadow: var(--dc-shadow-lg) !important; }
 #booking-section .lg\:col-span-5 { padding: clamp(1.2rem, 3vw, 2rem) !important; border: 1px solid rgba(225,240,226,.16) !important; border-radius: 1.4rem !important; background: rgba(255,255,255,.075) !important; }
 #booking-section label { display: block; margin-bottom: .45rem !important; color: #46554d !important; font-size: 10px !important; letter-spacing: .07em; }
@@ -356,10 +369,27 @@ i[class*="fa-"] { display: inline-block; width: 1em; height: 1em; overflow: hidd
 #booking-section .lg\:col-span-5 > p { color: #d0ddd4 !important; line-height: 1.75; }
 #booking-section .lg\:col-span-5 > div:last-child { border-color: rgba(225,240,226,.2) !important; color: #d0ddd4 !important; }
 #booking-section .lg\:col-span-5 > div:last-child .text-brand-400 { color: #d5e6b1 !important; }
+#booking-section span.bg-brand-950 { background: rgba(255, 255, 255, .12) !important; border-color: rgba(255, 255, 255, .22) !important; color: #d5e6b1 !important; }
 #warranty-section { background: #18382f !important; background-image: linear-gradient(120deg, #193a30, #102820) !important; }
 #warranty-section h2, #warranty-section h3 { color: white !important; }
 #warranty-section input { min-height: 48px; border-radius: .8rem !important; }
 #ai-diagnostic-section { background: #f5f2e9 !important; }
+#ai-diagnostic-section .grid.grid-cols-1.lg\:grid-cols-12 {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr) !important;
+    gap: clamp(1.5rem, 3vw, 2.5rem) !important;
+    align-items: start !important;
+}
+#ai-diagnostic-section .lg\:col-span-6 {
+    grid-column: auto !important;
+    width: 100% !important;
+}
+#ai-diagnostic-section .bg-slate-50 {
+    background: #ffffff !important;
+    border-color: #d8e2d4 !important;
+    box-shadow: 0 4px 20px rgba(22, 54, 40, .05) !important;
+    border-radius: 1.4rem !important;
+}
 #ai-diagnostic-section .bg-purple-50\/40,
 #ai-diagnostic-section .bg-purple-50 { background: #eef3e8 !important; }
 #ai-diagnostic-section .border-purple-300,
@@ -466,6 +496,16 @@ footer .border-t { border-color: rgba(226,236,226,.14) !important; }
     .glass-nav > div > div.hidden.md\:flex a { padding-inline: .42rem !important; font-size: 10px !important; }
     .glass-nav #unauth-actions > button { padding-inline: .7rem !important; }
     #home .grid.grid-cols-1.lg\:grid-cols-12 { gap: 2.3rem !important; }
+}
+@media (max-width: 1023px) {
+    #booking-section .grid.grid-cols-1.lg\:grid-cols-12 {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+    #ai-diagnostic-section .grid.grid-cols-1.lg\:grid-cols-12 {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
 }
 @media (max-width: 767px) {
     body > div.bg-slate-950 { min-height: 32px; font-size: 10px !important; }
