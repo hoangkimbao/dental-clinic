@@ -120,7 +120,19 @@ body > div.bg-slate-950 .text-emerald-400 { color: #c5da9a !important; }
 .glass-nav #unauth-actions > button i { color: var(--dc-brand) !important; }
 .glass-nav #auth-actions #btn-toggle-portal { border-radius: 999px !important; background: var(--dc-brand) !important; box-shadow: none !important; }
 .glass-nav #auth-actions > div { border: 1px solid var(--dc-line) !important; background: white !important; border-radius: 999px !important; }
-#mobile-menu-btn { background: #f0f1eb !important; border: 1px solid var(--dc-line) !important; }
+#mobile-menu-btn {
+    display: none !important;
+    background: #f0f1eb !important;
+    border: 1px solid var(--dc-line) !important;
+}
+@media (min-width: 768px) {
+    #mobile-menu-btn { display: none !important; }
+    #mobile-menu-drawer { display: none !important; }
+    #mobile-menu-backdrop { display: none !important; }
+}
+@media (max-width: 767px) {
+    #mobile-menu-btn { display: flex !important; }
+}
 #mobile-menu-drawer {
     position: absolute !important; top: 100%; left: 0; right: 0;
     z-index: 72; padding: .8rem max(1.1rem, calc((100vw - 1180px) / 2)) 1.25rem !important;
