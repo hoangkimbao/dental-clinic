@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>DentalCare Luxury Clinic — PC Command Center & Notification Hub</title>
     <!-- Local Vector Icons (100% Offline LAN Readiness, Zero External CDN Dependency) -->
     <script src="js/vendor/ui-icons.js"></script>
@@ -10,23 +10,30 @@
 </head>
 <body>
 
-    <!-- 1. Native Desktop Titlebar -->
+    <!-- 1. Native Desktop Titlebar & Mobile Navigation Bar -->
     <header class="titlebar">
-        <div class="titlebar-brand">
-            <i class="fa-solid fa-tooth tooth-icon"></i>
-            <span>DENTALCARE LUXURY — C2 COMMAND CENTER</span>
+        <div class="titlebar-left">
+            <!-- Mobile hamburger toggle button -->
+            <button id="btnSidebarToggle" class="sidebar-toggle-btn" aria-label="Mở Menu Điều Hướng" onclick="toggleMobileSidebar()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="titlebar-brand">
+                <i class="fa-solid fa-tooth tooth-icon"></i>
+                <span class="brand-full">DENTALCARE LUXURY — C2 COMMAND CENTER</span>
+                <span class="brand-short">DENTALCARE C2</span>
+            </div>
         </div>
 
         <div class="titlebar-status">
             <div id="serverConfigIndicator" class="server-config-indicator" onclick="openServerConfigModal()" title="Cấu hình địa chỉ máy chủ API & WebSocket (Click để thay đổi)">
                 <i class="fa-solid fa-server"></i>
-                <span id="currentServerLabel">http://localhost:8080</span>
+                <span id="currentServerLabel" class="desktop-only-inline">http://localhost:8080</span>
             </div>
             <div id="connectionBadge" class="connection-badge disconnected">
                 <span class="status-dot"></span>
-                <span id="connectionText">STOMP: MẤT KẾT NỐI</span>
+                <span id="connectionText" class="desktop-only-inline">STOMP: MẤT KẾT NỐI</span>
             </div>
-            <div id="liveClock" style="color: #94a3b8; font-family: monospace;">--:--:--</div>
+            <div id="liveClock" class="live-clock-badge">--:--:--</div>
         </div>
 
         <div class="window-controls">
@@ -36,11 +43,25 @@
         </div>
     </header>
 
-    <!-- 2. Main Desktop Layout -->
+    <!-- Mobile Sidebar Backdrop Overlay (tap to dismiss drawer) -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="closeMobileSidebar()"></div>
+
+    <!-- 2. Main Desktop / Tablet / Mobile Layout -->
     <div class="app-container">
 
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar">
+        <!-- Sidebar Navigation (Desktop Persistent / Mobile Off-Canvas Drawer) -->
+        <aside id="appSidebar" class="sidebar">
+            <!-- Mobile drawer header (visible only on mobile) -->
+            <div class="sidebar-drawer-header">
+                <div class="drawer-brand">
+                    <i class="fa-solid fa-tooth tooth-icon"></i>
+                    <span>DENTALCARE C2</span>
+                </div>
+                <button id="btnCloseSidebar" class="sidebar-close-btn" aria-label="Đóng Menu" onclick="closeMobileSidebar()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
             <nav class="sidebar-menu">
                 <div class="menu-category-title">Điều Hành Tổng Quan</div>
                 <div class="nav-item active" data-tab="overview">
@@ -84,7 +105,7 @@
             </nav>
 
             <div class="sidebar-footer">
-                <div>
+                <div class="footer-security">
                     <i class="fa-solid fa-shield-halved" style="color: #38bdf8;"></i>
                     <span>Enterprise Secured</span>
                 </div>
@@ -111,29 +132,45 @@
                 <div class="metrics-grid">
                     <div class="metric-card">
                         <div class="metric-info">
-                            <h4>Dịch Vụ Nha Khoa</h4>
+                            <div class="metric-header-row">
+                                <h4>Dịch Vụ Nha Khoa</h4>
+                                <span class="metric-trend-pill positive"><i class="fa-solid fa-circle-check"></i> Hoạt động</span>
+                            </div>
                             <div id="statServicesCount" class="metric-val">--</div>
+                            <span class="metric-caption">Danh mục kỹ thuật số</span>
                         </div>
                         <div class="metric-icon-wrap metric-blue"><i class="fa-solid fa-tooth"></i></div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-info">
-                            <h4>Bác Sĩ Chuyên Khoa</h4>
+                            <div class="metric-header-row">
+                                <h4>Bác Sĩ Chuyên Khoa</h4>
+                                <span class="metric-trend-pill emerald"><i class="fa-solid fa-user-doctor"></i> Trực ca</span>
+                            </div>
                             <div id="statDoctorsCount" class="metric-val">--</div>
+                            <span class="metric-caption">Đội ngũ Răng Hàm Mặt</span>
                         </div>
                         <div class="metric-icon-wrap metric-emerald"><i class="fa-solid fa-user-doctor"></i></div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-info">
-                            <h4>Vật Tư / Sản Phẩm</h4>
+                            <div class="metric-header-row">
+                                <h4>Vật Tư / Sản Phẩm</h4>
+                                <span class="metric-trend-pill amber"><i class="fa-solid fa-boxes-stacked"></i> Kiểm kê</span>
+                            </div>
                             <div id="statProductsCount" class="metric-val">--</div>
+                            <span class="metric-caption">Kho trung tâm & vệ tinh</span>
                         </div>
                         <div class="metric-icon-wrap metric-amber"><i class="fa-solid fa-boxes-stacked"></i></div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-info">
-                            <h4>Chi Nhánh & Đại Lý C2</h4>
+                            <div class="metric-header-row">
+                                <h4>Chi Nhánh & Đại Lý C2</h4>
+                                <span class="metric-trend-pill rose"><i class="fa-solid fa-hospital"></i> Mạng lưới</span>
+                            </div>
                             <div id="statBranchesCount" class="metric-val">--</div>
+                            <span class="metric-caption">Cơ sở trực thuộc & liên kết</span>
                         </div>
                         <div class="metric-icon-wrap metric-rose"><i class="fa-solid fa-hospital"></i></div>
                     </div>
@@ -164,9 +201,12 @@
 
                 <div class="card-panel">
                     <div class="panel-header">
-                        <div style="display: flex; gap: 12px; align-items: center;">
-                            <input type="text" id="searchServiceInput" placeholder="Tìm dịch vụ theo tên, mã..." class="form-control" style="width: 280px;" oninput="filterServicesTable()">
-                            <select id="filterServiceCategory" class="form-control" style="width: 200px;" onchange="filterServicesTable()">
+                        <div class="filter-toolbar">
+                            <div class="search-input-wrap">
+                                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                                <input type="text" id="searchServiceInput" placeholder="Tìm dịch vụ theo tên, mã..." class="form-control search-field" oninput="filterServicesTable()">
+                            </div>
+                            <select id="filterServiceCategory" class="form-control filter-select" onchange="filterServicesTable()">
                                 <option value="ALL">Tất cả chuyên khoa</option>
                                 <option value="ORTHODONTICS">Niềng Răng Chỉnh Nha</option>
                                 <option value="IMPLANT">Cấy Ghép Implant</option>
@@ -175,7 +215,7 @@
                                 <option value="SURGERY">Tiểu Phẫu Nhổ Răng Khôn</option>
                             </select>
                         </div>
-                        <span id="servicesCountLabel" style="font-size: 12px; color: #94a3b8;">Đang tải...</span>
+                        <span id="servicesCountLabel" class="status-counter-label">Đang tải...</span>
                     </div>
                     <div class="table-responsive">
                         <table class="data-table">
@@ -213,8 +253,13 @@
 
                 <div class="card-panel">
                     <div class="panel-header">
-                        <input type="text" id="searchDoctorInput" placeholder="Tìm theo tên bác sĩ, số điện thoại..." class="form-control" style="width: 320px;" oninput="filterDoctorsTable()">
-                        <span id="doctorsCountLabel" style="font-size: 12px; color: #94a3b8;">Đang tải...</span>
+                        <div class="filter-toolbar">
+                            <div class="search-input-wrap">
+                                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                                <input type="text" id="searchDoctorInput" placeholder="Tìm theo tên bác sĩ, số điện thoại..." class="form-control search-field" oninput="filterDoctorsTable()">
+                            </div>
+                        </div>
+                        <span id="doctorsCountLabel" class="status-counter-label">Đang tải...</span>
                     </div>
                     <div class="table-responsive">
                         <table class="data-table">
@@ -252,15 +297,18 @@
 
                 <div class="card-panel">
                     <div class="panel-header">
-                        <div style="display: flex; gap: 12px; align-items: center;">
-                            <input type="text" id="searchInventoryInput" placeholder="Tìm vật tư theo mã, tên, thương hiệu..." class="form-control" style="width: 320px;" oninput="filterInventoryTable()">
-                            <select id="filterInventorySafety" class="form-control" style="width: 200px;" onchange="filterInventoryTable()">
+                        <div class="filter-toolbar">
+                            <div class="search-input-wrap">
+                                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                                <input type="text" id="searchInventoryInput" placeholder="Tìm vật tư theo mã, tên, thương hiệu..." class="form-control search-field" oninput="filterInventoryTable()">
+                            </div>
+                            <select id="filterInventorySafety" class="form-control filter-select" onchange="filterInventoryTable()">
                                 <option value="ALL">Tất cả trạng thái</option>
                                 <option value="LOW">Cảnh Báo Tồn Thấp (≤ 10)</option>
                                 <option value="SAFE">Đảm Bảo An Toàn (> 10)</option>
                             </select>
                         </div>
-                        <span id="inventoryCountLabel" style="font-size: 12px; color: #94a3b8;">Đang tải...</span>
+                        <span id="inventoryCountLabel" class="status-counter-label">Đang tải...</span>
                     </div>
                     <div class="table-responsive">
                         <table class="data-table">
@@ -299,8 +347,13 @@
 
                 <div class="card-panel">
                     <div class="panel-header">
-                        <input type="text" id="searchBranchInput" placeholder="Tìm chi nhánh theo tên, địa chỉ, quận huyện..." class="form-control" style="width: 320px;" oninput="filterBranchesTable()">
-                        <span id="branchesCountLabel" style="font-size: 12px; color: #94a3b8;">Đang tải...</span>
+                        <div class="filter-toolbar">
+                            <div class="search-input-wrap">
+                                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                                <input type="text" id="searchBranchInput" placeholder="Tìm chi nhánh theo tên, địa chỉ, quận huyện..." class="form-control search-field" oninput="filterBranchesTable()">
+                            </div>
+                        </div>
+                        <span id="branchesCountLabel" class="status-counter-label">Đang tải...</span>
                     </div>
                     <div class="table-responsive">
                         <table class="data-table">
@@ -337,13 +390,13 @@
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="config-grid-layout">
                     <!-- General Clinic Info -->
                     <div class="card-panel">
                         <div class="panel-header">
                             <span class="panel-title"><i class="fa-solid fa-hospital"></i> Thông Tin Thương Hiệu & Hotline</span>
                         </div>
-                        <div style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+                        <div class="config-panel-body">
                             <div class="form-group">
                                 <label>Tên Hệ Thống Phòng Khám</label>
                                 <input type="text" id="cfgClinicName" class="form-control">
@@ -352,7 +405,7 @@
                                 <label>Khẩu Hiệu / Tagline</label>
                                 <input type="text" id="cfgTagline" class="form-control">
                             </div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="responsive-two-col-fields">
                                 <div class="form-group">
                                     <label>Hotline Đặt Lịch</label>
                                     <input type="text" id="cfgHotline" class="form-control">
@@ -362,7 +415,7 @@
                                     <input type="text" id="cfgEmergencyHotline" class="form-control">
                                 </div>
                             </div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="responsive-two-col-fields">
                                 <div class="form-group">
                                     <label>Email Liên Hệ</label>
                                     <input type="text" id="cfgEmail" class="form-control">
@@ -384,7 +437,7 @@
                         <div class="panel-header">
                             <span class="panel-title"><i class="fa-solid fa-scale-balanced"></i> Pháp Lý & Giấy Phép Hoạt Động KCB</span>
                         </div>
-                        <div style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+                        <div class="config-panel-body">
                             <div class="form-group">
                                 <label>Số Giấy Phép Hoạt Động (Sở Y Tế)</label>
                                 <input type="text" id="cfgLicenseNumber" class="form-control">
@@ -456,14 +509,14 @@
 
                 <div class="card-panel">
                     <div class="panel-header">
-                        <div style="display: flex; gap: 8px;">
+                        <div class="notif-filter-group" style="display: flex; gap: 8px; flex-wrap: wrap;">
                             <button class="btn btn-outline notif-filter-btn active" data-filter="ALL" onclick="filterNotificationFeed('ALL')">Tất cả</button>
                             <button class="btn btn-outline notif-filter-btn" data-filter="BOOKING" onclick="filterNotificationFeed('BOOKING')">Lịch Khám</button>
                             <button class="btn btn-outline notif-filter-btn" data-filter="INVENTORY" onclick="filterNotificationFeed('INVENTORY')">Kho Vật Tư</button>
                             <button class="btn btn-outline notif-filter-btn" data-filter="EMERGENCY" onclick="filterNotificationFeed('EMERGENCY')">Cấp Cứu</button>
                             <button class="btn btn-outline notif-filter-btn" data-filter="SYSTEM" onclick="filterNotificationFeed('SYSTEM')">Hệ Thống</button>
                         </div>
-                        <span id="notifStatusSummary" style="font-size: 12px; color: #94a3b8;">Đang kết nối WebSocket...</span>
+                        <span id="notifStatusSummary" class="status-counter-label">Đang kết nối WebSocket...</span>
                     </div>
                     <div id="fullNotificationFeed" class="notification-feed" style="max-height: 520px; padding: 14px;">
                         <!-- Alerts arrive here in real time -->
@@ -530,7 +583,7 @@
                 <div class="card-panel" style="margin-top: 24px;">
                     <div class="panel-header">
                         <span class="panel-title"><i class="fa-solid fa-table text-sky-400"></i> Bảng Xem Trước Dữ Liệu Chuẩn Bị Xuất</span>
-                        <div style="display: flex; gap: 8px;">
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                             <button class="btn btn-outline" onclick="previewExportData('appointments')" style="padding: 4px 10px; font-size: 11px;">Xem Lịch Khám</button>
                             <button class="btn btn-outline" onclick="previewExportData('inventory')" style="padding: 4px 10px; font-size: 11px;">Xem Tồn Kho</button>
                             <button class="btn btn-outline" onclick="previewExportData('kpi')" style="padding: 4px 10px; font-size: 11px;">Xem KPI</button>
@@ -552,7 +605,7 @@
         </main>
     </div>
 
-    <!-- 3. Modals -->
+    <!-- 3. Modals & Dialog Windows -->
 
     <!-- Modal: Add/Edit Service -->
     <div id="serviceModal" class="modal-overlay">
@@ -562,7 +615,7 @@
                 <button class="window-btn" onclick="closeModal('serviceModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="responsive-two-col-fields">
                     <div class="form-group">
                         <label>Mã Dịch Vụ (Code)</label>
                         <input type="text" id="mServiceCode" placeholder="DV-NIENG-01" class="form-control">
@@ -582,7 +635,7 @@
                     <label>Tên Dịch Vụ Nha Khoa</label>
                     <input type="text" id="mServiceName" placeholder="Niềng Răng Mắc Cài Kim Loại Tự Buộc Damon" class="form-control">
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="responsive-two-col-fields">
                     <div class="form-group">
                         <label>Giá Niêm Yết (VNĐ)</label>
                         <input type="number" id="mServicePrice" placeholder="35000000" class="form-control">
@@ -640,7 +693,7 @@
 
     <!-- Modal: Server & API Configuration -->
     <div id="serverConfigModal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 520px;">
+        <div class="modal-content modal-content-sm">
             <div class="modal-header">
                 <h3 class="panel-title"><i class="fa-solid fa-server text-sky-400"></i> Cấu Hình Máy Chủ Phòng Khám (API & WebSocket)</h3>
                 <button class="window-btn" onclick="closeModal('serverConfigModal')"><i class="fa-solid fa-xmark"></i></button>
@@ -657,7 +710,7 @@
                     <label>STOMP WebSocket Endpoint</label>
                     <input type="text" id="cfgWsEndpointPreview" class="form-control" readonly style="opacity: 0.85; font-family: monospace; font-size: 12px; background: rgba(0,0,0,0.25); color: #38bdf8;">
                 </div>
-                <div style="display: flex; gap: 8px; margin-top: 8px;">
+                <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
                     <button type="button" class="btn btn-outline" style="font-size: 11px; padding: 4px 10px;" onclick="applyPresetServerUrl('http://localhost:8080')">Mặc Định (localhost:8080)</button>
                     <button type="button" class="btn btn-outline" style="font-size: 11px; padding: 4px 10px;" onclick="applyPresetServerUrl('https://nhakhoadentalcare.id.vn')">Cloudflare VPS Domain</button>
                 </div>

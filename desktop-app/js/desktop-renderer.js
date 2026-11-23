@@ -216,6 +216,11 @@ function initNavigation() {
 function switchTab(tabId) {
     state.currentTab = tabId;
 
+    // Auto-close mobile drawer when switching tabs
+    if (typeof window.closeMobileSidebar === 'function') {
+        window.closeMobileSidebar();
+    }
+
     // Update sidebar active class
     document.querySelectorAll('.sidebar .nav-item').forEach(item => {
         if (item.getAttribute('data-tab') === tabId) {
@@ -1331,3 +1336,18 @@ function showToast(message) {
         setTimeout(() => toast.remove(), 300);
     }, 3200);
 }
+
+// Mobile Drawer Controller (100% Non-breaking, zero regression)
+window.toggleMobileSidebar = function() {
+    const sidebar = document.getElementById('appSidebar');
+    const backdrop = document.getElementById('sidebarBackdrop');
+    if (sidebar) sidebar.classList.toggle('open');
+    if (backdrop) backdrop.classList.toggle('active');
+};
+
+window.closeMobileSidebar = function() {
+    const sidebar = document.getElementById('appSidebar');
+    const backdrop = document.getElementById('sidebarBackdrop');
+    if (sidebar) sidebar.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('active');
+};
