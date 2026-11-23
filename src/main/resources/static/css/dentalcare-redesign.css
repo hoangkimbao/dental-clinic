@@ -536,11 +536,15 @@ footer .border-t { border-color: rgba(226,236,226,.14) !important; }
     color: #fef3c7 !important;
 }
 #floating-contact-widget {
+    position: fixed !important;
     right: 1.25rem !important;
     bottom: 1.5rem !important;
     gap: .75rem !important;
     z-index: 60 !important;
     overflow: visible !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
 }
 #floating-contact-widget a {
     width: 48px !important;
@@ -554,14 +558,32 @@ footer .border-t { border-color: rgba(226,236,226,.14) !important; }
     justify-content: center !important;
     overflow: visible !important;
 }
-#floating-contact-widget a span.pointer-events-none {
+#floating-contact-widget .floating-label {
+    position: absolute !important;
+    right: calc(100% + 12px) !important;
+    left: auto !important;
+    top: 50% !important;
+    transform: translateY(-50%) translateX(6px) !important;
+    white-space: nowrap !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.2s !important;
     background: #0f172a !important;
     color: #ffffff !important;
-    border: 1px solid rgba(255, 255, 255, 0.18) !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
-    font-size: 11px !important;
+    font-size: 12px !important;
     font-weight: 700 !important;
-    letter-spacing: .02em;
+    padding: 6px 14px !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+    backdrop-filter: blur(10px) !important;
+    z-index: 100 !important;
+}
+#floating-contact-widget a:hover .floating-label {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(-50%) translateX(0) !important;
 }
 #floating-contact-widget .ui-icon { width: 20px; height: 20px; }
 
