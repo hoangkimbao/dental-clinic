@@ -1231,18 +1231,42 @@ function showToast(msg) {
     if (!container) {
         container = document.createElement('div');
         container.id = 'toast-notification-container';
-        container.className = 'fixed bottom-6 right-6 z-[9999] flex flex-col-reverse gap-2.5 pointer-events-none max-w-md w-full sm:w-auto px-4 sm:px-0';
+        container.className = 'fixed bottom-6 right-6 z-[99999] flex flex-col-reverse gap-2.5 pointer-events-none max-w-md w-full sm:w-auto px-4 sm:px-0';
         document.body.appendChild(container);
     }
     const toast = document.createElement('div');
-    toast.className = 'pointer-events-auto bg-slate-950/95 text-white text-xs font-bold px-4 py-3 rounded-2xl shadow-2xl flex items-center justify-between gap-3 border border-slate-700/80 backdrop-blur-md transition-all duration-300 transform translate-y-2 opacity-0';
+    const isError = msg.includes('⛔') || msg.includes('❌') || msg.includes('Lỗi') || msg.includes('Thất bại') || msg.includes('không có quyền') || msg.includes('không hợp lệ');
+    const isWarning = msg.includes('⚠️') || msg.includes('hết hạn') || msg.includes('chú ý');
+
+    let iconHtml = '<i class="fa-solid fa-circle-check text-emerald-400 text-sm shrink-0"></i>';
+    let borderCol = 'rgba(255,255,255,0.2)';
+    let bgCol = '#0f172a';
+
+    if (isError) {
+        iconHtml = '<i class="fa-solid fa-circle-xmark text-rose-400 text-sm shrink-0"></i>';
+        borderCol = '#f43f5e';
+        bgCol = '#1f0d12';
+    } else if (isWarning) {
+        iconHtml = '<i class="fa-solid fa-triangle-exclamation text-amber-400 text-sm shrink-0"></i>';
+        borderCol = '#f59e0b';
+        bgCol = '#1c1507';
+    }
+
+    toast.className = `pointer-events-auto text-white text-xs font-bold px-4 py-3.5 rounded-full shadow-2xl flex items-center justify-between gap-3 border backdrop-blur-md transition-all duration-300 transform translate-y-2 opacity-0 ${isError ? 'toast-error' : isWarning ? 'toast-warning' : 'toast-success'}`;
+    toast.style.backgroundColor = bgCol;
+    toast.style.borderColor = borderCol;
+    toast.style.color = '#ffffff';
+    toast.style.boxShadow = '0 14px 40px rgba(0, 0, 0, 0.55)';
+
+    const cleanMsg = msg.replace(/^[⛔❌⚠️✅🎉🔔✓⏰📍⏳\s]+/, '').trim() || msg;
+
     toast.innerHTML = `
         <div class="flex items-center gap-2.5">
-            ${DentalIcons.renderIcon('circle-check', { className: 'w-4 h-4 text-brand-400 shrink-0 inline-block' })}
-            <span class="leading-snug">${msg}</span>
+            ${iconHtml}
+            <span class="leading-snug text-white font-bold tracking-wide" style="color:#ffffff !important;">${cleanMsg}</span>
         </div>
-        <button onclick="this.parentElement.remove()" class="text-slate-500 hover:text-white transition ml-2 cursor-pointer">
-            ${DentalIcons.renderIcon('xmark', { className: 'w-3.5 h-3.5 inline-block' })}
+        <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white transition ml-3 cursor-pointer p-0.5 shrink-0" title="Đóng thông báo">
+            <i class="fa-solid fa-xmark text-xs"></i>
         </button>
     `;
     container.appendChild(toast);

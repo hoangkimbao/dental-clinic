@@ -498,6 +498,43 @@ footer .border-t { border-color: rgba(226,236,226,.14) !important; }
     max-height: min(90vh, 860px); overflow: auto; border: 1px solid rgba(255,255,255,.7) !important;
     border-radius: 1.25rem !important; box-shadow: var(--dc-shadow-lg) !important;
 }
+
+/* Toast Notifications: Ultra high-contrast, crystal clear on both dark and light dashboard */
+#toast-notification-container {
+    z-index: 99999 !important;
+}
+#toast-notification-container > div {
+    background-color: #0f172a !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 999px !important;
+    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.55) !important;
+    backdrop-filter: blur(14px) !important;
+}
+#toast-notification-container > div span {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+#toast-notification-container > div button {
+    color: #94a3b8 !important;
+}
+#toast-notification-container > div button:hover {
+    color: #ffffff !important;
+}
+#toast-notification-container > div.toast-error {
+    background-color: #240b12 !important;
+    border-color: #f43f5e !important;
+}
+#toast-notification-container > div.toast-error span {
+    color: #ffe4e6 !important;
+}
+#toast-notification-container > div.toast-warning {
+    background-color: #261907 !important;
+    border-color: #f59e0b !important;
+}
+#toast-notification-container > div.toast-warning span {
+    color: #fef3c7 !important;
+}
 #floating-contact-widget { right: 1.25rem !important; bottom: 1.25rem !important; gap: .6rem !important; }
 #floating-contact-widget a { width: 46px; height: 46px; border: 2px solid rgba(255,255,255,.85); border-radius: 50% !important; box-shadow: 0 8px 22px rgba(17,50,38,.18) !important; }
 #floating-contact-widget .ui-icon { width: 19px; height: 19px; }
