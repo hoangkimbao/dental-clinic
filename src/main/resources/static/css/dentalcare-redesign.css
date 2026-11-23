@@ -535,9 +535,35 @@ footer .border-t { border-color: rgba(226,236,226,.14) !important; }
 #toast-notification-container > div.toast-warning span {
     color: #fef3c7 !important;
 }
-#floating-contact-widget { right: 1.25rem !important; bottom: 1.25rem !important; gap: .6rem !important; }
-#floating-contact-widget a { width: 46px; height: 46px; border: 2px solid rgba(255,255,255,.85); border-radius: 50% !important; box-shadow: 0 8px 22px rgba(17,50,38,.18) !important; }
-#floating-contact-widget .ui-icon { width: 19px; height: 19px; }
+#floating-contact-widget {
+    right: 1.25rem !important;
+    bottom: 1.5rem !important;
+    gap: .75rem !important;
+    z-index: 60 !important;
+    overflow: visible !important;
+}
+#floating-contact-widget a {
+    width: 48px !important;
+    height: 48px !important;
+    border: 2px solid rgba(255,255,255,.9) !important;
+    border-radius: 50% !important;
+    box-shadow: 0 8px 24px rgba(17,50,38,.22) !important;
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: visible !important;
+}
+#floating-contact-widget a span.pointer-events-none {
+    background: #0f172a !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: .02em;
+}
+#floating-contact-widget .ui-icon { width: 20px; height: 20px; }
 
 @media (max-width: 1100px) {
     .glass-nav > div:first-child { grid-template-columns: minmax(190px, auto) minmax(0, 1fr) auto; gap: .65rem !important; }
