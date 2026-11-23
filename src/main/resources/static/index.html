@@ -240,7 +240,7 @@ footer { background: #0d3534 !important; }
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap"></noscript>
-    <link rel="stylesheet" href="css/dentalcare-redesign.css?v=20261123_1135">
+    <link rel="stylesheet" href="css/dentalcare-redesign.css?v=20261123_1140">
     <!-- DentalCare Bespoke SVG Iconography & Brand System (R4, R5) -->
     <script src="js/dental-icons.js"></script>
     <script src="js/ui-icons.js"></script>
@@ -3850,10 +3850,9 @@ footer { background: #0d3534 !important; }
     <div id="floating-contact-widget" class="fixed bottom-16 sm:bottom-6 right-6 z-50 flex flex-col items-end gap-3 pointer-events-auto select-none transition-all duration-300">
         <!-- 1. Đặt Lịch Nhanh -->
         <a href="#booking-section" onclick="showLandingPage(); trackGaEvent('click_booking_float', { source: 'floating_widget' })" 
-           title="Đặt Lịch Khám Online"
            aria-label="Đặt Lịch Khám Online"
            class="group relative flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-teal-700 to-teal-600 hover:from-teal-800 hover:to-teal-700 text-white shadow-lg hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 border border-teal-500/30">
-            <span class="floating-label">
+            <span class="floating-label" style="position:absolute; right:calc(100% + 12px); left:auto; top:50%; transform:translateY(-50%); white-space:nowrap;">
                 Đặt Lịch Khám Online
             </span>
             <div class="flex items-center justify-center text-teal-100 group-hover:scale-110 transition-transform">
@@ -3863,10 +3862,9 @@ footer { background: #0d3534 !important; }
 
         <!-- 2. Chat Zalo Tư Vấn -->
         <a href="https://zalo.me" target="_blank" onclick="trackGaEvent('click_zalo', { source: 'floating_widget' })"
-           title="Chat tư vấn qua Zalo"
            aria-label="Chat tư vấn qua Zalo"
            class="group relative flex items-center justify-center w-12 h-12 rounded-full bg-[#0068FF] hover:bg-[#0052cc] text-white shadow-lg hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 border border-sky-400/30">
-            <span class="floating-label">
+            <span class="floating-label" style="position:absolute; right:calc(100% + 12px); left:auto; top:50%; transform:translateY(-50%); white-space:nowrap;">
                 Chat Zalo Tư Vấn
             </span>
             <div class="w-7 h-7 rounded-full bg-white text-[#0068FF] flex items-center justify-center font-black text-xs shadow-inner group-hover:scale-110 transition-transform">
@@ -3876,11 +3874,10 @@ footer { background: #0d3534 !important; }
 
         <!-- 3. Hotline 24/7 (Pulse Ripple) -->
         <a href="tel:0977224504" onclick="trackGaEvent('click_hotline', { source: 'floating_widget' })"
-           title="Gọi ngay Hotline 0977 224 504"
            aria-label="Gọi ngay Hotline 0977 224 504"
            class="group relative flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-rose-600 to-red-500 hover:from-rose-700 hover:to-red-600 text-white shadow-xl hover:shadow-rose-500/40 hover:scale-105 active:scale-95 transition-all duration-300 border border-rose-400/40">
             <span class="absolute -inset-0.5 rounded-full bg-rose-500/40 animate-ping pointer-events-none"></span>
-            <span class="floating-label">
+            <span class="floating-label" style="position:absolute; right:calc(100% + 12px); left:auto; top:50%; transform:translateY(-50%); white-space:nowrap;">
                 Hotline: 0977 224 504
             </span>
             <div class="flex items-center justify-center text-white relative z-10 group-hover:rotate-12 transition-transform">
@@ -3904,7 +3901,7 @@ footer { background: #0d3534 !important; }
         <!-- GSAP 3.12 Core Animation Engine for 3D UI & Micro-interactions -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
         <!-- Deferred Non-Critical Scripts -->
-    <script defer src="js/app.js?v=20261123_1135"></script>
+    <script defer src="js/app.js?v=20261123_1140"></script>
     <script defer src="js/it-team.js"></script>
     <!-- Agrid User Behavior Analytics Tracking SDK (0ms initial render latency) -->
     <script defer src="js/agrid-sdk.js"></script>
